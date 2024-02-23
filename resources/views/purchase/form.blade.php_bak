@@ -1,0 +1,55 @@
+
+<div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('purchase_date') }}</label>
+    <div>
+        {{ Form::text('purchase_date', $purchase->purchase_date, ['class' => 'form-control' .
+        ($errors->has('purchase_date') ? ' is-invalid' : ''), 'placeholder' => 'Purchase Date']) }}
+        {!! $errors->first('purchase_date', '<div class="invalid-feedback">:message</div>') !!}
+        <small class="form-hint">purchase <b>purchase_date</b> instruction.</small>
+    </div>
+</div>
+<div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('supplier_id') }}</label>
+    <div>
+        {{ Form::text('supplier_id', $purchase->supplier_id, ['class' => 'form-control' .
+        ($errors->has('supplier_id') ? ' is-invalid' : ''), 'placeholder' => 'Supplier Id']) }}
+        {!! $errors->first('supplier_id', '<div class="invalid-feedback">:message</div>') !!}
+        <small class="form-hint">purchase <b>supplier_id</b> instruction.</small>
+    </div>
+</div>
+<div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('user_id') }}</label>
+    <div>
+        {{ Form::text('user_id', $purchase->user_id, ['class' => 'form-control' .
+        ($errors->has('user_id') ? ' is-invalid' : ''), 'placeholder' => 'User Id']) }}
+        {!! $errors->first('user_id', '<div class="invalid-feedback">:message</div>') !!}
+        <small class="form-hint">purchase <b>user_id</b> instruction.</small>
+    </div>
+</div>
+<div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('total') }}</label>
+    <div>
+        {{ Form::text('total', $purchase->total, ['class' => 'form-control' .
+        ($errors->has('total') ? ' is-invalid' : ''), 'placeholder' => 'Total']) }}
+        {!! $errors->first('total', '<div class="invalid-feedback">:message</div>') !!}
+        <small class="form-hint">purchase <b>total</b> instruction.</small>
+    </div>
+</div>
+<div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('additional_field') }}</label>
+    <div>
+        {{ Form::text('additional_field', $purchase->additional_field, ['class' => 'form-control' .
+        ($errors->has('additional_field') ? ' is-invalid' : ''), 'placeholder' => 'Additional Field']) }}
+        {!! $errors->first('additional_field', '<div class="invalid-feedback">:message</div>') !!}
+        <small class="form-hint">purchase <b>additional_field</b> instruction.</small>
+    </div>
+</div>
+
+    <div class="form-footer">
+        <div class="text-end">
+            <div class="d-flex">
+                <a href="#" class="btn btn-danger">Cancel</a>
+                <button type="submit" class="btn btn-primary ms-auto ajax-submit">Submit</button>
+            </div>
+        </div>
+    </div>
