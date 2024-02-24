@@ -212,14 +212,13 @@
                                 <thead>
                                 <tr>
                                     <th class="fw-bolder fs-4">তারিখ</th>
-                                    <th class="fw-bolder fs-4">ক্রেতা</th>
-                                    <th class="fw-bolder fs-4">সরবরাহকারী</th>
+                                    <th class="fw-bolder fs-4 bg-success text-white">ক্রেতা</th>
+                                    <th class="fw-bolder fs-4 bg-danger text-white">সরবরাহকারী</th>
                                     <th class="fw-bolder fs-4">চালান নং</th>
-                                    <th class="fw-bolder fs-4">পেমেন্ট'র ধরন</th>
                                     <th class="fw-bolder fs-4">পেমেন্ট মাধ্যম</th>
+                                    <th class="fw-bolder fs-4">পেমেন্ট'র ধরন</th>
                                     <th class="fw-bolder fs-4">টাকা</th>
                                     <th class="fw-bolder fs-4">আদায়কারী</th>
-
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
@@ -228,9 +227,10 @@
                                 @forelse ($payments as $payment)
                                     <tr>
                                         <td>{{ date('d/m/Y',strtotime($payment->date)) }}</td>
-                                        <td>{{ $payment->customer->name??'-' }}</td>
-                                        <td>{{ $payment->supplier->name??'-' }}</td>
+                                        <td class="bg-success text-white">{{ $payment->customer->name??'-' }}</td>
+                                        <td class="bg-danger text-white">{{ $payment->supplier->name??'-' }}</td>
                                         <td>{{ $payment->invoice??'-' }}</td>
+                                        <td>{{ $payment->paymentMethod->name??'-' }}</td>
                                         <td>
 
                                             @if($payment->customer_id != "")
@@ -251,11 +251,7 @@
                                                 @endif
                                             @endif
                                         </td>
-                                        <td>{{ $payment->paymentMethod->name??'-' }}</td>
                                         <td>{{ $payment->amount }}</td>
-
-
-
                                         <td>{{ $payment->user->name }}</td>
 
                                         <td>
