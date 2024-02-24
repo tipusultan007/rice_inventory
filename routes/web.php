@@ -34,3 +34,4 @@ Route::resource('/payment_methods', App\Http\Controllers\PaymentMethodController
 
 Route::post('customer-payment',[\App\Http\Controllers\PaymentController::class,'customerPayment'])->name('customer.make.payment');
 Route::post('supplier-payment',[\App\Http\Controllers\PaymentController::class,'supplierPayment'])->name('supplier.make.payment');
+Route::resource('/payments', App\Http\Controllers\PaymentController::class);

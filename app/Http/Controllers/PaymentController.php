@@ -4,13 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Payment;
+use App\Models\PaymentMethod;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use PHPUnit\Framework\Constraint\Operator;
 
+/**
+ * Class PaymentController
+ * @package App\Http\Controllers
+ */
 class PaymentController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $payments = Payment::with('customer','supplier')->orderByDesc('created_at')->paginate(10);
+        $methods = PaymentMethod::all();
+        $customers = Customer::all();
+        $suppliers = Supplier::all();
+
+        return view('payment.index', compact('payments','methods','customers','suppliers'))
+            ->with('i', (request()->input('page', 1) - 1) * $payments->perPage());
+    }
     public function customerPayment(Request $request)
     {
         $customer = Customer::find($request->customer_id);
@@ -53,5 +72,88 @@ class PaymentController extends Controller
         }
 
         return redirect()->back()->with('success', 'Payment successful!');
+    }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $payment = new Payment();
+        return view('payment.create', compact('payment'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        request()->validate(Payment::$rules);
+
+        $payment = Payment::create($request->all());
+
+        return redirect()->route('payments.index')
+            ->with('success', 'Payment created successfully.');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $payment = Payment::find($id);
+
+        return view('payment.show', compact('payment'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $payment = Payment::find($id);
+        $methods = PaymentMethod::all();
+
+        return view('payment.edit', compact('payment','methods'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  Payment $payment
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Payment $payment)
+    {
+        request()->validate(Payment::$rules);
+
+        $payment->update($request->all());
+
+        return redirect()->route('payments.index')
+            ->with('success', 'Payment updated successfully');
+    }
+
+    /**
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
+    public function destroy($id)
+    {
+        $payment = Payment::find($id)->delete();
+
+        return redirect()->route('payments.index')
+            ->with('success', 'Payment deleted successfully');
     }
 }

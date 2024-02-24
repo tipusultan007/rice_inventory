@@ -176,6 +176,11 @@ return [
             'icon' => 'ti ti-shopping-cart',
         ],
         [
+            'text' => 'পেমেন্ট',
+            'route' => 'payments.index',
+            'icon' => 'ti ti-currency-taka',
+        ],
+        [
             'text' => 'ব্যয়',
             'route' => 'expenses.index',
             'icon' => 'ti ti-coin-taka',
