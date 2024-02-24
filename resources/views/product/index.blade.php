@@ -46,6 +46,29 @@
             <div class="row mb-3">
                 <div class="col-md-3">
                     <div class="card">
+                        <div class="card-status-start bg-info"></div>
+                        <div class="card-body text-center">
+                            <h4 class="text-secondary">২৫ কেজি</h4>
+                            <h2>
+                                {{ $productQuantity->where('type','25')->sum('quantity') }}
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-status-start bg-warning"></div>
+                        <div class="card-body text-center">
+                            <h4 class="text-secondary">৫০ কেজি</h4>
+                            <h2>
+                                {{ $productQuantity->where('type','50')->sum('quantity') }}
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
                         <div class="card-status-start bg-green"></div>
                         <div class="card-body text-center">
                             <h4 class="text-secondary">বর্তমান স্থিতি</h4>
@@ -55,6 +78,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col-md-3">
                     <div class="card">
                         <div class="card-status-start bg-info"></div>

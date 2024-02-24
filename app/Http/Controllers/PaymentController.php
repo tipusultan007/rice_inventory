@@ -23,7 +23,8 @@ class PaymentController extends Controller
                 'amount' => $request->amount,
                 'type' => 'credit',
                 'date' => $request->date,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
+                'payment_method_id' => $request->payment_method_id
             ]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Payment failed. Please try again.');
