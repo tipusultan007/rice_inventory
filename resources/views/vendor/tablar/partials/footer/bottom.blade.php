@@ -23,15 +23,9 @@
                 </ul>
             </div>--}}
             <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-                <ul class="list-inline list-inline-dots mb-0">
-                    <li class="list-inline-item">
-                        Copyright &copy; 2024
-                        <a href="https://ebuz.xyz"
-                           class="link-secondary">{{config('tablar.bottom_title', 'Umair IT.')}}</a>.
-                        All rights reserved.
-                    </li>
-
-                </ul>
+                <div class="text-center">&copy; 2024 মেসার্স এস.এ রাইচ এজেন্সী। Developed by
+                    <a target="_blank" href="https://umairit.com"
+                       class="link-secondary">Umair IT</a>.</div>
             </div>
         </div>
     </div>

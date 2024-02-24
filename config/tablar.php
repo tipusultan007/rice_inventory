@@ -188,6 +188,10 @@ return [
             'text' => 'পেমেন্ট মাধ্যম',
             'route' => 'payment_methods.index',
             'icon' => 'ti ti-cash-banknote',
+        ],[
+            'text' => 'ম্যানেজমেন্ট',
+            'route' => 'users.index',
+            'icon' => 'ti ti-users',
         ],
 
     ],

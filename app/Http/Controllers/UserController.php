@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class UserController
@@ -44,15 +45,34 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        request()->validate(User::$rules);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust the validation rules for image as needed
+        ]);
 
         $data = $request->all();
+
+        // Handling image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            // Save the image to the storage folder
+            $image->storeAs('images', $imageName, 'public');
+
+            // Update the data array with the image path
+            $data['image'] = 'images/' . $imageName;
+        }
+
         $data['password'] = Hash::make($request->password);
         $user = User::create($data);
 
         return redirect()->route('users.index')
             ->with('success', 'User created successfully.');
     }
+
 
     /**
      * Display the specified resource.
@@ -87,20 +107,44 @@ class UserController extends Controller
      * @param  User $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        request()->validate(User::$rules);
+        $user = User::findOrFail($id);
 
-        $data = $request->all();
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
+        ]);
 
-        if ($request->filled('password')){
+        $data = $request->except('password');
+
+        // Handling image update
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            // Save the new image to the storage folder
+            $image->storeAs('images', $imageName, 'public');
+
+            // Delete the old image if it exists
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image);
+            }
+
+            // Update the data array with the new image path
+            $data['image'] = 'images/' . $imageName;
+        }
+// Check if the password key exists and is not empty
+        if (isset($request->password) && !empty($request->password)) {
             $data['password'] = Hash::make($request->password);
         }
-
-        $user->update($request->all());
+        // Update user data
+        $user->update($data);
 
         return redirect()->route('users.index')
-            ->with('success', 'User updated successfully');
+            ->with('success', 'User updated successfully.');
     }
 
     /**
