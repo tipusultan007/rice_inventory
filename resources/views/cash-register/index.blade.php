@@ -1,7 +1,7 @@
 @extends('tablar::page')
 
 @section('title')
-    Customer
+    Cash Register
 @endsection
 
 @section('content')
@@ -15,13 +15,13 @@
                         List
                     </div>
                     <h2 class="page-title">
-                        ক্রেতা তালিকা
+                        {{ __('Cash Register ') }}
                     </h2>
                 </div>
                 <!-- Page title actions -->
                 <div class="col-12 col-md-auto ms-auto d-print-none">
                     <div class="btn-list">
-                        <a href="{{ route('customers.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                        <a href="{{ route('cash_registers.create') }}" class="btn btn-primary d-none d-sm-inline-block">
                             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -30,7 +30,7 @@
                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                 <line x1="5" y1="12" x2="19" y2="12"/>
                             </svg>
-                            নতুন ক্রেতা
+                            Create Cash Register
                         </a>
                     </div>
                 </div>
@@ -47,15 +47,34 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">ক্রেতা</h3>
+                            <h3 class="card-title">Cash Register</h3>
                         </div>
-
+                        <div class="card-body border-bottom py-3">
+                            <div class="d-flex">
+                                <div class="text-muted">
+                                    Show
+                                    <div class="mx-2 d-inline-block">
+                                        <input type="text" class="form-control form-control-sm" value="10" size="3"
+                                               aria-label="Invoices count">
+                                    </div>
+                                    entries
+                                </div>
+                                <div class="ms-auto text-muted">
+                                    Search:
+                                    <div class="ms-2 d-inline-block">
+                                        <input type="text" class="form-control form-control-sm"
+                                               aria-label="Search invoice">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="table-responsive min-vh-100">
                             <table class="table card-table table-vcenter text-nowrap datatable">
                                 <thead>
                                 <tr>
-
-                                    {{--<th class="w-1 fs-5">নং
+                                    <th class="w-1"><input class="form-check-input m-0 align-middle" type="checkbox"
+                                                           aria-label="Select all invoices"></th>
+                                    <th class="w-1">No.
                                         <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                              class="icon icon-sm text-dark icon-thick" width="24" height="24"
@@ -64,25 +83,24 @@
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                             <polyline points="6 15 12 9 18 15"/>
                                         </svg>
-                                    </th>--}}
+                                    </th>
+                                    
+										<th>Opening Balance</th>
+										<th>Ending Balance</th>
 
-										<th class="fw-bolder fs-5">নাম</th>
-										<th class="fw-bolder fs-5">মোবাইল নং</th>
-										<th class="fw-bolder fs-5">ঠিকানা</th>
-										<th class="fw-bolder fs-5 text-end">বকেয়া</th>
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
 
-                               {{-- <tbody>
-                                @forelse ($customers as $customer)
+                                <tbody>
+                                @forelse ($cashRegisters as $cashRegister)
                                     <tr>
+                                        <td><input class="form-check-input m-0 align-middle" type="checkbox"
+                                                   aria-label="Select cashRegister"></td>
                                         <td>{{ ++$i }}</td>
-
-											<td>{{ $customer->name }}</td>
-											<td>{{ $customer->phone }}</td>
-											<td>{{ $customer->address }}</td>
-											<td class="text-danger fw-bolder text-end">{{ $customer->remainingDue }}</td>
+                                        
+											<td>{{ $cashRegister->opening_balance }}</td>
+											<td>{{ $cashRegister->ending_balance }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">
@@ -93,15 +111,15 @@
                                                     </button>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a class="dropdown-item"
-                                                           href="{{ route('customers.show',$customer->id) }}">
+                                                           href="{{ route('cash_registers.show',$cashRegister->id) }}">
                                                             View
                                                         </a>
                                                         <a class="dropdown-item"
-                                                           href="{{ route('customers.edit',$customer->id) }}">
+                                                           href="{{ route('cash_registers.edit',$cashRegister->id) }}">
                                                             Edit
                                                         </a>
                                                         <form
-                                                            action="{{ route('customers.destroy',$customer->id) }}"
+                                                            action="{{ route('cash_registers.destroy',$cashRegister->id) }}"
                                                             method="POST">
                                                             @csrf
                                                             @method('DELETE')
@@ -120,36 +138,16 @@
                                 @empty
                                     <td>No Data Found</td>
                                 @endforelse
-                                </tbody>--}}
+                                </tbody>
 
                             </table>
                         </div>
                        <div class="card-footer d-flex align-items-center">
-                            {{--{!! $customers->links('tablar::pagination') !!}--}}
+                            {!! $cashRegisters->links('tablar::pagination') !!}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
-@section('scripts')
-    <script type="module">
-            jQuery('.datatable').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "ajax":{
-                    "url": "{{ url('dataCustomers') }}",
-                    "dataType": "json",
-                    "type": "GET",
-                },
-                "columns": [
-                    { "data": "name" },
-                    { "data": "phone" },
-                    { "data": "address" },
-                    { "data": "due" },
-                    { "data": "options" },
-                ]
-            });
-    </script>
 @endsection

@@ -10,3 +10,9 @@
 body, a.btn, .btn, .form-label{
     font-family: 'SolaimanLipi', serif;
 }
+div.dt-container div.dt-search,.dt-paging .pagination {
+    margin-right: 20px;
+}
+.dt-length,.dt-info{
+    margin-left: 20px;
+}

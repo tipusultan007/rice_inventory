@@ -93,7 +93,7 @@
 											<td>{{ $sale->user->name }}</td>
 											<td>{{ $sale->saleDetails->sum('quantity') }}</td>
 											<td>{{ $sale->total }}</td>
-											<td>{{ $sale->additional_field }}</td>
+											<td>{{ $sale->note??'-' }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">

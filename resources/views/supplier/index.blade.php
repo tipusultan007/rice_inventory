@@ -49,7 +49,7 @@
                         <div class="card-header">
                             <h3 class="card-title">সরবরাহকারী</h3>
                         </div>
-                        <div class="card-body border-bottom py-3">
+                        {{--<div class="card-body border-bottom py-3">
                             <div class="d-flex">
                                 <div class="text-muted">
                                     Show
@@ -67,12 +67,12 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="table-responsive min-vh-100">
+                        </div>--}}
+                        <div class="table-responsive">
                             <table class="table card-table table-vcenter text-nowrap datatable">
                                 <thead>
                                 <tr>
-                                    <th class="w-1 fw-bolder fs-5">নং.
+                                   {{-- <th class="w-1 fw-bolder fs-5">নং.
                                         <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                              class="icon icon-sm text-dark icon-thick" width="24" height="24"
@@ -81,19 +81,19 @@
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                             <polyline points="6 15 12 9 18 15"/>
                                         </svg>
-                                    </th>
+                                    </th>--}}
 
-										<th class="fw-bolder fs-5">নাম</th>
-										<th class="fw-bolder fs-5">মোবাইল নং</th>
-										<th class="fw-bolder fs-5">ঠিকানা</th>
-										<th class="fw-bolder fs-5">প্রতিষ্ঠান</th>
-										<th class="fw-bolder fs-5 text-end">বকেয়া</th>
+										<th class="fw-bolder fs-4">নাম</th>
+										<th class="fw-bolder fs-4">মোবাইল নং</th>
+										<th class="fw-bolder fs-4">ঠিকানা</th>
+										{{--<th class="fw-bolder fs-5">প্রতিষ্ঠান</th>--}}
+										<th class="fw-bolder fs-4">বকেয়া</th>
 
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
 
-                                <tbody>
+                              {{--  <tbody>
                                 @forelse ($suppliers as $supplier)
                                     <tr>
                                         <td>{{ ++$i }}</td>
@@ -140,16 +140,36 @@
                                 @empty
                                     <td>No Data Found</td>
                                 @endforelse
-                                </tbody>
+                                </tbody>--}}
 
                             </table>
                         </div>
                        <div class="card-footer d-flex align-items-center">
-                            {!! $suppliers->links('tablar::pagination') !!}
+                            {{--{!! $suppliers->links('tablar::pagination') !!}--}}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+    <script type="module">
+        jQuery('.datatable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax":{
+                "url": "{{ url('dataSuppliers') }}",
+                "dataType": "json",
+                "type": "GET",
+            },
+            "columns": [
+                { "data": "name" },
+                { "data": "phone" },
+                { "data": "address" },
+                { "data": "due" },
+                { "data": "options" },
+            ]
+        });
+    </script>
 @endsection

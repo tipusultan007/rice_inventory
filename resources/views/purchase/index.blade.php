@@ -79,7 +79,6 @@
                                         <th class="fw-bolder fs-5">পরিমাণ</th>
 										<th class="fw-bolder fs-5">সর্বমোট</th>
 										<th class="fw-bolder fs-5">মন্তব্য</th>
-
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>

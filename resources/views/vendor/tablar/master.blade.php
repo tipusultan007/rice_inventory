@@ -14,6 +14,7 @@
         @yield('title', config('tablar.title', 'Tablar'))
         @yield('title_postfix', config('tablar.title_postfix', ''))
     </title>
+    <script type="module" src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.0.0/b-3.0.0/sb-1.7.0/datatables.min.js"></script>
     <!-- CSS files -->
     @if(config('tablar','vite'))
         @vite('resources/js/app.js')
@@ -22,11 +23,13 @@
     @yield('tablar_css')
 
     <link rel="stylesheet" href="{{asset('fonts/style.css')}}">
-
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.0.0/b-3.0.0/sb-1.7.0/datatables.min.css" rel="stylesheet">
 </head>
+<body>
 @yield('body')
 @include('tablar::extra.modal')
 
 @yield('tablar_js')
 @yield('scripts')
+</body>
 </html>
