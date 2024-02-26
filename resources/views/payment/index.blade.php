@@ -252,7 +252,7 @@
                                     <th class="fw-bolder fs-4">পেমেন্ট মাধ্যম</th>
                                     <th class="fw-bolder fs-4">পেমেন্ট'র ধরন</th>
                                     <th class="fw-bolder fs-4">টাকা</th>
-                                    <th class="fw-bolder fs-4">আদায়কারী</th>
+                                    <th class="fw-bolder fs-4">নোট</th>
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
@@ -286,7 +286,7 @@
                                             @endif
                                         </td>
                                         <td>{{ $payment->amount }}</td>
-                                        <td>{{ $payment->user->name }}</td>
+                                        <td>{!! $payment->note??'-' !!}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">

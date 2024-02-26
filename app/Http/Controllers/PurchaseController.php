@@ -116,6 +116,10 @@ class PurchaseController extends Controller
             ]);
 
             if ($request->paid>0 || $request->carrying_cost) {
+                $carryingCost = '';
+                if ($request->carrying_cost>0){
+                    $carryingCost = '<p>গাড়ি ভাড়াঃ '.$request->carrying_cost.'</p>';
+                }
                 $debitPayment = Payment::create([
                     'supplier_id' => $purchase->supplier_id,
                     'amount' => $request->input('paid',0) + $request->input('carrying_cost',0),
@@ -125,7 +129,7 @@ class PurchaseController extends Controller
                     'payment_method_id' => $request->input('payment_method_id'),
                     'date' => $purchase->date,
                     'cheque_no' => $request->input('cheque_no'),
-                    'note' => $request->input('cheque_details'),
+                    'note' => $carryingCost.' '.$request->input('cheque_details'),
                 ]);
             }
 
