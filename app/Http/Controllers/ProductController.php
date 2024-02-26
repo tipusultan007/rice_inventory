@@ -23,7 +23,7 @@ class ProductController extends Controller
 
         $allProducts = Product::select(DB::raw('SUM(quantity) as total_quantity,SUM(quantity*price_rate) as total_price'))->first();
         $productQuantity = Product::get();
-        $products = Product::paginate(10);
+        $products = Product::paginate(50);
 
         return view('product.index', compact('products','allProducts','productQuantity'))
             ->with('i', (request()->input('page', 1) - 1) * $products->perPage());

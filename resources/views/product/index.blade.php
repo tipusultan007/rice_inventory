@@ -98,28 +98,9 @@
                         <div class="card-header">
                             <h3 class="card-title">প্রোডাক্ট তালিকা</h3>
                         </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="d-flex">
-                                <div class="text-muted">
-                                    Show
-                                    <div class="mx-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm" value="10" size="3"
-                                               aria-label="Invoices count">
-                                    </div>
-                                    entries
-                                </div>
-                                <div class="ms-auto text-muted">
-                                    Search:
-                                    <div class="ms-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm"
-                                               aria-label="Search invoice">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter text-nowrap datatable">
+                            <table class="table card-table table-bordered table-vcenter text-nowrap datatable">
                                 <thead>
                                 <tr>
 
@@ -134,10 +115,10 @@
                                         </svg>
                                     </th>
 
-                                    <th>বিবরণ</th>
-                                    <th>বর্তমান স্থিতি</th>
-                                    <th>দর</th>
-                                    <th>মোট মূল্য</th>
+                                    <th class="fw-bolder fs-4">বিবরণ</th>
+                                    <th class="fw-bolder fs-4">বর্তমান স্থিতি</th>
+                                    <th class="fw-bolder fs-4">দর</th>
+                                    <th class="fw-bolder fs-4">মোট মূল্য</th>
 
                                     <th class="w-1"></th>
                                 </tr>
@@ -147,19 +128,19 @@
                                 @forelse ($products as $product)
                                     <tr>
 
-                                        <td>{{ ++$i }}</td>
+                                        <td class="py-0">{{ ++$i }}</td>
 
-                                        <td>{{ $product->name }}</td>
-                                        <td>{{ $product->quantity }}</td>
-                                        <td>{{ $product->price_rate }}</td>
-                                        <td>{{ $product->quantity * $product->price_rate }}</td>
+                                        <td class="py-0">{{ $product->name }}</td>
+                                        <td class="py-0">{{ $product->quantity }}</td>
+                                        <td class="py-0">{{ $product->price_rate }}</td>
+                                        <td class="py-0">{{ $product->quantity * $product->price_rate }}</td>
 
-                                        <td>
+                                        <td class="py-0">
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">
-                                                    <button class="btn dropdown-toggle align-text-top"
+                                                    <button class="btn dropdown-toggle align-text-top btn-sm"
                                                             data-bs-toggle="dropdown">
-                                                        Actions
+                                                        <i class="ti ti-dots"></i>
                                                     </button>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a class="dropdown-item"

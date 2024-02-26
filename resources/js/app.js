@@ -6,6 +6,9 @@ select2();
 window.$ = jQuery;
 import './tabler-init';
 
+import Swal from 'sweetalert2';
+window.Swal = Swal;
+
 $.fn.select2.defaults = {
     width: '100%',
     theme: 'bootstrap-5',

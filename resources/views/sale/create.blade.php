@@ -203,7 +203,6 @@
                                             </th>
                                             <td class="total border-0 py-2">
                                                 <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
-                                                    <option value=""></option>
                                                     @forelse($methods as $method)
                                                         <option value="{{ $method->id }}">{{ $method->name }}</option>
                                                     @empty

@@ -83,12 +83,11 @@
                                         </svg>
                                     </th>--}}
 
-										<th class="fw-bolder fs-4">নাম</th>
-										<th class="fw-bolder fs-4">মোবাইল নং</th>
-										<th class="fw-bolder fs-4">ঠিকানা</th>
-										{{--<th class="fw-bolder fs-5">প্রতিষ্ঠান</th>--}}
-										<th class="fw-bolder fs-4">বকেয়া</th>
-
+                                <tr>
+                                    <th class="fw-bolder fs-4">নাম</th>
+                                    <th class="fw-bolder fs-4">মোবাইল নং</th>
+                                    <th class="fw-bolder fs-4">ঠিকানা</th>
+                                    <th class="fw-bolder fs-4">বকেয়া</th>
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
@@ -155,21 +154,66 @@
 @endsection
 @section('scripts')
     <script type="module">
-        jQuery('.datatable').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax":{
-                "url": "{{ url('dataSuppliers') }}",
-                "dataType": "json",
-                "type": "GET",
-            },
-            "columns": [
-                { "data": "name" },
-                { "data": "phone" },
-                { "data": "address" },
-                { "data": "due" },
-                { "data": "options" },
-            ]
+
+        customerTables();
+        function customerTables() {
+            jQuery('.datatable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax":{
+                    "url": "{{ url('dataSuppliers') }}",
+                    "dataType": "json",
+                    "type": "GET",
+                },
+                "columns": [
+                    { "data": "name" },
+                    { "data": "phone" },
+                    { "data": "address" },
+                    { "data": "due" },
+                    { "data": "options" },
+                ]
+            });
+        }
+
+
+        $(document).on("click", ".delete", function () {
+            var id = $(this).data('id');
+            Swal.fire({
+                title: "আপনি কি নিশ্চিত?",
+                text: "এটি ফিরে নেওয়া যাবে না!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "হ্যাঁ",
+                cancelButtonText: "না",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ url('suppliers') }}/' + id,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                title: "ডিলেট হয়েছে!",
+                                text: "আপনার ফাইলটি ডিলেট হয়েছে।",
+                                icon: "success"
+                            });
+                            location.reload();
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire({
+                                title: "Error!",
+                                text: "An error occurred while deleting the customer.",
+                                icon: "error"
+                            });
+                        }
+                    });
+                }
+            });
         });
+
     </script>
 @endsection

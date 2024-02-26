@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Payment;
+use App\Models\Sale;
 use Illuminate\Http\Request;
 
 /**
@@ -77,8 +78,15 @@ class CustomerController extends Controller
                     $nestedData['address'] = $post->address??'-';
                     $nestedData['due'] = $post->remainingDue;
 
-                    $nestedData['options'] = "&emsp;<a href='{$show}' title='SHOW' ><span class='glyphicon glyphicon-list'></span></a>
-                                          &emsp;<a href='{$edit}' title='EDIT' ><span class='glyphicon glyphicon-edit'></span></a>";
+                    $nestedData['options'] = '<div class="dropdown">
+                                              <a href="#" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown">Action</a>
+                                              <div class="dropdown-menu ">
+                                                <a class="dropdown-item" href="'.route('customers.show',$post->id).'">দেখুন</a>
+                                                <a class="dropdown-item" href="'.route('customers.edit',$post->id).'">এডিট</a>
+                                                <a class="dropdown-item text-danger delete" href="javascript:;" data-id="'.$post->id.'">ডিলেট</a>
+                                              </div>
+                                            </div>
+                                            ';
                     $data[] = $nestedData;
 
                 }
@@ -172,9 +180,12 @@ class CustomerController extends Controller
      */
     public function destroy($id)
     {
+        Sale::where('customer_id', $id)->delete();
+        Payment::where('customer_id', $id)->delete();
         $customer = Customer::find($id)->delete();
 
-        return redirect()->route('customers.index')
-            ->with('success', 'Customer deleted successfully');
+        return response()->json([
+           'status' => 'success'
+        ]);
     }
 }

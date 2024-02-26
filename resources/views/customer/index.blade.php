@@ -50,26 +50,14 @@
                             <h3 class="card-title">ক্রেতা</h3>
                         </div>
 
-                        <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter text-nowrap datatable">
+                        <div class="min-vh-100">
+                            <table class="table card-table table-vcenter table-bordered datatable">
                                 <thead>
                                 <tr>
-
-                                    {{--<th class="w-1 fs-5">নং
-                                        <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="icon icon-sm text-dark icon-thick" width="24" height="24"
-                                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                            <polyline points="6 15 12 9 18 15"/>
-                                        </svg>
-                                    </th>--}}
-
-										<th class="fw-bolder fs-5">নাম</th>
-										<th class="fw-bolder fs-5">মোবাইল নং</th>
-										<th class="fw-bolder fs-5">ঠিকানা</th>
-										<th class="fw-bolder fs-5 text-end">বকেয়া</th>
+										<th class="fw-bolder fs-4">নাম</th>
+										<th class="fw-bolder fs-4">মোবাইল নং</th>
+										<th class="fw-bolder fs-4">ঠিকানা</th>
+										<th class="fw-bolder fs-4">বকেয়া</th>
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
@@ -135,6 +123,9 @@
 @endsection
 @section('scripts')
     <script type="module">
+
+        customerTables();
+        function customerTables() {
             jQuery('.datatable').DataTable({
                 "processing": true,
                 "serverSide": true,
@@ -151,5 +142,47 @@
                     { "data": "options" },
                 ]
             });
+        }
+
+
+            $(document).on("click", ".delete", function () {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: "আপনি কি নিশ্চিত?",
+                    text: "এটি ফিরে নেওয়া যাবে না!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "হ্যাঁ",
+                    cancelButtonText: "না",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '{{ url('customers') }}/' + id,
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    title: "ডিলেট হয়েছে!",
+                                    text: "আপনার ফাইলটি ডিলেট হয়েছে।",
+                                    icon: "success"
+                                });
+                                location.reload();
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: "An error occurred while deleting the customer.",
+                                    icon: "error"
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
     </script>
 @endsection
