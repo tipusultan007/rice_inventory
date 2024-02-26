@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Payment;
+use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -37,5 +40,14 @@ class ReportController extends Controller
         $products50 = Product::where('quantity','>',0)->where('type','50')->get();
 
         return view('reports.daily',compact('sales','purchases','supplierPayments','customerPayments','products25','products50'));
+    }
+
+    public function paymentReport(Request $request)
+    {
+        $payments = Payment::with('customer','supplier')->orderByDesc('created_at')->paginate(10);
+        $methods = PaymentMethod::all();
+        $customers = Customer::all();
+        $suppliers = Supplier::all();
+        return view('reports.payment',compact('payments','customers','suppliers','methods'));
     }
 }

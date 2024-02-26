@@ -45,7 +45,8 @@ class SaleController extends Controller
         $customers = Customer::all();
         $products = Product::all();
         $users = User::all();
-        return view('sale.create', compact('sale','customers','products','users'));
+        $lastSale = Sale::latest()->first();
+        return view('sale.create', compact('sale','customers','products','users','lastSale'));
     }
 
     /**
@@ -59,8 +60,7 @@ class SaleController extends Controller
         // Validate the request
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
-            'customer_id' => 'required|exists:customers,id', // Assuming 'suppliers' is the table name
-            'user_id' => 'required|exists:users,id', // Assuming 'users' is the table name
+            'user_id' => 'required|exists:users,id',
             'total' => 'required|numeric',
             'paid' => 'required|numeric',
             'note' => 'nullable|string',
@@ -78,10 +78,20 @@ class SaleController extends Controller
         DB::beginTransaction();
 
         try {
+            $customeId = $request->customer_id;
+            if ($request->customer_id === 'new'){
+                $customer = Customer::create([
+                    'name' => $request->input('name'),
+                    'phone' => $request->input('phone'),
+                    'address' => $request->input('address'),
+                ]);
+                $customeId = $customer->id;
+            }
             // Create the purchase
             $sale = Sale::create([
                 'date' => $request->input('date'),
-                'customer_id' => $request->input('customer_id'),
+                'book_no' => $request->input('book_no'),
+                'customer_id' => $customeId,
                 'user_id' => $request->input('user_id'),
                 'total' => $request->input('total'),
                 'invoice_no' => $request->input('invoice_no'),
@@ -125,6 +135,8 @@ class SaleController extends Controller
                     'user_id' => Auth::id(),
                     'payment_method_id' => $request->input('payment_method_id'),
                     'date' => $sale->date,
+                    'cheque_no' => $request->input('cheque_no'),
+                    'note' => $request->input('cheque_details'),
                 ]);
             }
 
@@ -195,6 +207,7 @@ class SaleController extends Controller
             $sale = Sale::findOrFail($id);
             $sale->update([
                 'date' => $request->input('date'),
+                'book_no' => $request->input('book_no'),
                 'customer_id' => $request->input('customer_id'),
                 'user_id' => $request->input('user_id'),
                 'total' => $request->input('total'),

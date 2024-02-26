@@ -43,7 +43,9 @@ class PaymentController extends Controller
                 'type' => 'credit',
                 'date' => $request->date,
                 'user_id' => Auth::id(),
-                'payment_method_id' => $request->payment_method_id
+                'payment_method_id' => $request->payment_method_id,
+                'cheque_no' => $request->input('cheque_no'),
+                'note' => $request->input('cheque_details'),
             ]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Payment failed. Please try again.');
@@ -66,6 +68,8 @@ class PaymentController extends Controller
                 'date' => $request->date,
                 'user_id' => Auth::id(),
                 'payment_method_id' => $request->payment_method_id,
+                'cheque_no' => $request->input('cheque_no'),
+                'note' => $request->input('cheque_details'),
             ]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Payment failed. Please try again.');

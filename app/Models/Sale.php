@@ -43,6 +43,7 @@ class Sale extends Model
         'customer_id',
         'user_id',
         'invoice_no',
+        'book_no',
         'subtotal',
         'dholai',
         'discount',

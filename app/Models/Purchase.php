@@ -47,6 +47,7 @@ class Purchase extends Model
         'supplier_id',
         'user_id',
         'invoice_no',
+        'book_no',
         'truck_no',
         'subtotal',
         'carrying_cost',

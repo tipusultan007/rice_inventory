@@ -47,7 +47,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Sale</h3>
+                            <h3 class="card-title">বিক্রয়</h3>
                         </div>
                         <div class="card-body border-bottom py-3">
                             <div class="d-flex">
@@ -73,7 +73,7 @@
                                 <thead>
                                 <tr>
                                     <th class="fw-bolder fs-5">বিক্রয়ের তারিখ</th>
-                                    <th class="fw-bolder fs-5">চালান নং</th>
+                                    <th class="fw-bolder fs-5">মেমো নং</th>
                                     <th class="fw-bolder fs-5">ক্রেতা</th>
                                     <th class="fw-bolder fs-5">অপারেটর</th>
                                     <th class="fw-bolder fs-5">পরিমাণ</th>

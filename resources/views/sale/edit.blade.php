@@ -62,7 +62,7 @@
                                 {{ method_field('PATCH') }}
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2 mb-3">
                                         <label for="date" class="form-label fs-3">তারিখ</label>
                                         <x-flat-picker name="date" id="date" value="{{ $sale->date }}"></x-flat-picker>
                                         @error('date')
@@ -70,14 +70,20 @@
                                         @enderror
                                     </div>
 
-                                    <div class="col-md-3 mb-3">
-                                        <label for="invoice_no" class="form-label fs-3">চালান নং</label>
+                                    <div class="col-md-2 mb-3">
+                                        <label for="invoice_no" class="form-label fs-3">মেমো নং</label>
                                         <input type="number" name="invoice_no" class="form-control" value="{{ $sale->invoice_no }}" readonly required>
                                         @error('invoice_no')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-
+                                    <div class="col-md-2 mb-3">
+                                        <label for="book_no" class="form-label fs-3">বই নং</label>
+                                        <input type="number" name="book_no" class="form-control" value="{{ $sale->book_no }}" >
+                                        @error('book_no')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="customer_id" class="form-label fs-3">ক্রেতা</label>
                                         <select name="customer_id" class="form-select select2" required>

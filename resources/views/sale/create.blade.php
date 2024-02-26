@@ -52,35 +52,56 @@
                                 @csrf
 
                                 <div class="row">
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2 mb-3">
                                         <label for="date" class="form-label fs-3">তারিখ</label>
-                                        <x-flat-picker name="date" id="date"></x-flat-picker>
+                                        <x-flat-picker name="date" id="date" value="{{ $lastSale?$lastSale->date:date('Y-m-d') }}"></x-flat-picker>
                                         @error('date')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
 
-                                    <div class="col-md-3 mb-3">
-                                        <label for="invoice_no" class="form-label fs-3">চালান নং</label>
-                                        <input type="number" name="invoice_no" class="form-control" value="{{ generateSaleInvoiceNumber() }}" readonly required>
+                                    <div class="col-md-2 mb-3">
+                                        <label for="invoice_no" class="form-label fs-3">মেমো নং</label>
+                                        <input type="number" name="invoice_no" class="form-control" value="{{ generateSaleInvoiceNumber() }}" required>
                                         @error('invoice_no')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-
+                                    <div class="col-md-2 mb-3">
+                                        <label for="book_no" class="form-label fs-3">বই নং</label>
+                                        <input type="number" name="book_no" class="form-control" value="{{ lastBookNo() }}" >
+                                        @error('book_no')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="customer_id" class="form-label fs-3">ক্রেতা</label>
-                                        <select name="customer_id" class="form-select select2" required>
-                                            <option value="" disabled>Select Customer</option>
+                                        <select name="customer_id" id="customer_id" class="form-select select2" required data-placeholder="--সিলেক্ট ক্রেতা--">
+                                            <option value="">--সিলেক্ট ক্রেতা--</option>
+                                            <option value="new">==== নতুন ক্রেতা তৈরি করুন ====</option>
                                             @foreach($customers as $customer)
                                                 <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
-                                                    {{ $customer->name }} - {{ $customer->address??'-' }}
+                                                    {{ $customer->name }} - {{ $customer->address??'-' }} - {{ $customer->remaining_due }}
                                                 </option>
                                             @endforeach
                                         </select>
                                         @error('customer_id')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
+                                    </div>
+                                </div>
+                                <div class="row mb-3" id="new-customer" style="display: none">
+                                    <div class="col-md-4">
+                                        <label for="name" class="form-label">ক্রেতা'র নাম</label>
+                                        <input type="text" class="form-control" id="name" name="name">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="phone" class="form-label">মোবাইল নং</label>
+                                        <input type="text" class="form-control" id="phone" name="phone">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="address" class="form-label">ঠিকানা</label>
+                                        <input type="text" class="form-control" id="address" name="address">
                                     </div>
                                 </div>
 
@@ -316,6 +337,17 @@
                 allowClear:true,
                 width:"100%",
             });
+
+
+            $("#customer_id").on("change.select2",function () {
+                var value = $(this).val();
+                $("#name, #phone, #address").val("");
+                if (value === 'new'){
+                    $("#new-customer").show();
+                }else {
+                    $("#new-customer").hide();
+                }
+            })
 
             $(document).on('change', '.products-select2', function() {
                 // Get the selected option

@@ -46,7 +46,7 @@
                                                 class="form-control select2" required>
                                             <option value=""></option>
                                             @forelse($customers as $customer)
-                                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                                <option data-due="{{ $customer->remaining_due }}" value="{{ $customer->id }}">{{ $customer->name }}</option>
                                             @empty
                                             @endforelse
                                         </select>
@@ -95,6 +95,22 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-3">
+                                        <label for="cheque_no">চেক নং</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="cheque_no" id="cheque_no" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="cheque_details">চেক বিবরণ</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="cheque_details" id="cheque_details" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
 
                                     </div>
                                     <div class="col-md-9">
@@ -115,14 +131,14 @@
                                 @csrf
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label for="supplier_id">ক্রেতা</label>
+                                        <label for="supplier_id">সরবরাহকারী</label>
                                     </div>
                                     <div class="col-md-9">
                                         <select name="supplier_id" id="supplier_id"
                                                 class="form-control select2" required>
                                             <option value=""></option>
                                             @forelse($suppliers as $supplier)
-                                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                                <option data-due="{{ $supplier->remaining_due }}" value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                             @empty
                                             @endforelse
                                         </select>
@@ -167,6 +183,22 @@
                                             @empty
                                             @endforelse
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="cheque_no">চেক নং</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="cheque_no" id="cheque_no" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="cheque_details">চেক বিবরণ</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" name="cheque_details" id="cheque_details" class="form-control">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -318,6 +350,18 @@
                 allowClear: true,
                 placeholder: 'সিলেক্ট করুন'
             });
+            $("#customer_id").on("change.select2",function () {
+                var due = $(this).find(':selected').data('due');
+                $("#customerDue").val(due);
+            });
+            $("#supplier_id").on("change.select2",function () {
+                var due = $(this).find(':selected').data('due');
+                console.log("hi")
+                $("#supplierDue").val(due);
+            })
         })
+
+
+
     </script>
 @endsection

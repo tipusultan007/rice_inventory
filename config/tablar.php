@@ -184,7 +184,7 @@ return [
             'text' => 'ব্যয়',
             'route' => 'expenses.index',
             'icon' => 'ti ti-coin-taka',
-        ],[
+        ], [
             'text' => 'ব্যয় ক্যাটেগরি',
             'route' => 'expense_categories.index',
             'icon' => 'ti ti-category',
@@ -193,10 +193,26 @@ return [
             'text' => 'পেমেন্ট মাধ্যম',
             'route' => 'payment_methods.index',
             'icon' => 'ti ti-cash-banknote',
-        ],[
+        ], [
             'text' => 'ম্যানেজমেন্ট',
             'route' => 'users.index',
             'icon' => 'ti ti-users',
+        ], [
+            'text' => 'রিপোর্ট',
+            'url' => '#',
+            'icon' => 'ti ti-report-analytics',
+            'submenu' => [
+                [
+                    'text' => 'দৈনিক রিপোর্ট',
+                    'route' => 'report.daily',
+                    'icon' => 'ti ti-report',
+                ],
+                [
+                    'text' => 'প্রোডাক্ট রিপোর্ট',
+                    'route' => 'report.daily',
+                    'icon' => 'ti ti-report',
+                ]
+            ]
         ],
 
     ],

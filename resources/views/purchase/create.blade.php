@@ -114,18 +114,25 @@
                             <form action="{{ route('purchases.store') }}" method="post">
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2 mb-3">
                                             <label for="date" class="form-label">ক্রয়ের তারিখ:</label>
                                             <x-flat-picker name="date" id="date" required value="{{ date('Y-m-d') }}"></x-flat-picker>
                                             @error('date')
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                     </div>
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2 mb-3">
                                         <label for="invoice_no" class="form-label">চালান নং:</label>
                                         <input type="text" name="invoice_no" class="form-control"
                                                value="{{ generatePurchaseInvoiceNumber() }}" readonly>
                                         @error('invoice_no')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label for="book_no" class="form-label fs-3">বই নং</label>
+                                        <input type="number" name="book_no" class="form-control" >
+                                        @error('book_no')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>

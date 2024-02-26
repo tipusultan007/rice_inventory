@@ -42,7 +42,9 @@ class Payment extends Model
         'invoice',
         'user_id',
         'date',
-        'payment_method_id'
+        'payment_method_id',
+        'cheque_no',
+        'note',
     ];
 
     public function paymentMethod()

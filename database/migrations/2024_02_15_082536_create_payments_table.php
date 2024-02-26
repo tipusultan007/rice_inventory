@@ -20,6 +20,8 @@ return new class extends Migration
             $table->enum('type', ['debit', 'credit']);
             $table->string('invoice')->nullable();
             $table->date('date');
+            $table->string('cheque_no')->nullable();
+            $table->text('note')->nullable();
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
