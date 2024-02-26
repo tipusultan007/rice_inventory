@@ -143,7 +143,7 @@ class SaleController extends Controller
             // Commit the transaction
             DB::commit();
 
-            return redirect()->route('sales.index')->with('success', 'Sale created successfully.');
+            return redirect()->route('sales.create')->with('success', 'বিক্রয় এন্ট্রি সফল হয়েছে!');
         } catch (\Exception $e) {
             // Rollback the transaction in case of an exception
             DB::rollBack();
@@ -151,7 +151,7 @@ class SaleController extends Controller
             // Log the exception
             \Log::error($e);
 
-            return redirect()->back()->with('error', 'An error occurred while creating the sale. Please try again.');
+            return redirect()->back()->with('error', 'বিক্রয় এন্ট্রি ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
         }
     }
 

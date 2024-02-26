@@ -132,7 +132,7 @@ class PurchaseController extends Controller
             // Commit the transaction
             DB::commit();
 
-            return redirect()->route('purchases.index')->with('success', 'Purchase created successfully.');
+            return redirect()->route('purchases.create')->with('success', 'ক্রয় এন্ট্রি সফল হয়েছে!');
         } catch (\Exception $e) {
             // Rollback the transaction in case of an exception
             DB::rollBack();
@@ -140,7 +140,7 @@ class PurchaseController extends Controller
             // Log the exception
             \Log::error($e);
 
-            return redirect()->back()->with('error', 'An error occurred while creating the purchase. Please try again.');
+            return redirect()->back()->with('error', 'ক্রয় এন্ট্রি ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
         }
     }
 
