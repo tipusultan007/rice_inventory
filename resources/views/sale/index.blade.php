@@ -49,36 +49,18 @@
                         <div class="card-header">
                             <h3 class="card-title">বিক্রয়</h3>
                         </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="d-flex">
-                                <div class="text-muted">
-                                    Show
-                                    <div class="mx-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm" value="10" size="3"
-                                               aria-label="Invoices count">
-                                    </div>
-                                    entries
-                                </div>
-                                <div class="ms-auto text-muted">
-                                    Search:
-                                    <div class="ms-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm"
-                                               aria-label="Search invoice">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter text-nowrap datatable">
+
+                        <div class="table-responsive">
+                            <table class="table card-table table-vcenter table-bordered text-nowrap datatable">
                                 <thead>
                                 <tr>
-                                    <th class="fw-bolder fs-5">বিক্রয়ের তারিখ</th>
-                                    <th class="fw-bolder fs-5">মেমো নং</th>
-                                    <th class="fw-bolder fs-5">ক্রেতা</th>
-                                    <th class="fw-bolder fs-5">অপারেটর</th>
-                                    <th class="fw-bolder fs-5">পরিমাণ</th>
-                                    <th class="fw-bolder fs-5">টাকা</th>
-                                    <th class="fw-bolder fs-5">মন্তব্য</th>
+                                    <th class="fw-bolder fs-4">বিক্রয়ের তারিখ</th>
+                                    <th class="fw-bolder fs-4">মেমো নং</th>
+                                    <th class="fw-bolder fs-4">ক্রেতা</th>
+                                    <th class="fw-bolder fs-4">অপারেটর</th>
+                                    <th class="fw-bolder fs-4">পরিমাণ</th>
+                                    <th class="fw-bolder fs-4">টাকা</th>
+                                    <th class="fw-bolder fs-4">নোট</th>
 
                                     <th class="w-1"></th>
                                 </tr>
@@ -87,18 +69,17 @@
                                 <tbody>
                                 @forelse ($sales as $sale)
                                     <tr>
-											<td>{{ date('d/m/Y',strtotime($sale->date)) }}</td>
-                                            <td>{{ $sale->invoice_no }}</td>
-											<td>{{ $sale->customer->name }}</td>
-											<td>{{ $sale->user->name }}</td>
-											<td>{{ $sale->saleDetails->sum('quantity') }}</td>
-											<td>{{ $sale->total }}</td>
-											<td>{{ $sale->note??'-' }}</td>
-
-                                        <td>
+											<td class="py-1">{{ date('d/m/Y',strtotime($sale->date)) }}</td>
+                                            <td class="py-1">{{ $sale->invoice_no }}</td>
+											<td class="py-1">{{ $sale->customer->name }} - {{ $sale->customer->address??'-' }}</td>
+											<td class="py-1">{{ $sale->user->name }}</td>
+											<td class="py-1">{{ $sale->saleDetails->sum('quantity') }}</td>
+											<td class="py-1">{{ $sale->total }}</td>
+											<td class="py-1">{{ $sale->note??'-' }}</td>
+                                            <td class="py-1">
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">
-                                                    <button class="btn dropdown-toggle align-text-top"
+                                                    <button class="btn dropdown-toggle btn-sm align-text-top"
                                                             data-bs-toggle="dropdown">
                                                         Actions
                                                     </button>

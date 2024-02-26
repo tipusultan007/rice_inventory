@@ -49,94 +49,74 @@
                         <div class="card-header">
                             <h3 class="card-title">ক্রয়</h3>
                         </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="d-flex">
-                                <div class="text-muted">
-                                    Show
-                                    <div class="mx-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm" value="10" size="3"
-                                               aria-label="Invoices count">
-                                    </div>
-                                    প্রতি পৃষ্টায় এন্ট্রি
-                                </div>
-                                <div class="ms-auto text-muted">
-                                    সার্চ করুন:
-                                    <div class="ms-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm"
-                                               aria-label="Search invoice">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter text-nowrap datatable">
-                                <thead>
+
+                        <table class="table card-table table-vcenter table-bordered datatable">
+                            <thead>
+                            <tr>
+                                <th class="fw-bolder fs-5">ক্রয়ের তারিখ</th>
+                                <th class="fw-bolder fs-5">চালান নং</th>
+                                <th class="fw-bolder fs-5">সাপ্লাইয়ার</th>
+                                <th class="fw-bolder fs-5">অপারেটর</th>
+                                <th class="fw-bolder fs-5">পরিমাণ</th>
+                                <th class="fw-bolder fs-5">সর্বমোট</th>
+                                <th class="fw-bolder fs-5">মন্তব্য</th>
+                                <th class="w-1"></th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            @forelse ($purchases as $purchase)
                                 <tr>
-										<th class="fw-bolder fs-5">ক্রয়ের তারিখ</th>
-										<th class="fw-bolder fs-5">চালান নং</th>
-										<th class="fw-bolder fs-5">সাপ্লাইয়ার</th>
-										<th class="fw-bolder fs-5">অপারেটর</th>
-                                        <th class="fw-bolder fs-5">পরিমাণ</th>
-										<th class="fw-bolder fs-5">সর্বমোট</th>
-										<th class="fw-bolder fs-5">মন্তব্য</th>
-                                    <th class="w-1"></th>
-                                </tr>
-                                </thead>
 
-                                <tbody>
-                                @forelse ($purchases as $purchase)
-                                    <tr>
+                                    <td class="py-1">{{ date('d/m/Y',strtotime($purchase->date)) }}</td>
+                                    <td class="py-1">{{ $purchase->invoice_no }}</td>
+                                    <td class="py-1">{{ $purchase->supplier->name }}</td>
+                                    <td class="py-1">{{ $purchase->user->name}}</td>
+                                    <td class="py-1">{{ $purchase->purchaseDetails->sum('quantity') }}</td>
+                                    <td class="py-1">{{ $purchase->total }}</td>
+                                    <td class="py-1">{{ $purchase->note }}</td>
 
-											<td>{{ date('d/m/Y',strtotime($purchase->date)) }}</td>
-                                            <td>{{ $purchase->invoice_no }}</td>
-											<td>{{ $purchase->supplier->name }}</td>
-											<td>{{ $purchase->user->name}}</td>
-                                            <td>{{ $purchase->purchaseDetails->sum('quantity') }}</td>
-											<td>{{ $purchase->total }}</td>
-											<td>{{ $purchase->note }}</td>
-
-                                        <td>
-                                            <div class="btn-list flex-nowrap">
-                                                <div class="dropdown">
-                                                    <button class="btn dropdown-toggle align-text-top"
-                                                            data-bs-toggle="dropdown">
-                                                        Actions
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('purchases.show',$purchase->id) }}">
-                                                            দেখুন
-                                                        </a>
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('purchases.edit',$purchase->id) }}">
-                                                            এডিট
-                                                        </a>
-                                                        <form
-                                                            action="{{ route('purchases.destroy',$purchase->id) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                    onclick="if(!confirm('ডিলেট করতে চান?')){return false;}"
-                                                                    class="dropdown-item text-red"><i
-                                                                    class="fa fa-fw fa-trash"></i>
-                                                                ডিলেট
-                                                            </button>
-                                                        </form>
-                                                    </div>
+                                    <td class="py-1">
+                                        <div class="btn-list flex-nowrap">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm dropdown-toggle align-text-top"
+                                                        data-bs-toggle="dropdown">
+                                                    Actions
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <a class="dropdown-item"
+                                                       href="{{ route('purchases.show',$purchase->id) }}">
+                                                        দেখুন
+                                                    </a>
+                                                    <a class="dropdown-item"
+                                                       href="{{ route('purchases.edit',$purchase->id) }}">
+                                                        এডিট
+                                                    </a>
+                                                    <form
+                                                        action="{{ route('purchases.destroy',$purchase->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                                onclick="if(!confirm('ডিলেট করতে চান?')){return false;}"
+                                                                class="dropdown-item text-red"><i
+                                                                class="fa fa-fw fa-trash"></i>
+                                                            ডিলেট
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center">কোনো ক্রয়ের চালান পাওয়া যায়নি।</td>
-                                    </tr>
-                                @endforelse
-                                </tbody>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center">কোনো ক্রয়ের চালান পাওয়া যায়নি।</td>
+                                </tr>
+                            @endforelse
+                            </tbody>
 
-                            </table>
-                        </div>
+                        </table>
                        <div class="card-footer d-flex align-items-center">
                             {!! $purchases->links('tablar::pagination') !!}
                         </div>

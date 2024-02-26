@@ -69,7 +69,7 @@
                             </div>
                         </div>--}}
                         <div class="table-responsive">
-                            <table class="table card-table table-vcenter text-nowrap datatable">
+                            <table class="table card-table table-vcenter table-bordered datatable">
                                 <thead>
                                 <tr>
                                    {{-- <th class="w-1 fw-bolder fs-5">নং.

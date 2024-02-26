@@ -135,112 +135,92 @@
                         <div class="card-header">
                             <h3 class="card-title">পেমেন্ট তালিকা</h3>
                         </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="d-flex">
-                                <div class="text-muted">
-                                    Show
-                                    <div class="mx-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm" value="10" size="3"
-                                               aria-label="Invoices count">
-                                    </div>
-                                    entries
-                                </div>
-                                <div class="ms-auto text-muted">
-                                    Search:
-                                    <div class="ms-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm"
-                                               aria-label="Search invoice">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter text-nowrap datatable table-bordered">
-                                <thead>
+
+                        <table class="table card-table table-vcenter datatable table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="fw-bolder fs-4">তারিখ</th>
+                                <th class="fw-bolder fs-4 bg-success text-white">ক্রেতা</th>
+                                <th class="fw-bolder fs-4 bg-danger text-white">সরবরাহকারী</th>
+                                <th class="fw-bolder fs-4">চালান নং</th>
+                                <th class="fw-bolder fs-4">পেমেন্ট মাধ্যম</th>
+                                <th class="fw-bolder fs-4">পেমেন্ট'র ধরন</th>
+                                <th class="fw-bolder fs-4">টাকা</th>
+                                <th class="fw-bolder fs-4">নোট</th>
+                                <th class="w-1"></th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            @forelse ($payments as $payment)
                                 <tr>
-                                    <th class="fw-bolder fs-4">তারিখ</th>
-                                    <th class="fw-bolder fs-4 bg-success text-white">ক্রেতা</th>
-                                    <th class="fw-bolder fs-4 bg-danger text-white">সরবরাহকারী</th>
-                                    <th class="fw-bolder fs-4">চালান নং</th>
-                                    <th class="fw-bolder fs-4">পেমেন্ট মাধ্যম</th>
-                                    <th class="fw-bolder fs-4">পেমেন্ট'র ধরন</th>
-                                    <th class="fw-bolder fs-4">টাকা</th>
-                                    <th class="fw-bolder fs-4">নোট</th>
-                                    <th class="w-1"></th>
-                                </tr>
-                                </thead>
+                                    <td class="py-1">{{ date('d/m/Y',strtotime($payment->date)) }}</td>
+                                    <td class="py-1 bg-success text-white">{{ $payment->customer->name??'-' }}</td>
+                                    <td class="py-1 bg-danger text-white">{{ $payment->supplier->name??'-' }}</td>
+                                    <td class="py-1">{{ $payment->invoice??'-' }}</td>
+                                    <td class="py-1">{{ $payment->paymentMethod->name??'-' }}</td>
+                                    <td class="py-1">
 
-                                <tbody>
-                                @forelse ($payments as $payment)
-                                    <tr>
-                                        <td>{{ date('d/m/Y',strtotime($payment->date)) }}</td>
-                                        <td class="bg-success text-white">{{ $payment->customer->name??'-' }}</td>
-                                        <td class="bg-danger text-white">{{ $payment->supplier->name??'-' }}</td>
-                                        <td>{{ $payment->invoice??'-' }}</td>
-                                        <td>{{ $payment->paymentMethod->name??'-' }}</td>
-                                        <td>
-
-                                            @if($payment->customer_id != "")
-                                                @if($payment->type === 'debit')
-                                                    <span class="badge bg-danger text-white">বকেয়া</span>
-                                                @elseif($payment->type === 'credit')
-                                                    <span class="badge bg-success text-white">পরিশোধ</span>
-                                                @else
-                                                    <span class="badge bg-info text-white">ডিস্কাউন্ট</span>
-                                                @endif
+                                        @if($payment->customer_id != "")
+                                            @if($payment->type === 'debit')
+                                                <span class="badge bg-danger text-white">বকেয়া</span>
+                                            @elseif($payment->type === 'credit')
+                                                <span class="badge bg-success text-white">পরিশোধ</span>
                                             @else
-                                                @if($payment->type === 'credit')
-                                                    <span class="badge bg-danger text-white">বকেয়া</span>
-                                                @elseif($payment->type === 'debit')
-                                                    <span class="badge bg-success text-white">পরিশোধ</span>
-                                                @else
-                                                    <span class="badge bg-warning text-white">ডিস্কাউন্ট</span>
-                                                @endif
+                                                <span class="badge bg-info text-white">ডিস্কাউন্ট</span>
                                             @endif
-                                        </td>
-                                        <td>{{ $payment->amount }}</td>
-                                        <td>{!! $payment->note??'-' !!}</td>
+                                        @else
+                                            @if($payment->type === 'credit')
+                                                <span class="badge bg-danger text-white">বকেয়া</span>
+                                            @elseif($payment->type === 'debit')
+                                                <span class="badge bg-success text-white">পরিশোধ</span>
+                                            @else
+                                                <span class="badge bg-warning text-white">ডিস্কাউন্ট</span>
+                                            @endif
+                                        @endif
+                                    </td>
+                                    <td class="py-1">{{ $payment->amount }}</td>
+                                    <td class="py-1">{!! $payment->note??'-' !!}</td>
 
-                                        <td>
-                                            <div class="btn-list flex-nowrap">
-                                                <div class="dropdown">
-                                                    <button class="btn dropdown-toggle align-text-top"
-                                                            data-bs-toggle="dropdown">
-                                                        Actions
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('payments.show',$payment->id) }}">
-                                                            View
-                                                        </a>
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('payments.edit',$payment->id) }}">
-                                                            Edit
-                                                        </a>
-                                                        <form
-                                                            action="{{ route('payments.destroy',$payment->id) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                    onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
-                                                                    class="dropdown-item text-red"><i
-                                                                    class="fa fa-fw fa-trash"></i>
-                                                                Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
+                                    <td class="py-1">
+                                        <div class="btn-list flex-nowrap">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm dropdown-toggle align-text-top"
+                                                        data-bs-toggle="dropdown">
+                                                    Actions
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <a class="dropdown-item"
+                                                       href="{{ route('payments.show',$payment->id) }}">
+                                                        View
+                                                    </a>
+                                                    <a class="dropdown-item"
+                                                       href="{{ route('payments.edit',$payment->id) }}">
+                                                        Edit
+                                                    </a>
+                                                    <form
+                                                        action="{{ route('payments.destroy',$payment->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                                onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
+                                                                class="dropdown-item text-red"><i
+                                                                class="fa fa-fw fa-trash"></i>
+                                                            Delete
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <td>No Data Found</td>
-                                @endforelse
-                                </tbody>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <td>No Data Found</td>
+                            @endforelse
+                            </tbody>
 
-                            </table>
-                        </div>
+                        </table>
                         <div class="card-footer d-flex align-items-center">
                             {!! $payments->links('tablar::pagination') !!}
                         </div>

@@ -52,7 +52,7 @@
 
                         <div class="min-vh-100">
                             <table class="table card-table table-vcenter table-bordered datatable">
-                                <thead>
+                                <thead class="thead-dark">
                                 <tr>
 										<th class="fw-bolder fs-4">নাম</th>
 										<th class="fw-bolder fs-4">মোবাইল নং</th>

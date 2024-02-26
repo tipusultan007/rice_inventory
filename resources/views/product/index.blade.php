@@ -128,19 +128,19 @@
                                 @forelse ($products as $product)
                                     <tr>
 
-                                        <td class="py-0">{{ ++$i }}</td>
+                                        <td class="py-1">{{ ++$i }}</td>
 
-                                        <td class="py-0">{{ $product->name }}</td>
-                                        <td class="py-0">{{ $product->quantity }}</td>
-                                        <td class="py-0">{{ $product->price_rate }}</td>
-                                        <td class="py-0">{{ $product->quantity * $product->price_rate }}</td>
+                                        <td class="py-1">{{ $product->name }}</td>
+                                        <td class="py-1">{{ $product->quantity }}</td>
+                                        <td class="py-1">{{ $product->price_rate }}</td>
+                                        <td class="py-1">{{ $product->quantity * $product->price_rate }}</td>
 
-                                        <td class="py-0">
+                                        <td class="py-1">
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">
                                                     <button class="btn dropdown-toggle align-text-top btn-sm"
                                                             data-bs-toggle="dropdown">
-                                                        <i class="ti ti-dots"></i>
+                                                        Actions
                                                     </button>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a class="dropdown-item"
