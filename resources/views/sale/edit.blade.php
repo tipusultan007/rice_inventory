@@ -64,7 +64,7 @@
                                 <div class="row">
                                     <div class="col-md-2 mb-3">
                                         <label for="date" class="form-label fs-3">তারিখ</label>
-                                        <x-flat-picker name="date" id="date" value="{{ $sale->date }}"></x-flat-picker>
+                                        <input type="text" name="date" id="date" class="form-control flatpicker">
                                         @error('date')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
@@ -179,7 +179,7 @@
                                         <tr>
                                             <th colspan="3" class="text-end border-0 py-0">পরিশোধ</th>
                                             <th class="total border-0 py-2">
-                                                <input type="number" name="paid" class="form-control" min="0">
+                                                <input type="number" name="paid" class="form-control" min="0" value="{{ $payment?$payment->amount:0 }}">
                                             </th>
                                             <th class="border-0 py-0"></th>
                                         </tr>
@@ -205,7 +205,7 @@
                                                 <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
                                                     <option value=""></option>
                                                     @forelse($methods as $method)
-                                                        <option value="{{ $method->id }}">{{ $method->name }}</option>
+                                                        <option value="{{ $method->id }}" {{ $payment?$payment->payment_method_id == $method->id?"selected":"":"" }}>{{ $method->name }}</option>
                                                     @empty
                                                     @endforelse
                                                 </select>
@@ -355,6 +355,17 @@
             //$(".products-select2").select2();
             initializeEventListeners();
 
+        });
+    </script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+                defaultDate: "{{ $sale->date }}"
+            });
         });
     </script>
 @endsection

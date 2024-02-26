@@ -208,8 +208,8 @@ return [
                     'icon' => 'ti ti-report',
                 ],
                 [
-                    'text' => 'প্রোডাক্ট রিপোর্ট',
-                    'route' => 'report.daily',
+                    'text' => 'পেমেন্ট রিপোর্ট',
+                    'route' => 'report.payment',
                     'icon' => 'ti ti-report',
                 ]
             ]

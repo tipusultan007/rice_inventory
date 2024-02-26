@@ -61,7 +61,7 @@
                                 <div class="row">
                                     <div class="col-md-2 mb-3">
                                         <label for="date" class="form-label">ক্রয়ের তারিখ:</label>
-                                        <x-flat-picker name="date" id="date" required value="{{ $purchase->date }}"></x-flat-picker>
+                                        <input type="text" name="date" id="date" required class="form-control flatpicker">
                                         @error('date')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
@@ -364,6 +364,17 @@
             //$(".products-select2").select2();
             initializeEventListeners();
 
+        });
+    </script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+                defaultDate: "{{ $purchase->date }}"
+            });
         });
     </script>
 @endsection

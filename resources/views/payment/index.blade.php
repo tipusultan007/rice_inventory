@@ -76,7 +76,7 @@
                                         <label for="date">তারিখ</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <x-flat-picker name="date" id="date" value="{{ date('Y-m-d') }}" required></x-flat-picker>
+                                        <input type="text" class="form-control flatpicker" name="date" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -169,7 +169,7 @@
                                         <label for="date">তারিখ</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <x-flat-picker name="date" id="date" value="{{ date('Y-m-d') }}" required></x-flat-picker>
+                                        <input type="text" class="form-control flatpicker" name="date" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -356,8 +356,16 @@
                 $("#supplierDue").val(due);
             })
         })
-
-
-
+    </script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+                defaultDate: "{{ date('Y-m-d') }}"
+            });
+        });
     </script>
 @endsection

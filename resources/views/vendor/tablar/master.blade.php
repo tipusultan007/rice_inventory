@@ -31,5 +31,6 @@
 
 @yield('tablar_js')
 @yield('scripts')
+
 </body>
 </html>

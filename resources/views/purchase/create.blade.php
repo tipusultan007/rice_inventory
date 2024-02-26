@@ -119,7 +119,8 @@
                                 <div class="row">
                                     <div class="col-md-2 mb-3">
                                             <label for="date" class="form-label">ক্রয়ের তারিখ:</label>
-                                            <x-flat-picker name="date" id="date" required value="{{ $lastPurchase?$lastPurchase->date:date('Y-m-d') }}"></x-flat-picker>
+                                        <input type="text" name="date" id="date" class="form-control flatpicker">
+                                         {{--   <x-flat-picker name="date" :options="['altFormat']" id="date" required value="{{ $lastPurchase?$lastPurchase->date:date('Y-m-d') }}"></x-flat-picker>--}}
                                             @error('date')
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror
@@ -411,6 +412,7 @@
         }
 
         $(document).ready(function($){
+
             $("#supplier_id,.select2").select2({
                 theme: "bootstrap-5",
                 placeholder: "",
@@ -437,8 +439,18 @@
 
             //$(".products-select2").select2();
             initializeEventListeners();
+        });
 
+    </script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+                defaultDate: "{{ $lastPurchase?$lastPurchase->date:date('Y-m-d') }}"
+            });
         });
     </script>
-
 @endsection

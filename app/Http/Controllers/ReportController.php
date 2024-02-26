@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\Supplier;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -54,14 +55,15 @@ class ReportController extends Controller
         $payment_method_id = $request->input('payment_method_id');
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
+        $payment_type = $request->input('type');
 
 
         // Use the filterPayments method from the previous example
-        $filteredPayments = $this->filterPayments($customer_id, $supplier_id, $payment_method_id, $start_date, $end_date);
+        $filteredPayments = $this->filterPayments($customer_id, $supplier_id, $payment_method_id, $start_date, $end_date,$payment_type);
 
         // Paginate the results with a specified number of items per page
         $perPage = 10;  // You can adjust this based on your requirements
-        $payments = $filteredPayments->paginate($perPage);
+        $payments = $filteredPayments->paginate($perPage)->withQueryString();;
 
         return view('reports.payment',compact(
             'payments',
@@ -72,11 +74,12 @@ class ReportController extends Controller
             'supplier_id',
             'payment_method_id',
             'start_date',
-            'end_date'
+            'end_date',
+            'payment_type'
         ));
     }
 
-    private function filterPayments($customer_id = null, $supplier_id = null, $payment_method_id = null, $start_date = null, $end_date = null)
+    private function filterPayments($customer_id = null, $supplier_id = null, $payment_method_id = null, $start_date = null, $end_date = null, $payment_type = null)
     {
         $query = Payment::query()->orderByDesc('created_at');
 
@@ -97,6 +100,9 @@ class ReportController extends Controller
 
         if ($end_date !== null) {
             $query->where('date', '<=', Carbon::parse($end_date)->endOfDay());
+        }
+        if ($payment_type !== null) {
+            $query->where('type', $payment_type);
         }
 
         return $query;

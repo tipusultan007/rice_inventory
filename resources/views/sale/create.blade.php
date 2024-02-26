@@ -54,7 +54,7 @@
                                 <div class="row">
                                     <div class="col-md-2 mb-3">
                                         <label for="date" class="form-label fs-3">তারিখ</label>
-                                        <x-flat-picker name="date" id="date" value="{{ $lastSale?$lastSale->date:date('Y-m-d') }}"></x-flat-picker>
+                                        <input name="date" id="date" class="form-control flatpicker" type="text">
                                         @error('date')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
@@ -179,7 +179,9 @@
                                             <th class="total border-0 py-2">
                                                 <input type="number" name="paid" class="form-control" min="0">
                                             </th>
-                                            <th class="border-0 py-0"></th>
+                                            <th class="border-0 py-0">
+                                                <button class="btn btn-success" id="make-paid" type="button"><i class="ti ti-check"></i></button>
+                                            </th>
                                         </tr>
                                         <tr>
                                             <th colspan="3" class="text-end border-0 py-0">নোট</th>
@@ -379,6 +381,22 @@
             //$(".products-select2").select2();
             initializeEventListeners();
 
+            $("#make-paid").on("click",function () {
+               var total = $("input[name='total']").val();
+               $("input[name='paid']").val(total);
+            })
+        });
+    </script>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+                defaultDate: "{{ $lastSale?$lastSale->date:date('Y-m-d') }}"
+            });
         });
     </script>
 @endsection

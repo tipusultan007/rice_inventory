@@ -179,7 +179,11 @@ class SaleController extends Controller
         $sale = Sale::find($id);
         $customers = Customer::all();
         $products = Product::all();
-        return view('sale.edit', compact('sale','customers','products'));
+        $payment = Payment::whereNotNull('customer_id')
+            ->where('type','credit')
+            ->where('invoice',$sale->invoice_id)
+            ->first();
+        return view('sale.edit', compact('sale','customers','products','payment'));
     }
 
     /**

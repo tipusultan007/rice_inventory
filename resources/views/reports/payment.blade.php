@@ -86,8 +86,14 @@
                                         </select>
                                     </div>
                                     <div class="col-md-3 mb-3">
-                                        <button class="btn btn-primary" type="submit">সার্চ</button>
-                                        <a href="{{ route('report.payment') }}" class="btn btn-secondary">রিসেট</a>
+                                        <input type="text" class="form-control flatpicker" name="start_date" placeholder="শুরুর তারিখ">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <input type="text" class="form-control flatpicker" name="end_date" placeholder="শেষ তারিখ">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <button class="btn btn-primary w-25" type="submit">সার্চ</button>
+                                        <a href="{{ route('report.payment') }}" class="btn btn-secondary w-25">রিসেট</a>
                                     </div>
                                 </div>
                             </form>
@@ -250,6 +256,16 @@
             width: '100%',
             theme: 'bootstrap-5',
             allowClear: true,
+        });
+    </script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+            });
         });
     </script>
 @endsection
