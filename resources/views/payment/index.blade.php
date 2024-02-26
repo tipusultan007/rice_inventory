@@ -46,7 +46,9 @@
                                                 class="form-control select2" required>
                                             <option value=""></option>
                                             @forelse($customers as $customer)
-                                                <option data-due="{{ $customer->remaining_due }}" value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                                <option data-due="{{ $customer->remaining_due }}" value="{{ $customer->id }}">
+                                                    {{ $customer->name }} - {{ $customer->address }} - {{ $customer->remaining_due }}
+                                                </option>
                                             @empty
                                             @endforelse
                                         </select>
@@ -74,8 +76,7 @@
                                         <label for="date">তারিখ</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="date" class="form-control" name="date" value="{{ date('Y-m-d') }}"
-                                               required>
+                                        <x-flat-picker name="date" id="date" value="{{ date('Y-m-d') }}" required></x-flat-picker>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -138,7 +139,9 @@
                                                 class="form-control select2" required>
                                             <option value=""></option>
                                             @forelse($suppliers as $supplier)
-                                                <option data-due="{{ $supplier->remaining_due }}" value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                                <option data-due="{{ $supplier->remaining_due }}" value="{{ $supplier->id }}">
+                                                    {{ $supplier->name }} - {{ $supplier->address }}
+                                                </option>
                                             @empty
                                             @endforelse
                                         </select>
@@ -166,8 +169,7 @@
                                         <label for="date">তারিখ</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="date" class="form-control" name="date" value="{{ date('Y-m-d') }}"
-                                               required>
+                                        <x-flat-picker name="date" id="date" value="{{ date('Y-m-d') }}" required></x-flat-picker>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
