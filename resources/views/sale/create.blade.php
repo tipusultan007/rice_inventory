@@ -210,6 +210,22 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                            <th colspan="3" class="text-end border-0 py-0">
+                                                চেক নং
+                                            </th>
+                                            <td>
+                                                <input type="text" name="cheque_no" id="cheque_no" class="form-control">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="3" class="text-end border-0 py-0">
+                                                চেক বিবরণ
+                                            </th>
+                                            <td>
+                                                <input type="text" name="cheque_details" id="cheque_details" class="form-control">
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <th colspan="3"></th>
                                             <td>
                                                 <button type="submit" class="btn btn-primary w-100">সাবমিট</button>

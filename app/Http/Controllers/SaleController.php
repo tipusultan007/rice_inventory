@@ -62,7 +62,7 @@ class SaleController extends Controller
             'date' => 'required|date',
             'user_id' => 'required|exists:users,id',
             'total' => 'required|numeric',
-            'paid' => 'required|numeric',
+            'paid' => 'nullable|numeric',
             'note' => 'nullable|string',
             'products.*.product_id' => 'required|exists:products,id', // Assuming 'products' is the table name
             'products.*.quantity' => 'required|numeric|min:1',
