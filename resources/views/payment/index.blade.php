@@ -340,13 +340,7 @@
 @section('scripts')
     <script type="module">
         $(document).ready(function () {
-            $("#customer_id,.select2").select2({
-                width: '100%',
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'সিলেক্ট করুন'
-            });
-            $("#supplier_id").select2({
+            $(".select2").select2({
                 width: '100%',
                 theme: 'bootstrap-5',
                 allowClear: true,

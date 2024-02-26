@@ -113,12 +113,12 @@
                                     <th class="text-end" colspan="3">মোট</th>
                                     <th class="text-end">{{ $purchase->subtotal }}</th>
                                 </tr>
-                                @if($purchase->carrying_cost>0)
+                               {{-- @if($purchase->carrying_cost>0)
                                 <tr>
                                     <th class="text-end" colspan="3">গাড়ি ভাড়া</th>
                                     <th class="text-end">{{ $purchase->carrying_cost }}</th>
                                 </tr>
-                                @endif
+                                @endif--}}
                                 @if($purchase->discount>0)
                                     <tr>
                                         <th class="text-end" colspan="3">ডিস্কাউন্ট</th>

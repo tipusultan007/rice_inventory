@@ -44,10 +44,41 @@ class ReportController extends Controller
 
     public function paymentReport(Request $request)
     {
-        $payments = Payment::with('customer','supplier')->orderByDesc('created_at')->paginate(10);
         $methods = PaymentMethod::all();
         $customers = Customer::all();
         $suppliers = Supplier::all();
+
+        // Get filter parameters from the request
+        $customer_id = $request->input('customer_id');
+        $supplier_id = $request->input('supplier_id');
+        $payment_method_id = $request->input('payment_method_id');
+
+        // Use the filterPayments method from the previous example
+        $filteredPayments = $this->filterPayments($customer_id, $supplier_id, $payment_method_id);
+
+        // Paginate the results with a specified number of items per page
+        $perPage = 10;  // You can adjust this based on your requirements
+        $payments = $filteredPayments->paginate($perPage);
+
         return view('reports.payment',compact('payments','customers','suppliers','methods'));
+    }
+
+    private function filterPayments($customer_id = null, $supplier_id = null, $payment_method_id = null)
+    {
+        $query = Payment::query()->orderByDesc('created_at');
+
+        if ($customer_id !== null) {
+            $query->where('customer_id', $customer_id);
+        }
+
+        if ($supplier_id !== null) {
+            $query->where('supplier_id', $supplier_id);
+        }
+
+        if ($payment_method_id !== null) {
+            $query->where('payment_method_id', $payment_method_id);
+        }
+
+        return $query;
     }
 }

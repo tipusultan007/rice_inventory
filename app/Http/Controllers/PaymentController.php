@@ -22,7 +22,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::with('customer','supplier')->orderByDesc('created_at')->paginate(10);
+        $payments = Payment::with('customer','supplier')->orderByDesc('id')->paginate(10);
         $methods = PaymentMethod::all();
         $customers = Customer::all();
         $suppliers = Supplier::all();

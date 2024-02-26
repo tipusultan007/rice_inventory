@@ -115,10 +115,10 @@ class PurchaseController extends Controller
                 'date' => $purchase->date,
             ]);
 
-            if ($request->paid>0) {
+            if ($request->paid>0 || $request->carrying_cost) {
                 $debitPayment = Payment::create([
                     'supplier_id' => $purchase->supplier_id,
-                    'amount' => $request->paid,
+                    'amount' => $request->input('paid',0) + $request->input('carrying_cost',0),
                     'type' => 'debit',
                     'invoice' => $purchase->invoice_no,
                     'user_id' => Auth::id(),

@@ -51,20 +51,59 @@
                             <h3 class="card-title">পেমেন্ট ফিল্টার</h3>
                         </div>
                         <div class="card-body">
-                            <form action="">
+                            <form action="{{ route('report.payment') }}" method="GET">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <select name="customer_id" id="customer_id" class="form-control sleect2" data-placeholder="ক্রেতা সিলেক্ট করুন">
+                                        <select name="customer_id" id="customer_id" class="form-control select2" data-placeholder="ক্রেতা">
                                             <option value=""></option>
                                             @foreach($customers as $customer)
                                                 <option value="{{ $customer->id }}">{{ $customer->name.' - '.$customer->address }}</option>
                                             @endforeach
                                         </select>
                                     </div>
+
+                                    <div class="col-md-3">
+                                        <select name="supplier_id" id="supplier_id" class="form-control select2" data-placeholder="সরবরাহকারী">
+                                            <option value=""></option>
+                                            @foreach($suppliers as $supplier)
+                                                <option value="{{ $supplier->id }}">{{ $supplier->name.' - '.$supplier->address }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="পেমেন্ট মাধ্যম">
+                                            <option value=""></option>
+                                            @foreach($methods as $method)
+                                                <option value="{{ $method->id }}">{{ $method->name.' - '.$method->address }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-primary" type="submit">সার্চ</button>
+                                        <a href="{{ route('report.payment') }}" class="btn btn-secondary">রিসেট</a>
+                                    </div>
                                 </div>
                             </form>
                         </div>
                     </div>
+                    @if($payments->count()>0)
+                        <div class="card">
+                            <div class="card-body">
+                                <p>Search Results:</p>
+                                <ul>
+                                    @if(!is_null($customer_id))
+                                        <li>Customer ID: {{ $customer_id }}</li>
+                                    @endif
+                                    @if(!is_null($supplier_id))
+                                        <li>Supplier ID: {{ $supplier_id }}</li>
+                                    @endif
+                                    @if(!is_null($payment_method_id))
+                                        <li>Payment Method ID: {{ $payment_method_id }}</li>
+                                    @endif
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
             <div class="row row-deck row-cards">
@@ -190,17 +229,10 @@
 @endsection
 @section('scripts')
     <script type="module">
-        $("#customer_id,.select2").select2({
+        $(".select2").select2({
             width: '100%',
             theme: 'bootstrap-5',
             allowClear: true,
-            placeholder: 'সিলেক্ট করুন'
-        });
-        $("#supplier_id").select2({
-            width: '100%',
-            theme: 'bootstrap-5',
-            allowClear: true,
-            placeholder: 'সিলেক্ট করুন'
         });
     </script>
 @endsection

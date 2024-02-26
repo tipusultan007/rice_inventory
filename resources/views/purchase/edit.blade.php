@@ -284,7 +284,7 @@
             });
 
             // Update total when carrying cost or discount changes
-            $('input[name="carrying_cost"], input[name="discount"], input[name="tohori"]').on('input', function () {
+            $('input[name="discount"], input[name="tohori"]').on('input', function () {
                 updateTotal();
             });
 
@@ -316,9 +316,9 @@
             });
             $('input[name="subtotal"]').val(total.toFixed(2));
             // Include carrying cost
-            var carryingCost = parseFloat($('input[name="carrying_cost"]').val()) || 0;
+           /* var carryingCost = parseFloat($('input[name="carrying_cost"]').val()) || 0;
             total += carryingCost;
-
+*/
             // Include discount
             var discount = parseFloat($('input[name="discount"]').val()) || 0;
             total -= discount;
