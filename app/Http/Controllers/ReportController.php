@@ -52,18 +52,31 @@ class ReportController extends Controller
         $customer_id = $request->input('customer_id');
         $supplier_id = $request->input('supplier_id');
         $payment_method_id = $request->input('payment_method_id');
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+
 
         // Use the filterPayments method from the previous example
-        $filteredPayments = $this->filterPayments($customer_id, $supplier_id, $payment_method_id);
+        $filteredPayments = $this->filterPayments($customer_id, $supplier_id, $payment_method_id, $start_date, $end_date);
 
         // Paginate the results with a specified number of items per page
         $perPage = 10;  // You can adjust this based on your requirements
         $payments = $filteredPayments->paginate($perPage);
 
-        return view('reports.payment',compact('payments','customers','suppliers','methods','customer_id','supplier_id','payment_method_id'));
+        return view('reports.payment',compact(
+            'payments',
+            'customers',
+            'suppliers',
+            'methods',
+            'customer_id',
+            'supplier_id',
+            'payment_method_id',
+            'start_date',
+            'end_date'
+        ));
     }
 
-    private function filterPayments($customer_id = null, $supplier_id = null, $payment_method_id = null)
+    private function filterPayments($customer_id = null, $supplier_id = null, $payment_method_id = null, $start_date = null, $end_date = null)
     {
         $query = Payment::query()->orderByDesc('created_at');
 
@@ -77,6 +90,13 @@ class ReportController extends Controller
 
         if ($payment_method_id !== null) {
             $query->where('payment_method_id', $payment_method_id);
+        }
+        if ($start_date !== null) {
+            $query->where('date', '>=', Carbon::parse($start_date)->startOfDay());
+        }
+
+        if ($end_date !== null) {
+            $query->where('date', '<=', Carbon::parse($end_date)->endOfDay());
         }
 
         return $query;

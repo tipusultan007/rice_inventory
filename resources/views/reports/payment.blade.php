@@ -53,7 +53,7 @@
                         <div class="card-body">
                             <form action="{{ route('report.payment') }}" method="GET">
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 mb-3">
                                         <select name="customer_id" id="customer_id" class="form-control select2" data-placeholder="ক্রেতা">
                                             <option value=""></option>
                                             @foreach($customers as $customer)
@@ -62,7 +62,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 mb-3">
                                         <select name="supplier_id" id="supplier_id" class="form-control select2" data-placeholder="সরবরাহকারী">
                                             <option value=""></option>
                                             @foreach($suppliers as $supplier)
@@ -70,7 +70,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 mb-3">
                                         <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="পেমেন্ট মাধ্যম">
                                             <option value=""></option>
                                             @foreach($methods as $method)
@@ -78,7 +78,14 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 mb-3">
+                                        <select name="type" id="type" class="form-control select2" data-placeholder="পেমেন্ট ধরন">
+                                            <option value=""></option>
+                                            <option value="credit">পরিশোধ</option>
+                                            <option value="debit">বকেয়া</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
                                         <button class="btn btn-primary" type="submit">সার্চ</button>
                                         <a href="{{ route('report.payment') }}" class="btn btn-secondary">রিসেট</a>
                                     </div>
@@ -103,6 +110,12 @@
                                         @endif
                                         @if(!is_null($payment_method_id))
                                             <li><b>পেমেন্ট মাধ্যমঃ</b> {{ $methods[$payment_method_id]->name }}</li>
+                                        @endif
+                                        @if(!is_null($start_date))
+                                            <li>শুরুর তারিখ: {{ date('d/m/Y',strtotime($start_date)) }}</li>
+                                        @endif
+                                        @if(!is_null($end_date))
+                                            <li>শেষ তারিখ: {{ date('d/m/Y',strtotime($end_date)) }}</li>
                                         @endif
                                     </ul>
                                 </div>
@@ -146,7 +159,7 @@
                                     <th class="fw-bolder fs-4">পেমেন্ট মাধ্যম</th>
                                     <th class="fw-bolder fs-4">পেমেন্ট'র ধরন</th>
                                     <th class="fw-bolder fs-4">টাকা</th>
-                                    <th class="fw-bolder fs-4">আদায়কারী</th>
+                                    <th class="fw-bolder fs-4">নোট</th>
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
@@ -180,7 +193,7 @@
                                             @endif
                                         </td>
                                         <td>{{ $payment->amount }}</td>
-                                        <td>{{ $payment->user->name }}</td>
+                                        <td>{!! $payment->note??'-' !!}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">

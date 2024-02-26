@@ -110,13 +110,16 @@
                         <div class="card-header">
                             <h3 class="card-title">ক্রয়ের বিবরণ</h3>
                         </div>
+                        @php
+                        $lastPurchase = \App\Models\Purchase::where('user_id',auth()->id())->latest()->first();
+                        @endphp
                         <div class="card-body">
                             <form action="{{ route('purchases.store') }}" method="post">
                                 @csrf
                                 <div class="row">
                                     <div class="col-md-2 mb-3">
                                             <label for="date" class="form-label">ক্রয়ের তারিখ:</label>
-                                            <x-flat-picker name="date" id="date" required value="{{ date('Y-m-d') }}"></x-flat-picker>
+                                            <x-flat-picker name="date" id="date" required value="{{ $lastPurchase?$lastPurchase->date:date('Y-m-d') }}"></x-flat-picker>
                                             @error('date')
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror
@@ -161,8 +164,8 @@
                                     <table class="table table-sm products table-borderless">
                                         <thead style="background-color: #eeeeee">
                                         <tr>
-                                            <th style="min-width: 300px" class="fw-bolder fs-5 p-2">বিবরণ</th>
                                             <th class="fw-bolder fs-5 p-2">ওজন</th>
+                                            <th style="min-width: 300px" class="fw-bolder fs-5 p-2">বিবরণ</th>
                                             <th class="fw-bolder fs-5 p-2">দর</th>
                                             <th class="fw-bolder fs-5 p-2">পরিমাণ</th>
                                             <th class="fw-bolder fs-5 p-2">টাকা</th>
@@ -171,6 +174,8 @@
                                         </thead>
                                         <tbody>
                                         <tr class="product-entry">
+                                            <td><input type="number" name="products[0][weight]" class="form-control"
+                                                       value="{{ old("products.0.weight") }}"></td>
                                             <td>
                                                 <select name="products[0][product_id]"
                                                         class="form-select products-select2" required data-placeholder="সিলেক্ট প্রোডাক্ট">
@@ -182,8 +187,7 @@
                                                     @endforeach
                                                 </select>
                                             </td>
-                                            <td><input type="number" name="products[0][weight]" class="form-control"
-                                                       value="{{ old("products.0.price_rate") }}"></td>
+
                                             <td><input type="number" name="products[0][price_rate]" class="form-control"
                                                        value="{{ old("products.0.price_rate") }}" required></td>
                                             <td><input type="number" name="products[0][quantity]" class="form-control"
