@@ -98,6 +98,7 @@ class PurchaseController extends Controller
                     'quantity' => $product['quantity'],
                     'amount' => $product['amount'],
                     'price_rate' => $product['price_rate'],
+                    'weight' => $product['weight'],
                 ]);
 
                 // Update product quantity

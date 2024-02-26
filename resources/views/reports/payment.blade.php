@@ -86,31 +86,35 @@
                             </form>
                         </div>
                     </div>
-                    @if($payments->count()>0)
-                        <div class="card">
-                            <div class="card-body">
-                                <p>Search Results:</p>
-                                <ul>
-                                    @if(!is_null($customer_id))
-                                        <li>Customer ID: {{ $customer_id }}</li>
-                                    @endif
-                                    @if(!is_null($supplier_id))
-                                        <li>Supplier ID: {{ $supplier_id }}</li>
-                                    @endif
-                                    @if(!is_null($payment_method_id))
-                                        <li>Payment Method ID: {{ $payment_method_id }}</li>
-                                    @endif
-                                </ul>
-                            </div>
-                        </div>
-                    @endif
                 </div>
             </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        @if($payments->count()>0)
+                            <div class="card">
+                                <div class="card-body">
+                                    <p>সার্চ রেজাল্টঃ</p>
+                                    <ul>
+                                        @if(!is_null($customer_id))
+                                            <li><b>ক্রেতাঃ</b> {{ $customers[$customer_id]->name }}</li>
+                                        @endif
+                                        @if(!is_null($supplier_id))
+                                            <li><b>সরবরাহকারীঃ</b> {{ $suppliers[$supplier_id]->name }}</li>
+                                        @endif
+                                        @if(!is_null($payment_method_id))
+                                            <li><b>পেমেন্ট মাধ্যমঃ</b> {{ $methods[$payment_method_id]->name }}</li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Payment</h3>
+                            <h3 class="card-title">পেমেন্ট তালিকা</h3>
                         </div>
                         <div class="card-body border-bottom py-3">
                             <div class="d-flex">

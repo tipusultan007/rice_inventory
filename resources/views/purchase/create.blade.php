@@ -124,7 +124,7 @@
                                     <div class="col-md-2 mb-3">
                                         <label for="invoice_no" class="form-label">চালান নং:</label>
                                         <input type="text" name="invoice_no" class="form-control"
-                                               value="{{ generatePurchaseInvoiceNumber() }}" required>
+                                               value="">
                                         @error('invoice_no')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
@@ -161,7 +161,8 @@
                                     <table class="table table-sm products table-borderless">
                                         <thead style="background-color: #eeeeee">
                                         <tr>
-                                            <th class="fw-bolder fs-5 p-2">বিবরণ</th>
+                                            <th style="min-width: 300px" class="fw-bolder fs-5 p-2">বিবরণ</th>
+                                            <th class="fw-bolder fs-5 p-2">ওজন</th>
                                             <th class="fw-bolder fs-5 p-2">দর</th>
                                             <th class="fw-bolder fs-5 p-2">পরিমাণ</th>
                                             <th class="fw-bolder fs-5 p-2">টাকা</th>
@@ -181,6 +182,8 @@
                                                     @endforeach
                                                 </select>
                                             </td>
+                                            <td><input type="number" name="products[0][weight]" class="form-control"
+                                                       value="{{ old("products.0.price_rate") }}"></td>
                                             <td><input type="number" name="products[0][price_rate]" class="form-control"
                                                        value="{{ old("products.0.price_rate") }}" required></td>
                                             <td><input type="number" name="products[0][quantity]" class="form-control"
@@ -195,7 +198,7 @@
                                         <tfoot>
 
                                         <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">মোট</th>
+                                            <th colspan="4" class="text-end border-0 py-0">মোট</th>
                                             <th class="subtotal border-0 py-2">
                                                 <input type="number" name="subtotal" class="form-control" value="0" readonly>
                                             </th>
@@ -203,35 +206,35 @@
                                         </tr>
 
                                         <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">গাড়ি ভাড়া</th>
-                                            <th class="carrying_cost border-0 py-2">
-                                                <input type="number" name="carrying_cost" class="form-control" value="0" min="0">
-                                            </th>
-                                            <th class="border-0 py-0"></th>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">তহরি</th>
+                                            <th colspan="4" class="text-end border-0 py-0">তহরি</th>
                                             <th class="tohori border-0 py-2">
                                                 <input type="number" name="tohori" class="form-control" value="0" min="0">
                                             </th>
                                             <th class="border-0 py-0"></th>
                                         </tr>
                                         <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">ডিস্কাউন্ট</th>
+                                            <th colspan="4" class="text-end border-0 py-0">ডিস্কাউন্ট</th>
                                             <th class="discount border-0 py-2">
                                                 <input type="number" name="discount" class="form-control" value="0" min="0">
                                             </th>
                                             <th class="border-0 py-0"></th>
                                         </tr>
                                         <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">সর্বমোট</th>
+                                            <th colspan="4" class="text-end border-0 py-0">সর্বমোট</th>
                                             <th class="total border-0 py-2">
                                                 <input type="number" name="total" class="form-control" value="0" readonly>
                                             </th>
                                             <th class="border-0 py-0"></th>
                                         </tr>
                                         <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">পরিশোধ</th>
+                                            <th colspan="4" class="text-end border-0 py-0">গাড়ি ভাড়া</th>
+                                            <th class="carrying_cost border-0 py-2">
+                                                <input type="number" name="carrying_cost" class="form-control" value="0" min="0">
+                                            </th>
+                                            <th class="border-0 py-0"></th>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="4" class="text-end border-0 py-0">পরিশোধ</th>
                                             <th class="total border-0 py-2">
                                                 <input type="number" name="paid" class="form-control" value="0" min="0">
                                                 @error('paid')
@@ -241,7 +244,7 @@
                                             <th class="border-0 py-0"></th>
                                         </tr>
                                         <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">নোট</th>
+                                            <th colspan="4" class="text-end border-0 py-0">নোট</th>
                                             <th class="total border-0 py-2">
                                                 <input type="text" name="note" class="form-control" value="{{ old('note') }}">
                                                 @error('note')
@@ -255,7 +258,7 @@
                                                 $methods = \App\Models\PaymentMethod::all();
                                             @endphp
                                             <tr>
-                                                <th colspan="3" class="text-end border-0 py-0">
+                                                <th colspan="4" class="text-end border-0 py-0">
                                                     <label for="payment_method_id">পেমেন্ট মাধ্যম</label>
                                                 </th>
                                                 <td class="total border-0 py-2">
@@ -269,7 +272,7 @@
                                                 </td>
                                             </tr>
                                         <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">
+                                            <th colspan="4" class="text-end border-0 py-0">
                                                 চেক নং
                                             </th>
                                             <td>
@@ -277,7 +280,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">
+                                            <th colspan="4" class="text-end border-0 py-0">
                                                 চেক বিবরণ
                                             </th>
                                             <td>
@@ -285,7 +288,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th colspan="3"></th>
+                                            <th colspan="4"></th>
                                             <td>
                                                    <button type="submit" class="btn btn-primary w-100">সাবমিট</button>
                                             </td>

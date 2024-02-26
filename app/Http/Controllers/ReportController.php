@@ -60,7 +60,7 @@ class ReportController extends Controller
         $perPage = 10;  // You can adjust this based on your requirements
         $payments = $filteredPayments->paginate($perPage);
 
-        return view('reports.payment',compact('payments','customers','suppliers','methods'));
+        return view('reports.payment',compact('payments','customers','suppliers','methods','customer_id','supplier_id','payment_method_id'));
     }
 
     private function filterPayments($customer_id = null, $supplier_id = null, $payment_method_id = null)
