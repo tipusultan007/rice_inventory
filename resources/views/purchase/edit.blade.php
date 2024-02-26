@@ -74,14 +74,7 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-2 mb-3">
-                                        <label for="book_no" class="form-label fs-3">বই নং</label>
-                                        <input type="number" name="book_no" class="form-control" value="{{ $purchase->book_no }}" >
-                                        @error('book_no')
-                                        <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-6 mb-3">
                                         <label for="supplier_id" class="form-label">সরবরাহকারী:</label>
                                         <select name="supplier_id" id="supplier_id" class="form-control select2" required data-placeholder="সরবরাহকারী বাছাই করুন">
                                             <option value=""></option>
@@ -96,7 +89,7 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-2 mb-3">
                                         <label for="truck_no" class="form-label">ট্রাক নম্বর:</label>
                                         <input type="text" name="truck_no" class="form-control"
                                                value="{{ $purchase->truck_no }}">

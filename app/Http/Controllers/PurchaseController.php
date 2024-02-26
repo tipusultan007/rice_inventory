@@ -59,7 +59,7 @@ class PurchaseController extends Controller
             'supplier_id' => 'required|exists:suppliers,id', // Assuming 'suppliers' is the table name
             'user_id' => 'required|exists:users,id', // Assuming 'users' is the table name
             'total' => 'required|numeric',
-            'paid' => 'required|numeric',
+            'paid' => 'nullable|numeric',
             'note' => 'nullable|string',
             'products.*.product_id' => 'required|exists:products,id', // Assuming 'products' is the table name
             'products.*.quantity' => 'required|numeric|min:1',
@@ -82,7 +82,6 @@ class PurchaseController extends Controller
                 'user_id' => $request->input('user_id'),
                 'total' => $request->input('total'),
                 'invoice_no' => $request->input('invoice_no'),
-                'book_no' => $request->input('book_no'),
                 'note' => $request->input('note'),
                 'carrying_cost' => $request->input('carrying_cost'),
                 'subtotal' => $request->input('subtotal'),
@@ -125,6 +124,8 @@ class PurchaseController extends Controller
                     'user_id' => Auth::id(),
                     'payment_method_id' => $request->input('payment_method_id'),
                     'date' => $purchase->date,
+                    'cheque_no' => $request->input('cheque_no'),
+                    'note' => $request->input('cheque_details'),
                 ]);
             }
 
