@@ -22,6 +22,7 @@ class Customer extends Model
 
     static $rules = [
 		'name' => 'required',
+        'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
     ];
 
     protected $perPage = 20;
@@ -31,12 +32,12 @@ class Customer extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','phone','address'];
+    protected $fillable = ['name','phone','address','image'];
 
 
     public function payments()
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(Transaction::class);
     }
 
     public function debitSum()

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Sale;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class CustomerController
@@ -21,8 +23,6 @@ class CustomerController extends Controller
     public function index()
     {
         return view('customer.index');
-        /*return view('customer.index', compact('customers'))
-            ->with('i', (request()->input('page', 1) - 1) * $customers->perPage());*/
     }
 
     public function dataCustomers(Request $request)
@@ -122,7 +122,20 @@ class CustomerController extends Controller
     {
         request()->validate(Customer::$rules);
 
-        $customer = Customer::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            // Save the image to the storage folder
+            $image->storeAs('customers', $imageName, 'public');
+
+            // Update the data array with the image path
+            $data['image'] = 'customers/' . $imageName;
+        }
+
+        $customer = Customer::create($data);
 
         return redirect()->route('customers.index')
             ->with('success', 'Customer created successfully.');
@@ -138,7 +151,7 @@ class CustomerController extends Controller
     {
         $customer = Customer::find($id);
 
-        $payments = Payment::where('customer_id', $customer->id)->orderByDesc('id')->paginate(10);
+        $payments = Transaction::where('customer_id', $customer->id)->orderByDesc('id')->paginate(20);
 
         return view('customer.show', compact('customer','payments'));
     }
@@ -167,7 +180,25 @@ class CustomerController extends Controller
     {
         request()->validate(Customer::$rules);
 
-        $customer->update($request->all());
+        $data = $request->all();
+
+        // Handling image update
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            // Save the new image to the storage folder
+            $image->storeAs('customers', $imageName, 'public');
+
+            // Delete the old image if it exists
+            if ($customer->image) {
+                Storage::disk('public')->delete($customer->image);
+            }
+
+            // Update the data array with the new image path
+            $data['image'] = 'customers/' . $imageName;
+        }
+        $customer->update($data);
 
         return redirect()->route('customers.index')
             ->with('success', 'Customer updated successfully');

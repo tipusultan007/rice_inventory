@@ -16,12 +16,12 @@ return new class extends Migration
             $table->date('date');
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('invoice_no')->unique()->nullable();
+            $table->unsignedBigInteger('sale_id');
+            $table->string('invoice_no');
             $table->decimal('subtotal', 10, 2);
-            $table->decimal('dholai', 10, 2)->nullable();
-            $table->decimal('discount', 10, 2)->nullable();
             $table->decimal('total', 10, 2);
             $table->string('note')->nullable();
+            $table->string('attachment')->nullable();
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers');

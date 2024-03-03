@@ -29,6 +29,82 @@ class ProductController extends Controller
             ->with('i', (request()->input('page', 1) - 1) * $products->perPage());
     }
 
+    public function dataProducts(Request $request)
+    {
+        $columns = array(
+            0 =>'name',
+            1 =>'quantity',
+            2=> 'price_rate',
+        );
+
+        $totalData = Product::count();
+
+        $totalFiltered = $totalData;
+
+        $limit = $request->input('length');
+        $start = $request->input('start');
+        $order = $columns[$request->input('order.0.column')];
+        $dir = $request->input('order.0.dir');
+
+        if(empty($request->input('search.value')))
+        {
+            $posts = Product::offset($start)
+                ->limit($limit)
+                ->orderBy($order,$dir)
+                ->get();
+        }
+        else {
+            $search = $request->input('search.value');
+
+            $posts =  Product::where('name','LIKE',"%{$search}%")
+                ->orWhere('price_rate', 'LIKE',"%{$search}%")
+                ->offset($start)
+                ->limit($limit)
+                ->orderBy($order,$dir)
+                ->get();
+
+            $totalFiltered = Product::where('name','LIKE',"%{$search}%")
+                ->orWhere('price_rate', 'LIKE',"%{$search}%")
+                ->count();
+        }
+
+        $data = array();
+        if(!empty($posts))
+        {
+            foreach ($posts as $post)
+            {
+                $show =  route('products.show',$post->id);
+                $edit =  route('products.edit',$post->id);
+
+                $nestedData['id'] = $post->id;
+                $nestedData['name'] = $post->name;
+                $nestedData['quantity'] = $post->quantity??'-';
+                $nestedData['price_rate'] = $post->price_rate??'-';
+                $nestedData['stock_value'] = $post->quantity * $post->price_rate;
+
+                $nestedData['options'] = '<div class="dropdown">
+                                              <a href="#" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown">Action</a>
+                                              <div class="dropdown-menu ">
+                                                <a class="dropdown-item" href="'.route('products.show',$post->id).'">দেখুন</a>
+                                                <a class="dropdown-item" href="'.route('products.edit',$post->id).'">এডিট</a>
+                                                <a class="dropdown-item text-danger delete" href="javascript:;" data-id="'.$post->id.'">ডিলেট</a>
+                                              </div>
+                                            </div>
+                                            ';
+                $data[] = $nestedData;
+
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($request->input('draw')),
+            "recordsTotal"    => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data"            => $data
+        );
+
+        echo json_encode($json_data);
+    }
     /**
      * Show the form for creating a new resource.
      *

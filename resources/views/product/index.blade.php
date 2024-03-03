@@ -100,21 +100,9 @@
                         </div>
 
                         <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-bordered table-vcenter text-nowrap datatable">
+                            <table class="table table-bordered table-vcenter text-nowrap datatable">
                                 <thead>
                                 <tr>
-
-                                    <th class="w-1">No.
-                                        <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="icon icon-sm text-dark icon-thick" width="24" height="24"
-                                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                            <polyline points="6 15 12 9 18 15"/>
-                                        </svg>
-                                    </th>
-
                                     <th class="fw-bolder fs-4">বিবরণ</th>
                                     <th class="fw-bolder fs-4">বর্তমান স্থিতি</th>
                                     <th class="fw-bolder fs-4">দর</th>
@@ -124,7 +112,7 @@
                                 </tr>
                                 </thead>
 
-                                <tbody>
+                               {{-- <tbody>
                                 @forelse ($products as $product)
                                     <tr>
 
@@ -171,14 +159,14 @@
                                 @empty
                                     <td>No Data Found</td>
                                 @endforelse
-                                </tbody>
+                                </tbody>--}}
 
                             </table>
 
                         </div>
-                        <div class="card-footer d-flex align-items-center">
+                        {{--<div class="card-footer d-flex align-items-center">
                             {!! $products->links('tablar::pagination') !!}
-                        </div>
+                        </div>--}}
                     </div>
                 </div>
             </div>
@@ -186,5 +174,67 @@
     </div>
 @endsection
 @section('scripts')
+    <script type="module">
 
+        customerTables();
+        function customerTables() {
+            jQuery('.datatable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax":{
+                    "url": "{{ route('data.products') }}",
+                    "dataType": "json",
+                    "type": "GET",
+                },
+                "columns": [
+                    { "data": "name" },
+                    { "data": "quantity" },
+                    { "data": "price_rate" },
+                    { "data": "stock_value", sorting: false },
+                    { "data": "options",sorting: false  },
+                ]
+            });
+        }
+
+
+        $(document).on("click", ".delete", function () {
+            var id = $(this).data('id');
+            Swal.fire({
+                title: "আপনি কি নিশ্চিত?",
+                text: "এটি ফিরে নেওয়া যাবে না!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "হ্যাঁ",
+                cancelButtonText: "না",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ url('products') }}/' + id,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                title: "ডিলেট হয়েছে!",
+                                text: "আপনার ফাইলটি ডিলেট হয়েছে।",
+                                icon: "success"
+                            });
+                            location.reload();
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire({
+                                title: "Error!",
+                                text: "An error occurred while deleting the customer.",
+                                icon: "error"
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
 @endsection

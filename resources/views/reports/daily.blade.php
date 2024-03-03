@@ -44,7 +44,7 @@
                 @include('tablar::common.alert')
             @endif
 
-            <div class="row row-deck row-cards">
+            <div class="row">
                 <div class="col-12 justify-content-center">
                         <div class="info text-center">
                             <h1 class="display-6 fw-bolder mb-1">মেসার্স এস.এ রাইচ এজেন্সী</h1>
@@ -52,14 +52,27 @@
                             <h3 class="mt-2">তারিখঃ {{ date('d/m/Y') }}</h3>
                         </div>
                 </div>
+                <div class="col-12 d-print-none">
+                    <form action="{{ route('report.daily') }}" method="get">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="text" class="form-control flatpicker" name="date">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-secondary" type="submit">সার্চ করুন</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
                 <div class="col-6">
                     <table class="table table-vcenter table-bordered table-sm">
                         <caption style="caption-side: top; font-weight: bold;text-align: center">বিক্রয় তালিকা</caption>
                         <thead>
                         <tr>
                             <th class="fw-bolder fs-5">চালান নং</th>
-                            <th class="fw-bolder fs-5">ক্রেতা</th>
-                            <th class="fw-bolder fs-5 text-end">টাকা</th>
+                            <th class="fw-bolder fs-5">বিক্রেতা</th>
+                            <th class="fw-bolder fs-5 text-end">সর্বমোট</th>
+                            <th class="fw-bolder text-end fs-5">পরিশোধ</th>
                         </tr>
                         </thead>
 
@@ -69,22 +82,30 @@
                                 <td>{{ $sale->invoice_no }}</td>
                                 <td>{{ $sale->customer->name }} - {{ $sale->customer->address }}</td>
                                 <td class="text-end">{{ $sale->total }}</td>
+                                <td class="text-end">{{ $sale->paid??'-' }}</td>
                             </tr>
                         @empty
-                            <td colspan="8" class="text-center">No Data Found</td>
+                            <td colspan="4" class="text-center">No Data Found</td>
                         @endforelse
                         </tbody>
-
+                        <tfoot>
+                        <tr>
+                            <th colspan="2" class="text-end">মোট =</th>
+                            <th class="text-end">{{ $sales->sum('total') }}</th>
+                            <th class="text-end">{{ $sales->sum('paid') }}</th>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
                 <div class="col-6">
-                    <table class="table table-vcenter table-sm table-bordered">
+                    <table class="table table-sm table-vcenter table-bordered">
                         <caption style="caption-side: top; font-weight: bold;text-align: center">ক্রয় তালিকা</caption>
                         <thead>
                         <tr>
                             <th class="fw-bolder fs-5">চালান নং</th>
                             <th class="fw-bolder fs-5">ক্রেতা</th>
-                            <th class="fw-bolder fs-5 text-end">টাকা</th>
+                            <th class="fw-bolder fs-5 text-end">সর্বমোট</th>
+                            <th class="fw-bolder fs-5 text-end">পরিশোধ</th>
                         </tr>
                         </thead>
 
@@ -94,18 +115,27 @@
                                 <td>{{ $purchase->invoice_no }}</td>
                                 <td>{{ $purchase->supplier->name }} - {{ $purchase->supplier->address }}</td>
                                 <td class="text-end">{{ $purchase->total }}</td>
+                                <td class="text-end">{{ $purchase->paid??'-' }}</td>
                             </tr>
                         @empty
-                            <td colspan="3" class="text-center">No Data Found</td>
+                            <td colspan="4" class="text-center">No Data Found</td>
                         @endforelse
                         </tbody>
+
+                        <tfoot>
+                        <tr>
+                            <th colspan="2" class="text-end">মোট =</th>
+                            <th class="text-end">{{ $purchases->sum('total') }}</th>
+                            <th class="text-end">{{ $purchases->sum('paid') }}</th>
+                        </tr>
+                        </tfoot>
 
                     </table>
                 </div>
             </div>
-            <div class="row row-deck row-cards">
+            <div class="row">
                 <div class="col-6">
-                    <table class="table table-vcenter table-bordered table-sm">
+                    <table class="table table-bordered table-vcenter table-sm">
                         <caption style="caption-side: top; font-weight: bold;text-align: center">পেমেন্ট গ্রহণ</caption>
                         <thead>
                         <tr>
@@ -122,11 +152,16 @@
                             </tr>
                         @endforeach
                         </tbody>
-
+                        <tfoot>
+                        <tr>
+                            <th class="text-end">মোট =</th>
+                            <th class="text-end">{{ $customerPayments->sum('amount') }}</th>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
                 <div class="col-6">
-                    <table class="table table-vcenter table-sm table-bordered">
+                    <table class="table table-sm table-vcenter table-bordered">
                         <caption style="caption-side: top; font-weight: bold;text-align: center">পেমেন্ট প্রদান</caption>
                         <thead>
                         <tr>
@@ -143,13 +178,18 @@
                             </tr>
                         @endforeach
                         </tbody>
-
+                        <tfoot>
+                        <tr>
+                            <th class="text-end">মোট =</th>
+                            <th class="text-end">{{ $supplierPayments->sum('amount') }}</th>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
-            <div class="row row-deck row-cards">
+            <div class="row">
                     <div class="col-6">
-                        <table class="table table-vcenter table-bordered table-sm">
+                        <table class="table table-bordered table-vcenter table-sm">
                             <caption style="caption-side: top; font-weight: bold;text-align: center">২৫ কেজি বস্তা</caption>
                             <thead>
                             <tr>
@@ -159,10 +199,10 @@
                             </thead>
 
                             <tbody>
-                            @foreach($products25 as $product)
+                            @foreach ($productData25 as $data)
                                 <tr>
-                                    <td>{{ $product->name }}</td>
-                                    <td class="text-end">{{ $product->quantity }}</td>
+                                    <td>{{ $data['product_name'] }}</td>
+                                    <td class="text-end">{{ $data['quantity'] }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -170,7 +210,7 @@
                         </table>
                     </div>
                     <div class="col-6">
-                        <table class="table table-vcenter table-sm table-bordered">
+                        <table class="table table-sm table-vcenter table-bordered">
                             <caption style="caption-side: top; font-weight: bold;text-align: center">৫০ কেজি বস্তা</caption>
                             <thead>
                             <tr>
@@ -180,10 +220,10 @@
                             </thead>
 
                             <tbody>
-                            @foreach($products50 as $product)
+                            @foreach ($productData50 as $data)
                                 <tr>
-                                    <td>{{ $product->name }}</td>
-                                    <td class="text-end">{{ $product->quantity }}</td>
+                                    <td>{{ $data['product_name'] }}</td>
+                                    <td class="text-end">{{ $data['quantity'] }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -193,4 +233,18 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+                defaultDate: "{{ date('Y-m-d') }}"
+            });
+        });
+    </script>
 @endsection

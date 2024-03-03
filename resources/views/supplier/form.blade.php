@@ -35,6 +35,15 @@
         <small class="form-hint">supplier <b>company</b> instruction.</small>
     </div>
 </div>
+<div class="form-group col-md-4 mb-3">
+    <label class="form-label">   {{ Form::label('image','ছবি') }}</label>
+    <div>
+        <input type="file" name="image" class="form-control" id="image">
+    </div>
+    @if ($supplier->image)
+        <img height="100" class="img-fluid mt-2" src="{{ asset('storage/' . $supplier->image) }}" alt="{{ $supplier->name }} Image">
+    @endif
+</div>
 
     <div class="form-footer">
         <div class="text-end">

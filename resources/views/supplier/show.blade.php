@@ -52,6 +52,13 @@
                         <div class="card-body">
 
                             <table class="table table-bordered">
+                                @if ($supplier->image)
+                                <tr>
+                                    <th colspan="2" class="text-center">
+                                            <img height="100" class="img-fluid mt-2" src="{{ asset('storage/' . $supplier->image) }}" alt="{{ $supplier->name }} Image">
+                                    </th>
+                                </tr>
+                                @endif
                                 <tr>
                                     <th>নাম</th><td>{{ $supplier->name }}</td>
                                 </tr>
@@ -78,15 +85,17 @@
                             <h3 class="card-title">বকেয়া পরিশোধ ফরম</h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('supplier.make.payment') }}" method="POST">
+                            <form action="{{ route('transactions.store') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="supplier_id" value="{{ $supplier->id }}">
+                                <input type="hidden" name="transaction_type" value="supplier_payment">
+                                <input type="hidden" name="type" value="debit">
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label for="due">পূর্বের বকেয়া</label>
+                                        <label for="date">তারিখ</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="due" value="{{ $supplier->remainingDue }}" readonly>
+                                        <input type="text" class="form-control flatpicker" name="date" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -97,29 +106,29 @@
                                         <input type="number" class="form-control" name="amount" value="" required>
                                     </div>
                                 </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="date">তারিখ</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="date" class="form-control" name="date" value="{{ date('Y-m-d') }}" required>
-                                    </div>
-                                </div>
                                 @php
-                                    $methods = \App\Models\PaymentMethod::all();
+                                    $methods = \App\Models\Account::all();
                                 @endphp
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label for="payment_method_id">পেমেন্ট মাধ্যম</label>
+                                        <label for="account_id">পেমেন্ট মাধ্যম</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
+                                        <select name="account_id" id="account_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
                                             <option value=""></option>
                                             @forelse($methods as $method)
                                                 <option value="{{ $method->id }}">{{ $method->name }}</option>
                                             @empty
                                             @endforelse
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="note">নোট</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" name="note" value="" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -147,8 +156,7 @@
                         <tr>
                             <th class="fw-bolder fs-5">তারিখ</th>
                             <th class="fw-bolder fs-5">চালান নং</th>
-                            <th class="fw-bolder fs-5">আদায়/গ্রহণকারি</th>
-                            <th class="fw-bolder fs-5">পেমেন্ট মাধ্যম</th>
+                            <th class="fw-bolder fs-5">অ্যাকাউন্ট</th>
                             <th class="fw-bolder fs-5">ধরণ</th>
                             <th class="fw-bolder fs-5">টাকা</th>
                         </tr>
@@ -156,10 +164,9 @@
                         <tbody>
                         @forelse($payments as $payment)
                             <tr>
-                                <td>{{ date('d/m/Y',strtotime($payment->date)) }}</td>
+                                <td>{{ date('d/m/Y',strtotime($payment->created_at)) }}</td>
                                 <td>{{ $payment->invoice??'-' }}</td>
-                                <td>{{ $payment->supplier->name??'-' }}</td>
-                                <td>{{ $payment->paymentMethod->name??'-' }}</td>
+                                <td>{{ $payment->account->name??'-' }}</td>
                                 <td>
                                     @if($payment->type === "credit")
                                         <span class="badge bg-danger text-white">বকেয়া</span>
@@ -181,3 +188,27 @@
 @endsection
 
 
+@section('scripts')
+    <script type="module">
+        $(document).ready(function () {
+            $(".select2").select2({
+                width: '100%',
+                theme: 'bootstrap-5',
+                allowClear: true,
+                placeholder: 'সিলেক্ট করুন'
+            });
+
+        })
+    </script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+                defaultDate: "{{ date('Y-m-d') }}"
+            });
+        });
+    </script>
+@endsection

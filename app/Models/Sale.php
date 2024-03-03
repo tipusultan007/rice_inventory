@@ -50,6 +50,8 @@ class Sale extends Model
         'total',
         'note',
         'due',
+        'paid',
+        'attachment'
     ];
 
     public function saleDetails()

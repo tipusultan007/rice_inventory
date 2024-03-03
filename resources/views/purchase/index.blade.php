@@ -59,7 +59,7 @@
                                 <th class="fw-bolder fs-5">অপারেটর</th>
                                 <th class="fw-bolder fs-5">পরিমাণ</th>
                                 <th class="fw-bolder fs-5">সর্বমোট</th>
-                                <th class="fw-bolder fs-5">মন্তব্য</th>
+                                <th class="fw-bolder fs-5">পরিশোধ</th>
                                 <th class="w-1"></th>
                             </tr>
                             </thead>
@@ -74,7 +74,7 @@
                                     <td class="py-1">{{ $purchase->user->name}}</td>
                                     <td class="py-1">{{ $purchase->purchaseDetails->sum('quantity') }}</td>
                                     <td class="py-1">{{ $purchase->total }}</td>
-                                    <td class="py-1">{{ $purchase->note }}</td>
+                                    <td class="py-1">{{ $purchase->paid??'-' }}</td>
 
                                     <td class="py-1">
                                         <div class="btn-list flex-nowrap">

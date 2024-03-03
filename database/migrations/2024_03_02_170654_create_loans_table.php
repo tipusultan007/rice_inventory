@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_methods', function (Blueprint $table) {
+        Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('details');
+            $table->decimal('loan_amount', 10, 2);
+            $table->decimal('interest_rate', 10, 2);
+            $table->decimal('balance', 10, 2)->default(0);
+            $table->date('date');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payment_methods');
+        Schema::dropIfExists('loans');
     }
 };

@@ -51,7 +51,7 @@
                         </div>
 
                         <div class="min-vh-100">
-                            <table class="table card-table table-vcenter table-bordered datatable">
+                            <table class="table table-vcenter table-bordered datatable">
                                 <thead class="thead-dark">
                                 <tr>
 										<th class="fw-bolder fs-4">নাম</th>

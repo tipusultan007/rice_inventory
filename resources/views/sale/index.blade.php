@@ -59,9 +59,8 @@
                                     <th class="fw-bolder fs-4">ক্রেতা</th>
                                     <th class="fw-bolder fs-4">অপারেটর</th>
                                     <th class="fw-bolder fs-4">পরিমাণ</th>
-                                    <th class="fw-bolder fs-4">টাকা</th>
-                                    <th class="fw-bolder fs-4">নোট</th>
-
+                                    <th class="fw-bolder fs-4">সর্বমোট</th>
+                                    <th class="fw-bolder fs-4">পরিশোধ</th>
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
@@ -75,7 +74,7 @@
 											<td class="py-1">{{ $sale->user->name }}</td>
 											<td class="py-1">{{ $sale->saleDetails->sum('quantity') }}</td>
 											<td class="py-1">{{ $sale->total }}</td>
-											<td class="py-1">{{ $sale->note??'-' }}</td>
+											<td class="py-1">{{ $sale->paid??'-' }}</td>
                                             <td class="py-1">
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">

@@ -23,6 +23,9 @@ return new class extends Migration
             $table->decimal('total', 10, 2);
             $table->string('note')->nullable();
             $table->integer('due')->nullable();
+            $table->string('attachment')->nullable();
+            $table->integer('paid')->nullable();
+            $table->integer('book_no')->nullable();
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers');

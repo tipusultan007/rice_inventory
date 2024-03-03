@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use App\Models\Purchase;
 use App\Models\Supplier;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class SupplierController
@@ -123,7 +125,20 @@ class SupplierController extends Controller
     {
         request()->validate(Supplier::$rules);
 
-        $supplier = Supplier::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            // Save the image to the storage folder
+            $image->storeAs('suppliers', $imageName, 'public');
+
+            // Update the data array with the image path
+            $data['image'] = 'suppliers/' . $imageName;
+        }
+
+        $supplier = Supplier::create($data);
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Supplier created successfully.');
@@ -138,7 +153,7 @@ class SupplierController extends Controller
     public function show($id)
     {
         $supplier = Supplier::find($id);
-        $payments = Payment::where('supplier_id', $supplier->id)->orderByDesc('id')->paginate(10);
+        $payments = Transaction::where('supplier_id', $supplier->id)->orderByDesc('id')->paginate(10);
 
         return view('supplier.show', compact('supplier','payments'));
     }
@@ -166,8 +181,26 @@ class SupplierController extends Controller
     public function update(Request $request, Supplier $supplier)
     {
         request()->validate(Supplier::$rules);
+        $data = $request->all();
 
-        $supplier->update($request->all());
+        // Handling image update
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            // Save the new image to the storage folder
+            $image->storeAs('suppliers', $imageName, 'public');
+
+            // Delete the old image if it exists
+            if ($supplier->image) {
+                Storage::disk('public')->delete($supplier->image);
+            }
+
+            // Update the data array with the new image path
+            $data['image'] = 'suppliers/' . $imageName;
+        }
+        $supplier->update($data);
+
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Supplier updated successfully');

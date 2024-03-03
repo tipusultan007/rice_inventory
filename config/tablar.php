@@ -149,19 +149,8 @@ return [
             'icon' => 'ti ti-home',
             'url' => 'home'
         ],
-
         [
-            'text' => 'ক্রেতা',
-            'route' => 'customers.index',
-            'icon' => 'ti ti-users',
-        ],
-        [
-            'text' => 'সরবরাহকারী',
-            'route' => 'suppliers.index',
-            'icon' => 'ti ti-users',
-        ],
-        [
-            'text' => 'প্রোডাক্ট',
+            'text' => 'পণ্য',
             'route' => 'products.index',
             'icon' => 'ti ti-building-store',
         ],
@@ -176,28 +165,109 @@ return [
             'icon' => 'ti ti-shopping-cart',
         ],
         [
-            'text' => 'পেমেন্ট',
-            'route' => 'payments.index',
+            'text' => 'ক্রেতা',
+            'route' => 'customers.index',
+            'icon' => 'ti ti-users',
+        ],
+        [
+            'text' => 'সরবরাহকারী',
+            'route' => 'suppliers.index',
+            'icon' => 'ti ti-users',
+        ],
+        [
+            'text' => 'ব্যবহারকারীসমূহ',
+            'route' => 'users.index',
+            'icon' => 'ti ti-users',
+        ],
+        [
+            'text' => 'অ্যাকাউন্টসমূহ',
+            'route' => 'accounts.index',
             'icon' => 'ti ti-currency-taka',
         ],
         [
-            'text' => 'ব্যয়',
-            'route' => 'expenses.index',
+            'text' => 'লোন ম্যানেজমেন্ট',
+            'url' => '#',
             'icon' => 'ti ti-coin-taka',
-        ], [
-            'text' => 'ব্যয় ক্যাটেগরি',
-            'route' => 'expense_categories.index',
-            'icon' => 'ti ti-category',
+            'submenu' => [
+                [
+                    'text' => 'সকল লোন',
+                    'route' => 'loans.index',
+                    'icon' => 'ti ti-coin-taka',
+                ],
+                [
+                    'text' => 'লোন পেমেন্ট',
+                    'route' => 'loans.transactions',
+                    'icon' => 'ti ti-category',
+                ],
+            ]
         ],
         [
-            'text' => 'পেমেন্ট মাধ্যম',
-            'route' => 'payment_methods.index',
-            'icon' => 'ti ti-cash-banknote',
-        ], [
-            'text' => 'ম্যানেজমেন্ট',
-            'route' => 'users.index',
-            'icon' => 'ti ti-users',
-        ], [
+            'text' => 'ব্যালেন্স ট্রান্সফার',
+            'route' => 'balance_transfers.index',
+            'icon' => 'ti ti-currency-taka',
+        ],
+        [
+            'text' => 'লেনদেন',
+            'url' => '#',
+            'icon' => 'ti ti-currency-taka',
+            'submenu' => [
+                [
+                    'text' => 'সকল লেনদেন',
+                    'route' => 'transactions.index',
+                    'icon' => 'ti ti-cash-banknote',
+                ],
+                [
+                    'text' => 'ক্রেতা\'র লেনদেন',
+                    'route' => 'transactions.customer',
+                    'icon' => 'ti ti-cash-banknote',
+                ],
+                [
+                    'text' => 'সরবরাহকারী\'র লেনদেন',
+                    'route' => 'transactions.supplier',
+                    'icon' => 'ti ti-cash-banknote',
+                ],
+            ]
+        ],
+        [
+            'text' => 'লোন ম্যানেজমেন্ট',
+            'url' => '#',
+            'icon' => 'ti ti-coin-taka',
+            'submenu' => [
+                [
+                    'text' => 'সকল লোন',
+                    'route' => 'loans.index',
+                    'icon' => 'ti ti-coin-taka',
+                ],
+                [
+                    'text' => 'লোন পেমেন্ট',
+                    'route' => 'loans.transactions',
+                    'icon' => 'ti ti-category',
+                ],
+            ]
+        ],
+        [
+            'text' => 'ব্যয় সমুহ',
+            'url' => '#',
+            'icon' => 'ti ti-coin-taka',
+            'submenu' => [
+                [
+                    'text' => 'ব্যয়',
+                    'route' => 'expenses.index',
+                    'icon' => 'ti ti-coin-taka',
+                ],
+                [
+                    'text' => 'ব্যয় ক্যাটেগরি',
+                    'route' => 'expense_categories.index',
+                    'icon' => 'ti ti-category',
+                ],
+            ]
+        ],
+        [
+            'text' => 'সম্পদ',
+            'route' => 'asset.index',
+            'icon' => 'ti ti-box',
+        ],
+        [
             'text' => 'রিপোর্ট',
             'url' => '#',
             'icon' => 'ti ti-report-analytics',

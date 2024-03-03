@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('truck_no')->nullable();
             $table->string('invoice_no')->nullable();
             $table->integer('due')->nullable();
+            $table->string('attachment')->nullable();
+            $table->integer('paid')->nullable();
             $table->timestamps();
 
             $table->foreign('supplier_id')->references('id')->on('suppliers');
@@ -35,6 +37,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('purchase_id');
             $table->unsignedBigInteger('product_id');
+            $table->decimal('weight')->nullable();
             $table->integer('quantity');
             $table->decimal('amount', 10, 2);
             $table->decimal('price_rate', 10, 2); // Added column

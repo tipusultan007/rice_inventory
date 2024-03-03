@@ -71,7 +71,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-3 mb-3">
-                                        <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="পেমেন্ট মাধ্যম">
+                                        <select name="account_id" id="account_id" class="form-control select2" data-placeholder="অ্যাকাউন্ট">
                                             <option value=""></option>
                                             @foreach($methods as $method)
                                                 <option value="{{ $method->id }}">{{ $method->name.' - '.$method->address }}</option>
@@ -79,10 +79,17 @@
                                         </select>
                                     </div>
                                     <div class="col-md-3 mb-3">
-                                        <select name="type" id="type" class="form-control select2" data-placeholder="পেমেন্ট ধরন">
+                                        <select name="transaction_type" id="transaction_type" class="form-control select2" data-placeholder="লেনদেনের ধরন নির্বাচন করুন">
                                             <option value=""></option>
-                                            <option value="credit">পরিশোধ</option>
-                                            <option value="debit">বকেয়া</option>
+                                            <option value="balance_transfer_out">ব্যালেন্স ট্রান্সফার আউট</option>
+                                            <option value="balance_transfer_in">ব্যালেন্স ট্রান্সফার ইন</option>
+                                            <option value="balance_addition">ব্যালেন্স যোগ</option>
+                                            <option value="external_payment_received">বাইরের পেমেন্ট প্রাপ্ত</option>
+                                            <option value="external_payment_made">বাইরের পেমেন্ট করা</option>
+                                            <option value="due_payment">বাকি পেমেন্ট</option>
+                                            <option value="supplier_payment">সাপ্লাইয়ার পেমেন্ট</option>
+                                            <option value="sale">বিক্রয়</option>
+                                            <option value="purchase">ক্রয়</option>
                                         </select>
                                     </div>
                                     <div class="col-md-3 mb-3">
@@ -115,7 +122,7 @@
                                             <li><b>সরবরাহকারীঃ</b> {{ $suppliers[$supplier_id]->name }}</li>
                                         @endif
                                         @if(!is_null($payment_method_id))
-                                            <li><b>পেমেন্ট মাধ্যমঃ</b> {{ $methods[$payment_method_id]->name }}</li>
+                                            <li><b>অ্যাকাউন্টঃ</b> {{ $methods[$payment_method_id]->name }}</li>
                                         @endif
                                         @if(!is_null($start_date))
                                             <li>শুরুর তারিখ: {{ date('d/m/Y',strtotime($start_date)) }}</li>
@@ -142,11 +149,9 @@
                                 <th class="fw-bolder fs-4">তারিখ</th>
                                 <th class="fw-bolder fs-4 bg-success text-white">ক্রেতা</th>
                                 <th class="fw-bolder fs-4 bg-danger text-white">সরবরাহকারী</th>
-                                <th class="fw-bolder fs-4">চালান নং</th>
-                                <th class="fw-bolder fs-4">পেমেন্ট মাধ্যম</th>
+                                <th class="fw-bolder fs-4">অ্যাকাউন্ট</th>
                                 <th class="fw-bolder fs-4">পেমেন্ট'র ধরন</th>
                                 <th class="fw-bolder fs-4">টাকা</th>
-                                <th class="fw-bolder fs-4">নোট</th>
                                 <th class="w-1"></th>
                             </tr>
                             </thead>
@@ -157,8 +162,7 @@
                                     <td class="py-1">{{ date('d/m/Y',strtotime($payment->date)) }}</td>
                                     <td class="py-1 bg-success text-white">{{ $payment->customer->name??'-' }}</td>
                                     <td class="py-1 bg-danger text-white">{{ $payment->supplier->name??'-' }}</td>
-                                    <td class="py-1">{{ $payment->invoice??'-' }}</td>
-                                    <td class="py-1">{{ $payment->paymentMethod->name??'-' }}</td>
+                                    <td class="py-1">{{ $payment->account->name??'-' }}</td>
                                     <td class="py-1">
 
                                         @if($payment->customer_id != "")
@@ -180,8 +184,6 @@
                                         @endif
                                     </td>
                                     <td class="py-1">{{ $payment->amount }}</td>
-                                    <td class="py-1">{!! $payment->note??'-' !!}</td>
-
                                     <td class="py-1">
                                         <div class="btn-list flex-nowrap">
                                             <div class="dropdown">
@@ -191,15 +193,15 @@
                                                 </button>
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     <a class="dropdown-item"
-                                                       href="{{ route('payments.show',$payment->id) }}">
+                                                       href="{{ route('transactions.show',$payment->id) }}">
                                                         View
                                                     </a>
                                                     <a class="dropdown-item"
-                                                       href="{{ route('payments.edit',$payment->id) }}">
+                                                       href="{{ route('transactions.edit',$payment->id) }}">
                                                         Edit
                                                     </a>
                                                     <form
-                                                        action="{{ route('payments.destroy',$payment->id) }}"
+                                                        action="{{ route('transactions.destroy',$payment->id) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('DELETE')

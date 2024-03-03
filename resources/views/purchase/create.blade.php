@@ -141,7 +141,15 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-3 mb-3">
+                                        <label for="attachment" class="form-label">ফাইল:</label>
+                                        <input type="file" name="attachment" class="form-control"
+                                               value="{{ old('attachment') }}">
+                                        @error('attachment')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-3 mb-3">
                                         <label for="supplier_id" class="form-label">সরবরাহকারী:</label>
                                         <select name="supplier_id" id="supplier_id" class="form-control select2" required data-placeholder="সরবরাহকারী বাছাই করুন">
                                             <option value=""></option>
@@ -162,145 +170,177 @@
                                 <input type="hidden" name="user_id" value="{{ auth()->id() }}">
                                 <div class="mb-3">
                                     <label class="form-label">প্রোডাক্ট তালিকা:</label>
-                                    <table class="table table-sm products table-borderless">
-                                        <thead style="background-color: #eeeeee">
-                                        <tr>
-                                            <th class="fw-bolder fs-5 p-2">ওজন</th>
-                                            <th style="min-width: 300px" class="fw-bolder fs-5 p-2">বিবরণ</th>
-                                            <th class="fw-bolder fs-5 p-2">দর</th>
-                                            <th class="fw-bolder fs-5 p-2">পরিমাণ</th>
-                                            <th class="fw-bolder fs-5 p-2">টাকা</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr class="product-entry">
-                                            <td><input type="number" name="products[0][weight]" class="form-control"
-                                                       value="{{ old("products.0.weight") }}"></td>
-                                            <td>
-                                                <select name="products[0][product_id]"
-                                                        class="form-select products-select2" required data-placeholder="সিলেক্ট প্রোডাক্ট">
-                                                    <option value=""></option>
-                                                    @foreach($products as $product)
-                                                        <option data-price-rate="{{ $product->price_rate }}" value="{{ $product->id }}" {{ old("products.0.product_id") == $product->id ? 'selected' : '' }}>
-                                                            {{ $product->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-
-                                            <td><input type="number" name="products[0][price_rate]" class="form-control"
-                                                       value="{{ old("products.0.price_rate") }}" required></td>
-                                            <td><input type="number" name="products[0][quantity]" class="form-control"
-                                                       value="{{ old("products.0.quantity") }}" required></td>
-                                            <td><input type="number" name="products[0][amount]" class="form-control"
-                                                       value="{{ old("products.0.amount") }}" required></td>
-                                            <td>
-                                                <button class="btn btn-primary btn-icon" type="button" onclick="addProductEntry()"><i class="ti ti-plus"></i></button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                        <tfoot>
-
-                                        <tr>
-                                            <th colspan="4" class="text-end border-0 py-0">মোট</th>
-                                            <th class="subtotal border-0 py-2">
-                                                <input type="number" name="subtotal" class="form-control" value="0" readonly>
-                                            </th>
-                                            <th class="border-0 py-0 border-0 py-0"></th>
-                                        </tr>
-
-                                        <tr>
-                                            <th colspan="4" class="text-end border-0 py-0">তহরি</th>
-                                            <th class="tohori border-0 py-2">
-                                                <input type="number" name="tohori" class="form-control" value="0" min="0">
-                                            </th>
-                                            <th class="border-0 py-0"></th>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="4" class="text-end border-0 py-0">ডিস্কাউন্ট</th>
-                                            <th class="discount border-0 py-2">
-                                                <input type="number" name="discount" class="form-control" value="0" min="0">
-                                            </th>
-                                            <th class="border-0 py-0"></th>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="4" class="text-end border-0 py-0">সর্বমোট</th>
-                                            <th class="total border-0 py-2">
-                                                <input type="number" name="total" class="form-control" value="0" readonly>
-                                            </th>
-                                            <th class="border-0 py-0"></th>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="4" class="text-end border-0 py-0">গাড়ি ভাড়া</th>
-                                            <th class="carrying_cost border-0 py-2">
-                                                <input type="number" name="carrying_cost" class="form-control" value="0" min="0">
-                                            </th>
-                                            <th class="border-0 py-0"></th>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="4" class="text-end border-0 py-0">পরিশোধ</th>
-                                            <th class="total border-0 py-2">
-                                                <input type="number" name="paid" class="form-control" value="0" min="0">
-                                                @error('paid')
-                                                <div class="text-danger">{{ $message }}</div>
-                                                @enderror
-                                            </th>
-                                            <th class="border-0 py-0"></th>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="4" class="text-end border-0 py-0">নোট</th>
-                                            <th class="total border-0 py-2">
-                                                <input type="text" name="note" class="form-control" value="{{ old('note') }}">
-                                                @error('note')
-                                                <div class="text-danger">{{ $message }}</div>
-                                                @enderror
-                                            </th>
-                                            <th class="border-0 py-0"></th>
-                                        </tr>
-
-                                            @php
-                                                $methods = \App\Models\PaymentMethod::all();
-                                            @endphp
+                                    <div class="table-responsive">
+                                        <table class="table table-sm products table-borderless">
+                                            <thead style="background-color: #eeeeee">
                                             <tr>
-                                                <th colspan="4" class="text-end border-0 py-0">
-                                                    <label for="payment_method_id">পেমেন্ট মাধ্যম</label>
+                                                <th class="fw-bolder fs-5 p-2">ওজন</th>
+                                                <th style="min-width: 300px" class="fw-bolder fs-5 p-2">বিবরণ</th>
+                                                <th style="min-width: 100px" class="fw-bolder fs-5 p-2">দর</th>
+                                                <th style="min-width: 100px" class="fw-bolder fs-5 p-2">পরিমাণ</th>
+                                                <th style="min-width: 100px" class="fw-bolder fs-5 p-2">টাকা</th>
+                                                <th style="min-width: 100px">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr class="product-entry">
+                                                <td><input type="number" name="products[0][weight]" class="form-control"
+                                                           value="{{ old("products.0.weight") }}"></td>
+                                                <td>
+                                                    <select name="products[0][product_id]"
+                                                            class="form-select products-select2" required data-placeholder="সিলেক্ট প্রোডাক্ট">
+                                                        <option value=""></option>
+                                                        @foreach($products as $product)
+                                                            <option data-price-rate="{{ $product->price_rate }}" value="{{ $product->id }}" {{ old("products.0.product_id") == $product->id ? 'selected' : '' }}>
+                                                                {{ $product->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+
+                                                <td><input type="number" name="products[0][price_rate]" class="form-control"
+                                                           value="{{ old("products.0.price_rate") }}" required></td>
+                                                <td><input type="number" name="products[0][quantity]" class="form-control"
+                                                           value="{{ old("products.0.quantity") }}" required></td>
+                                                <td><input type="number" name="products[0][amount]" class="form-control"
+                                                           value="{{ old("products.0.amount") }}" required></td>
+                                                <td>
+                                                    <button class="btn btn-primary btn-icon" type="button" onclick="addProductEntry()"><i class="ti ti-plus"></i></button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                            <tfoot>
+
+                                            <tr>
+                                                <th colspan="2" class="text-end border-0 py-0">গাড়ি ভাড়া</th>
+                                                <th class="carrying_cost border-0 py-2">
+                                                    <input type="number" name="carrying_cost" class="form-control" value="0" min="0">
+                                                </th>
+                                                <th class="text-end border-0 py-0">মোট</th>
+                                                <th class="subtotal border-0 py-2">
+                                                    <input type="number" name="subtotal" class="form-control" value="0" readonly>
+                                                </th>
+                                                <th class="border-0 py-0 border-0 py-0"></th>
+                                            </tr>
+
+                                            <tr>
+                                                <th colspan="2" class="text-end border-0 py-0">ডিস্কাউন্ট</th>
+                                                <th class="discount border-0 py-2">
+                                                    <input type="number" name="discount" class="form-control" value="0" min="0">
+                                                </th>
+                                                <th class="text-end border-0 py-0">তহরি</th>
+                                                <th class="tohori border-0 py-2">
+                                                    <input type="number" name="tohori" class="form-control" value="0" min="0">
+                                                </th>
+                                                <th class="border-0 py-0"></th>
+                                            </tr>
+                                           {{-- <tr>
+                                                <th colspan="4" class="text-end border-0 py-0">ডিস্কাউন্ট</th>
+                                                <th class="discount border-0 py-2">
+                                                    <input type="number" name="discount" class="form-control" value="0" min="0">
+                                                </th>
+                                                <th class="border-0 py-0"></th>
+                                            </tr>--}}
+                                            <tr>
+                                                <th colspan="2" class="text-end border-0 py-0">নোট</th>
+                                                <th class="total border-0 py-2">
+                                                    <input type="text" name="note" class="form-control" value="{{ old('note') }}">
+                                                    @error('note')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                    @enderror
+                                                </th>
+                                                <th class="text-end border-0 py-0">সর্বমোট</th>
+                                                <th class="total border-0 py-2">
+                                                    <input type="number" name="total" class="form-control" value="0" readonly>
+                                                </th>
+                                                <th class="border-0 py-0"></th>
+                                            </tr>
+                                            {{--<tr>
+                                                <th colspan="4" class="text-end border-0 py-0">গাড়ি ভাড়া</th>
+                                                <th class="carrying_cost border-0 py-2">
+                                                    <input type="number" name="carrying_cost" class="form-control" value="0" min="0">
+                                                </th>
+                                                <th class="border-0 py-0"></th>
+                                            </tr>--}}
+                                            <tr>
+                                                <th colspan="2" class="text-end border-0 py-0">
+                                                    <label for="account_id">একাউন্ট</label>
                                                 </th>
                                                 <td class="total border-0 py-2">
-                                                    <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
+                                                    <select name="account_id" id="account_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
                                                         <option value=""></option>
-                                                        @forelse($methods as $method)
-                                                            <option value="{{ $method->id }}">{{ $method->name }}</option>
+                                                        @forelse($accounts as $account)
+                                                            <option value="{{ $account->id }}">{{ $account->name }}</option>
                                                         @empty
                                                         @endforelse
                                                     </select>
                                                 </td>
+                                                <th class="text-end border-0 py-0">পরিশোধ</th>
+                                                <th class="total border-0 py-2">
+                                                    <input type="number" name="paid" class="form-control" value="0" min="0">
+                                                    @error('paid')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                    @enderror
+                                                </th>
+                                                <th class="border-0 py-0"></th>
                                             </tr>
-                                        <tr>
-                                            <th colspan="4" class="text-end border-0 py-0">
-                                                চেক নং
-                                            </th>
-                                            <td>
-                                                <input type="text" name="cheque_no" id="cheque_no" class="form-control">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="4" class="text-end border-0 py-0">
-                                                চেক বিবরণ
-                                            </th>
-                                            <td>
-                                                <input type="text" name="cheque_details" id="cheque_details" class="form-control">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="4"></th>
-                                            <td>
-                                                   <button type="submit" class="btn btn-primary w-100">সাবমিট</button>
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                        </tfoot>
-                                    </table>
+                                            {{--<tr>
+                                                <th colspan="4" class="text-end border-0 py-0">নোট</th>
+                                                <th class="total border-0 py-2">
+                                                    <input type="text" name="note" class="form-control" value="{{ old('note') }}">
+                                                    @error('note')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                    @enderror
+                                                </th>
+                                                <th class="border-0 py-0"></th>
+                                            </tr>--}}
+
+                                            {{--<tr>
+                                                <th colspan="4" class="text-end border-0 py-0">
+                                                    <label for="payment_method_id">একাউন্ট</label>
+                                                </th>
+                                                <td class="total border-0 py-2">
+                                                    <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
+                                                        <option value=""></option>
+                                                        @forelse($accounts as $account)
+                                                            <option value="{{ $account->id }}">{{ $account->name }}</option>
+                                                        @empty
+                                                        @endforelse
+                                                    </select>
+                                                </td>
+                                            </tr>--}}
+                                           {{-- <tr>
+                                                <th colspan="4" class="text-end border-0 py-0">
+                                                    চেক নং
+                                                </th>
+                                                <td>
+                                                    <input type="text" name="cheque_no" id="cheque_no" class="form-control">
+                                                </td>
+                                            </tr>--}}
+                                            <tr>
+                                                <th colspan="2" class="text-end border-0 py-0">
+                                                    চেক নং
+                                                </th>
+                                                <td>
+                                                    <input type="text" name="cheque_no" id="cheque_no" class="form-control">
+                                                </td>
+                                                <th class="text-end border-0 py-0">
+                                                    চেক বিবরণ
+                                                </th>
+                                                <td>
+                                                    <input type="text" name="cheque_details" id="cheque_details" class="form-control">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="4"></th>
+                                                <td>
+                                                    <button type="submit" class="btn btn-primary w-100">সাবমিট</button>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </div>
                             </form>
                         </div>

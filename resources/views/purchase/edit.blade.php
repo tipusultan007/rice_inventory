@@ -55,7 +55,7 @@
                                 @csrf
                                 @include('purchase.form')
                             </form>--}}
-                            <form action="{{ route('purchases.update', $purchase->id) }}" method="post">
+                            <form action="{{ route('purchases.update', $purchase->id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <div class="row">
@@ -74,7 +74,18 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-3 mb-3">
+                                        <label for="attachment" class="form-label">ফাইল:</label>
+                                        <input type="file" name="attachment" class="form-control">
+                                        @if($purchase->attachment)
+                                            <a href="{{ asset('storage/' . $purchase->attachment) }}" target="_blank">View Attachment</a>
+                                        @endif
+                                        @error('attachment')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-md-3 mb-3">
                                         <label for="supplier_id" class="form-label">সরবরাহকারী:</label>
                                         <select name="supplier_id" id="supplier_id" class="form-control select2" required data-placeholder="সরবরাহকারী বাছাই করুন">
                                             <option value=""></option>
@@ -184,7 +195,7 @@
                                         <tr>
                                             <th colspan="3" class="text-end border-0 py-0">পরিশোধ</th>
                                             <th class="total border-0 py-2">
-                                                <input type="number" name="paid" class="form-control" value="0" min="0">
+                                                <input type="number" name="paid" class="form-control" value="{{ $purchase->paid }}" min="0">
                                                 @error('paid')
                                                 <div class="text-danger">{{ $message }}</div>
                                                 @enderror
@@ -203,17 +214,17 @@
                                         </tr>
 
                                         @php
-                                            $methods = \App\Models\PaymentMethod::all();
+                                            $methods = \App\Models\Account::all();
                                         @endphp
                                         <tr>
                                             <th colspan="3" class="text-end border-0 py-0">
-                                                <label for="payment_method_id">পেমেন্ট মাধ্যম</label>
+                                                <label for="account_id">অ্যাকাউন্ট</label>
                                             </th>
                                             <td class="total border-0 py-2">
-                                                <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
+                                                <select name="account_id" id="account_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
                                                     <option value=""></option>
                                                     @forelse($methods as $method)
-                                                        <option value="{{ $method->id }}">{{ $method->name }}</option>
+                                                        <option value="{{ $method->id }}" {{ $payment?$payment->account_id == $method->id?"selected":"":"" }}>{{ $method->name }}</option>
                                                     @empty
                                                     @endforelse
                                                 </select>

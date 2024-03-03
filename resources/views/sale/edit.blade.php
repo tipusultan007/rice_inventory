@@ -179,7 +179,7 @@
                                         <tr>
                                             <th colspan="3" class="text-end border-0 py-0">পরিশোধ</th>
                                             <th class="total border-0 py-2">
-                                                <input type="number" name="paid" class="form-control" min="0" value="{{ $payment?$payment->amount:0 }}">
+                                                <input type="number" name="paid" class="form-control" min="0" value="{{ $sale->paid}}">
                                             </th>
                                             <th class="border-0 py-0"></th>
                                         </tr>
@@ -195,17 +195,17 @@
                                         </tr>
 
                                         @php
-                                            $methods = \App\Models\PaymentMethod::all();
+                                            $methods = \App\Models\Account::all();
                                         @endphp
                                         <tr>
                                             <th colspan="3" class="text-end border-0 py-0">
-                                                <label for="payment_method_id">পেমেন্ট মাধ্যম</label>
+                                                <label for="account_id">পেমেন্ট মাধ্যম</label>
                                             </th>
                                             <td class="total border-0 py-2">
-                                                <select name="payment_method_id" id="payment_method_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
+                                                <select name="account_id" id="account_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
                                                     <option value=""></option>
                                                     @forelse($methods as $method)
-                                                        <option value="{{ $method->id }}" {{ $payment?$payment->payment_method_id == $method->id?"selected":"":"" }}>{{ $method->name }}</option>
+                                                        <option value="{{ $method->id }}" {{ $payment?$payment->account_id == $method->id?"selected":"":"" }}>{{ $method->name }}</option>
                                                     @empty
                                                     @endforelse
                                                 </select>

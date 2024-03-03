@@ -55,6 +55,8 @@ class Purchase extends Model
         'total',
         'note',
         'due',
+        'paid',
+        'attachment'
     ];
 
 

@@ -23,6 +23,7 @@ class Supplier extends Model
 
     static $rules = [
 		'name' => 'required',
+        'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
     ];
 
     protected $perPage = 20;
@@ -32,7 +33,7 @@ class Supplier extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','phone','address','company'];
+    protected $fillable = ['name','phone','address','company','image'];
 
     public function purchases()
     {
@@ -41,7 +42,7 @@ class Supplier extends Model
 
     public function payments()
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(Transaction::class);
     }
     public function debitSum()
     {
