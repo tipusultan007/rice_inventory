@@ -70,7 +70,7 @@
                         <thead>
                         <tr>
                             <th class="fw-bolder fs-5">চালান নং</th>
-                            <th class="fw-bolder fs-5">বিক্রেতা</th>
+                            <th class="fw-bolder fs-5">ক্রেতা</th>
                             <th class="fw-bolder fs-5 text-end">সর্বমোট</th>
                             <th class="fw-bolder text-end fs-5">পরিশোধ</th>
                         </tr>
@@ -103,7 +103,7 @@
                         <thead>
                         <tr>
                             <th class="fw-bolder fs-5">চালান নং</th>
-                            <th class="fw-bolder fs-5">ক্রেতা</th>
+                            <th class="fw-bolder fs-5">সরবরাহকারী</th>
                             <th class="fw-bolder fs-5 text-end">সর্বমোট</th>
                             <th class="fw-bolder fs-5 text-end">পরিশোধ</th>
                         </tr>
@@ -136,7 +136,7 @@
             <div class="row">
                 <div class="col-6">
                     <table class="table table-bordered table-vcenter table-sm">
-                        <caption style="caption-side: top; font-weight: bold;text-align: center">পেমেন্ট গ্রহণ</caption>
+                        <caption style="caption-side: top; font-weight: bold;text-align: center">জমা</caption>
                         <thead>
                         <tr>
                             <th class="fw-bolder fs-5">ক্রেতা</th>
@@ -162,10 +162,10 @@
                 </div>
                 <div class="col-6">
                     <table class="table table-sm table-vcenter table-bordered">
-                        <caption style="caption-side: top; font-weight: bold;text-align: center">পেমেন্ট প্রদান</caption>
+                        <caption style="caption-side: top; font-weight: bold;text-align: center">খরচ</caption>
                         <thead>
                         <tr>
-                            <th class="fw-bolder fs-5">ক্রেতা</th>
+                            <th class="fw-bolder fs-5">সরবরাহকারী</th>
                             <th class="fw-bolder fs-5 text-end">টাকা</th>
                         </tr>
                         </thead>
