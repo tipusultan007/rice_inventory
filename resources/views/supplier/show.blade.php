@@ -179,7 +179,10 @@
                         @endforelse
                         </tbody>
                     </table>
-                    {{ $payments->links() }}
+
+                </div>
+                <div class="card-footer d-flex align-items-center">
+                    {!! $payments->links('tablar::pagination') !!}
                 </div>
             </div>
         </div>
