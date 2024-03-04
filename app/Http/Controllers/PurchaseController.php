@@ -203,7 +203,7 @@ class PurchaseController extends Controller
                 'total' => $request->input('total'),
                 'note' => $request->input('note'),
                 'due' => $request->input('due'),
-                'paid' => $request->input('paid'),
+                'paid' => $request->input('paid') + $request->input('carrying_cost'),
             ]);
 
             // Create purchase details and update product quantities
@@ -363,7 +363,7 @@ class PurchaseController extends Controller
                 'total' => $request->input('total'),
                 'note' => $request->input('note'),
                 'due' => $request->input('due'),
-                'paid' => $request->input('paid'),
+                'paid' => $request->input('paid') + $request->input('carrying_cost'),
             ]);
 
             // Update purchase details and product quantities
@@ -480,6 +480,11 @@ class PurchaseController extends Controller
             // Delete the related supplier payment transaction
             Transaction::where('reference_id', $purchase->id)
                 ->where('transaction_type', 'supplier_payment')
+                ->where('supplier_id', $purchase->supplier_id)
+                ->delete();
+
+            Transaction::where('reference_id', $purchase->id)
+                ->where('transaction_type', 'purchase')
                 ->where('supplier_id', $purchase->supplier_id)
                 ->delete();
 
