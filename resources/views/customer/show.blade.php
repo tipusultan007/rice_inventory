@@ -91,20 +91,21 @@
                                 <input type="hidden" name="customer_id" value="{{ $customer->id }}">
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label for="amount">পরিশোধ</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="number" class="form-control" name="amount" value="" required>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
                                         <label for="date">তারিখ</label>
                                     </div>
                                     <div class="col-md-9">
                                         <input type="text" class="form-control flatpicker" name="date" required>
                                     </div>
                                 </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="amount">পরিশোধ</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="number" class="form-control" name="amount" value="" required>
+                                    </div>
+                                </div>
+
                                 @php
                                     $methods = \App\Models\Account::all();
                                 @endphp
@@ -124,6 +125,14 @@
                                             @empty
                                             @endforelse
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="note">নোট</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" name="note" value="" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
