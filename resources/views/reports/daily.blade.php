@@ -73,6 +73,7 @@
                             <th class="fw-bolder fs-5">ক্রেতা</th>
                             <th class="fw-bolder fs-5 text-end">সর্বমোট</th>
                             <th class="fw-bolder text-end fs-5">পরিশোধ</th>
+                            <th class="fw-bolder text-end fs-5">বকেয়া</th>
                         </tr>
                         </thead>
 
@@ -83,6 +84,7 @@
                                 <td>{{ $sale->customer->name }} - {{ $sale->customer->address }}</td>
                                 <td class="text-end">{{ $sale->total }}</td>
                                 <td class="text-end">{{ $sale->paid??'-' }}</td>
+                                <td class="text-end">{{ $sale->total - $sale->paid??0 }}</td>
                             </tr>
                         @empty
                             <td colspan="4" class="text-center">No Data Found</td>
@@ -106,6 +108,7 @@
                             <th class="fw-bolder fs-5">সরবরাহকারী</th>
                             <th class="fw-bolder fs-5 text-end">সর্বমোট</th>
                             <th class="fw-bolder fs-5 text-end">পরিশোধ</th>
+                            <th class="fw-bolder text-end fs-5">বকেয়া</th>
                         </tr>
                         </thead>
 
@@ -116,6 +119,7 @@
                                 <td>{{ $purchase->supplier->name }} - {{ $purchase->supplier->address }}</td>
                                 <td class="text-end">{{ $purchase->total }}</td>
                                 <td class="text-end">{{ $purchase->paid??'-' }}</td>
+                                <td class="text-end">{{ $purchase->total - $purchase->paid??0 }}</td>
                             </tr>
                         @empty
                             <td colspan="4" class="text-center">No Data Found</td>
