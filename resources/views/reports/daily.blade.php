@@ -78,13 +78,21 @@
                         </thead>
 
                         <tbody>
+                        @php
+$totalSaleDue = 0;
+$totalPurchaseDue = 0;
+ @endphp
                         @forelse ($sales as $sale)
+                            @php
+                                $due = $sale->total - $sale->paid;
+                                $totalSaleDue += $due;
+                            @endphp
                             <tr>
                                 <td>{{ $sale->invoice_no }}</td>
                                 <td>{{ $sale->customer->name }} - {{ $sale->customer->address }}</td>
                                 <td class="text-end">{{ $sale->total }}</td>
                                 <td class="text-end">{{ $sale->paid??'-' }}</td>
-                                <td class="text-end">{{ $sale->total - $sale->paid??0 }}</td>
+                                <td class="text-end">{{ $due }}</td>
                             </tr>
                         @empty
                             <td colspan="5" class="text-center">No Data Found</td>
@@ -95,6 +103,7 @@
                             <th colspan="2" class="text-end">মোট =</th>
                             <th class="text-end">{{ $sales->sum('total') }}</th>
                             <th class="text-end">{{ $sales->sum('paid') }}</th>
+                            <th class="text-end">{{ $totalSaleDue }}</th>
                         </tr>
                         </tfoot>
                     </table>
@@ -114,12 +123,16 @@
 
                         <tbody>
                         @forelse ($purchases as $purchase)
+                            @php
+                                $due = $purchase->total - $purchase->paid;
+                                $totalPurchaseDue += $due;
+                            @endphp
                             <tr>
                                 <td>{{ $purchase->invoice_no }}</td>
                                 <td>{{ $purchase->supplier->name }} - {{ $purchase->supplier->address }}</td>
                                 <td class="text-end">{{ $purchase->total }}</td>
                                 <td class="text-end">{{ $purchase->paid??'-' }}</td>
-                                <td class="text-end">{{ $purchase->total - $purchase->paid??0 }}</td>
+                                <td class="text-end">{{ $due }}</td>
                             </tr>
                         @empty
                             <td colspan="5" class="text-center">No Data Found</td>
@@ -131,6 +144,7 @@
                             <th colspan="2" class="text-end">মোট =</th>
                             <th class="text-end">{{ $purchases->sum('total') }}</th>
                             <th class="text-end">{{ $purchases->sum('paid') }}</th>
+                            <th class="text-end">{{ $totalPurchaseDue }}</th>
                         </tr>
                         </tfoot>
 
