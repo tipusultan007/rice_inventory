@@ -65,7 +65,6 @@
                                             <label class="form-label" for="account_id">পেমেন্ট মাধ্যম</label>
                                             <select name="account_id"
                                                     class="form-control select2" required>
-                                                <option value=""></option>
                                                 @forelse($accounts as $account)
                                                     <option value="{{ $account->id }}">{{ $account->name }}</option>
                                                 @empty
