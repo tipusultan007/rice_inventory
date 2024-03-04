@@ -163,7 +163,7 @@
                         <tbody>
                         @forelse($payments as $payment)
                             <tr>
-                                <td>{{ date('d/m/Y',strtotime($payment->created_at)) }}</td>
+                                <td>{{ date('d/m/Y',strtotime($payment->date)) }}</td>
                                 <td>{{ $payment->invoice??'-' }}</td>
                                 <td>{{ $payment->account->name??'-' }}</td>
                                 <td>

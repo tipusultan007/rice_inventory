@@ -126,7 +126,7 @@
                                                 <span class="badge bg-success text-white">পরিশোধ</span>
                                             @endif
                                         </td>
-                                        <td>{{ date('d/m/Y',strtotime($transaction->created_at)) }}</td>
+                                        <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
                                         <td>
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">

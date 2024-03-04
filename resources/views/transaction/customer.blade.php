@@ -126,7 +126,7 @@
                                                 <span class="badge bg-danger text-white">বকেয়া</span>
                                             @endif
                                         </td>
-                                        <td>{{ date('d/m/Y',strtotime($transaction->created_at)) }}</td>
+                                        <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
                                         <td>
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">
