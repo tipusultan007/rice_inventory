@@ -132,7 +132,7 @@
                                         <label for="note">নোট</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="note" value="" required>
+                                        <input type="text" class="form-control" name="note" value="">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
