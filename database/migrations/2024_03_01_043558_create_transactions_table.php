@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->unsignedBigInteger('supplier_id')->nullable();
             $table->unsignedBigInteger('loan_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
 
             $table->decimal('amount', 10, 2);
             $table->enum('type', ['debit', 'credit']); // Common types: debit and credit

@@ -52,13 +52,14 @@
                                     <input type="hidden" name="transaction_type" value="due_payment">
                                     <input type="hidden" name="type" value="credit">
                                     <div class="col-md-2 mb-3">
+                                        <label class="form-label" for="date">তারিখ</label>
+                                        <input type="text" class="form-control flatpicker" name="date" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
                                             <label class="form-label" for="amount">টাকা</label>
                                             <input type="number" class="form-control" name="amount" value="" required>
                                     </div>
-                                    <div class="col-md-2 mb-3">
-                                            <label class="form-label" for="date">তারিখ</label>
-                                            <input type="text" class="form-control flatpicker" name="date" required>
-                                    </div>
+
                                     <div class="col-md-4 mb-3">
 
                                             <label class="form-label" for="payment_method_id">পেমেন্ট মাধ্যম</label>
@@ -194,7 +195,7 @@
                 allowInput: true,
                 altFormat: "d-m-Y",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ date('Y-m-d') }}"
+                defaultDate: "{{ $lastTrx->date }}"
             });
         });
     </script>

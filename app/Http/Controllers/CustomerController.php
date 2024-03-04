@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Sale;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -150,10 +151,11 @@ class CustomerController extends Controller
     public function show($id)
     {
         $customer = Customer::find($id);
+        $lastTrx = Transaction::where('user_id',Auth::id())->latest()->first();
 
         $payments = Transaction::where('customer_id', $customer->id)->orderByDesc('id')->paginate(20);
 
-        return view('customer.show', compact('customer','payments'));
+        return view('customer.show', compact('customer','payments','lastTrx'));
     }
 
     /**

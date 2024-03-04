@@ -7,6 +7,7 @@ use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -153,9 +154,11 @@ class SupplierController extends Controller
     public function show($id)
     {
         $supplier = Supplier::find($id);
+        $lastTrx = Transaction::where('user_id',Auth::id())->latest()->first();
+
         $payments = Transaction::where('supplier_id', $supplier->id)->orderByDesc('id')->paginate(10);
 
-        return view('supplier.show', compact('supplier','payments'));
+        return view('supplier.show', compact('supplier','payments','lastTrx'));
     }
 
     /**

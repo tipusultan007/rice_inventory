@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Transaction
@@ -50,6 +51,7 @@ class Transaction extends Model
         'cheque_no',
         'cheque_details',
         'date',
+        'user_id'
     ];
 
     public function account()
@@ -65,6 +67,13 @@ class Transaction extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+
+    public function setUserIdAttribute($value)
+    {
+
+        $this->attributes['user_id'] = Auth::id();
     }
 
     public function getTransactionTypeAttribute()

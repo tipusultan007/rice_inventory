@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class TransactionController
@@ -36,7 +37,9 @@ class TransactionController extends Controller
         $customers = Customer::all();
         $accounts = Account::all();
 
-        return view('transaction.customer',compact('transactions','customers','accounts'));
+        $lastTrx = Transaction::where('user_id',Auth::id())->latest()->first();
+
+        return view('transaction.customer',compact('transactions','customers','accounts','lastTrx'));
     }
 
     public function supplierTransactions()
@@ -46,8 +49,10 @@ class TransactionController extends Controller
 
         $suppliers = Supplier::all();
         $accounts = Account::all();
+        $lastTrx = Transaction::where('user_id',Auth::id())->latest()->first();
 
-        return view('transaction.supplier',compact('transactions','suppliers','accounts'));
+
+        return view('transaction.supplier',compact('transactions','suppliers','accounts','lastTrx'));
     }
     /**
      * Show the form for creating a new resource.

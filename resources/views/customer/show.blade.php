@@ -119,7 +119,6 @@
                                     <div class="col-md-9">
                                         <select name="account_id" id="account_id"
                                                 class="form-control select2" data-placeholder="সিলেক্ট করুন">
-                                            <option value=""></option>
                                             @forelse($methods as $method)
                                                 <option value="{{ $method->id }}">{{ $method->name }}</option>
                                             @empty
@@ -210,7 +209,7 @@
                 allowInput: true,
                 altFormat: "d-m-Y",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ date('Y-m-d') }}"
+                defaultDate: "{{ $lastTrx->date }}"
             });
         });
     </script>
