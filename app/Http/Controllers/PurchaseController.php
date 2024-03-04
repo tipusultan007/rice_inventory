@@ -246,7 +246,7 @@ class PurchaseController extends Controller
             ]);
 
             // If there is a payment, create a due payment transaction
-            if ($request->input('paid')) {
+            if ($request->input('paid') || $request->input('carrying_cost')) {
                 Transaction::create([
                     'account_id' => $request->input('account_id'), // Adjust based on your structure
                     'amount' => $request->input('paid') + $request->input('carrying_cost'),
@@ -423,7 +423,7 @@ class PurchaseController extends Controller
 
             if ($existingSupplierPaymentTransaction) {
                 // If the new request has a paid amount, update the existing transaction
-                if ($request->input('paid')) {
+                if ($request->input('paid') || $request->input('carrying_cost')) {
                     $existingSupplierPaymentTransaction->update([
                         'amount' => $request->input('paid') + $request->input('carrying_cost'),
                         'date' => $purchase->date,
@@ -435,7 +435,7 @@ class PurchaseController extends Controller
                     // If the new request doesn't have a paid amount, delete the existing transaction
                     $existingSupplierPaymentTransaction->delete();
                 }
-            } elseif ($request->input('paid')) {
+            } elseif ($request->input('paid') || $request->input('carrying_cost')) {
                 // If there wasn't an existing transaction, and the new request has a paid amount, create a new transaction
                 Transaction::create([
                     'account_id' => $request->input('account_id'), // Adjust based on your structure
