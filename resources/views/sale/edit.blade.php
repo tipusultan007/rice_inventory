@@ -72,7 +72,7 @@
 
                                     <div class="col-md-2 mb-3">
                                         <label for="invoice_no" class="form-label fs-3">মেমো নং</label>
-                                        <input type="number" name="invoice_no" class="form-control" value="{{ $sale->invoice_no }}" readonly required>
+                                        <input type="number" name="invoice_no" class="form-control" value="{{ $sale->invoice_no }}" required>
                                         @error('invoice_no')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror

@@ -87,7 +87,7 @@
                                 <td class="text-end">{{ $sale->total - $sale->paid??0 }}</td>
                             </tr>
                         @empty
-                            <td colspan="4" class="text-center">No Data Found</td>
+                            <td colspan="5" class="text-center">No Data Found</td>
                         @endforelse
                         </tbody>
                         <tfoot>
@@ -122,7 +122,7 @@
                                 <td class="text-end">{{ $purchase->total - $purchase->paid??0 }}</td>
                             </tr>
                         @empty
-                            <td colspan="4" class="text-center">No Data Found</td>
+                            <td colspan="5" class="text-center">No Data Found</td>
                         @endforelse
                         </tbody>
 
