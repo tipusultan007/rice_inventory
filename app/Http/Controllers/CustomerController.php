@@ -30,8 +30,6 @@ class CustomerController extends Controller
     {
             $columns = array(
                 0 =>'name',
-                1 =>'phone',
-                2=> 'address',
             );
 
             $totalData = Customer::count();
@@ -77,7 +75,7 @@ class CustomerController extends Controller
                     $nestedData['name'] = $post->name;
                     $nestedData['phone'] = $post->phone??'-';
                     $nestedData['address'] = $post->address??'-';
-                    $nestedData['due'] = $post->remainingDue;
+                    $nestedData['due'] = $post->remaining_due;
 
                     $nestedData['options'] = '<div class="dropdown">
                                               <a href="#" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown">Action</a>
@@ -138,6 +136,19 @@ class CustomerController extends Controller
 
         $customer = Customer::create($data);
 
+        if ($customer->starting_balance > 0){
+            Transaction::create([
+                'account_name' => $customer->name,
+                'amount' => $customer->starting_balance,
+                'transaction_type' => 'customer_opening_balance',
+                'type' => 'debit',
+                'reference_id' => $customer->id,
+                'customer_id' => $customer->id,
+                'user_id' => Auth::id(),
+                'date' => $request->date,
+            ]);
+        }
+
         return redirect()->route('customers.index')
             ->with('success', 'Customer created successfully.');
     }
@@ -153,9 +164,27 @@ class CustomerController extends Controller
         $customer = Customer::find($id);
         $lastTrx = Transaction::where('user_id',Auth::id())->latest()->first();
 
-        $payments = Transaction::where('customer_id', $customer->id)->orderByDesc('id')->paginate(20);
+        $transactions = Transaction::where('customer_id', $customer->id)
+            /*->whereIn('transaction_type',['sale','customer_payment','sale_return','customer_opening_balance'])*/
+            ->where(function($query) {
+                $query->where(function($query) {
+                    $query->where('transaction_type', 'customer_payment')
+                        ->where('type', 'debit');
+                })->orWhere(function($query) {
+                    $query->where('transaction_type', 'sale')
+                        ->where('type', 'credit');
+                })->orWhere(function($query) {
+                    $query->where('transaction_type', 'customer_opening_balance')
+                        ->where('type', 'debit');
+                })->orWhere(function($query) {
+                    $query->where('transaction_type', 'sale_return')
+                        ->where('type', 'debit');
+                });
+            })
+            ->orderBy('id', 'asc')
+            ->get();
 
-        return view('customer.show', compact('customer','payments','lastTrx'));
+        return view('customer.show', compact('customer','transactions','lastTrx'));
     }
 
     /**
@@ -202,6 +231,31 @@ class CustomerController extends Controller
         }
         $customer->update($data);
 
+        $debitTransaction = Transaction::where('transaction_type','customer_opening_balance')
+            ->where('reference_id', $customer->id)->first();
+        if ($debitTransaction){
+            if ($customer->starting_balance > 0) {
+                $debitTransaction->amount = $customer->starting_balance;
+                $debitTransaction->date = $request->date;
+                $debitTransaction->save();
+            }else{
+                $debitTransaction->delete();
+            }
+        }else {
+            if ($customer->starting_balance > 0) {
+                Transaction::create([
+                    'account_name' => $customer->name,
+                    'amount' => $customer->starting_balance,
+                    'transaction_type' => 'customer_opening_balance',
+                    'type' => 'debit',
+                    'reference_id' => $customer->id,
+                    'customer_id' => $customer->id,
+                    'user_id' => Auth::id(),
+                    'date' => $request->date,
+                ]);
+            }
+        }
+
         return redirect()->route('customers.index')
             ->with('success', 'Customer updated successfully');
     }
@@ -213,10 +267,7 @@ class CustomerController extends Controller
      */
     public function destroy($id)
     {
-        Sale::where('customer_id', $id)->delete();
-        Payment::where('customer_id', $id)->delete();
         $customer = Customer::find($id)->delete();
-
         return response()->json([
            'status' => 'success'
         ]);

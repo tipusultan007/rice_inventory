@@ -10,10 +10,10 @@
                 <div class="col">
                     <!-- Page pre-title -->
                     <div class="page-pretitle">
-                        Update
+                        আপডেট
                     </div>
                     <h2 class="page-title">
-                        {{ __('Customer ') }}
+                        ক্রেতা
                     </h2>
                 </div>
                 <!-- Page title actions -->
@@ -28,7 +28,7 @@
                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                 <line x1="5" y1="12" x2="19" y2="12"/>
                             </svg>
-                            Customer List
+                            ক্রেতা'র তালিকা
                         </a>
                     </div>
                 </div>
@@ -44,9 +44,7 @@
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Customer Details</h3>
-                        </div>
+
                         <div class="card-body">
                             <form method="POST"
                                   action="{{ route('customers.update', $customer->id) }}" id="ajaxForm" role="form"

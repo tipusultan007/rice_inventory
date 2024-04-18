@@ -6,7 +6,9 @@ use App\Models\Account;
 use App\Models\BalanceTransfer;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -61,31 +63,42 @@ class BalanceTransferController extends Controller
         // Create a balance transfer
         try {
 
+            $trxId = Str::uuid();
+
             $balanceTransfer = BalanceTransfer::create([
                 'from_account_id' => $request->input('from_account_id'),
                 'to_account_id' => $request->input('to_account_id'),
                 'amount' => $request->input('amount'),
                 'date' => $request->input('date'),
+                'trx_id' => $trxId,
             ]);
 
+            $from = Account::find($request->input('from_account_id'));
             // Create a transaction for the balance transfer from the source account
             Transaction::create([
                 'account_id' => $request->input('from_account_id'),
-                'amount' => $request->input('amount'),
-                'type' => 'debit',
-                'reference_id' => $balanceTransfer->id,
-                'date' => $balanceTransfer->date,
-                'transaction_type' => 'balance_transfer_out',
-            ]);
-
-            // Create a transaction for the balance transfer to the destination account
-            Transaction::create([
-                'account_id' => $request->input('to_account_id'),
+                'account_name' => $from->name,
                 'amount' => $request->input('amount'),
                 'type' => 'credit',
                 'reference_id' => $balanceTransfer->id,
                 'date' => $balanceTransfer->date,
-                'transaction_type' => 'balance_transfer_in',
+                'transaction_type' => 'balance_transfer',
+                'user_id' => Auth::id(),
+                'trx_id' => $trxId
+            ]);
+
+            $to = Account::find($request->input('to_account_id'));
+            // Create a transaction for the balance transfer to the destination account
+            Transaction::create([
+                'account_id' => $request->input('to_account_id'),
+                'account_name' => $to->name,
+                'amount' => $request->input('amount'),
+                'type' => 'debit',
+                'reference_id' => $balanceTransfer->id,
+                'date' => $balanceTransfer->date,
+                'transaction_type' => 'balance_transfer',
+                'user_id' => Auth::id(),
+                'trx_id' => $trxId
             ]);
 
 
@@ -164,8 +177,10 @@ class BalanceTransferController extends Controller
                 ->first();
 
             if ($debitTransaction) {
+                $to = Account::find($request->input('to_account_id'));
                 $debitTransaction->update([
-                    'account_id' => $request->input('from_account_id'),
+                    'account_id' => $request->input('to_account_id'),
+                    'account_name' => $to->name,
                     'amount' => $request->input('amount'),
                     'date' => $request->input('date'),
                 ]);
@@ -178,8 +193,10 @@ class BalanceTransferController extends Controller
                 ->first();
 
             if ($creditTransaction) {
+                $from = Account::find($request->input('from_account_id'));
                 $creditTransaction->update([
-                    'account_id' => $request->input('to_account_id'),
+                    'account_id' => $request->input('from_account_id'),
+                    'account_name' => $from->name,
                     'amount' => $request->input('amount'),
                     'date' => $request->input('date'),
                 ]);
@@ -191,11 +208,8 @@ class BalanceTransferController extends Controller
             return redirect()->route('balance_transfers.index')
                 ->with('success', 'Balance transfer updated successfully');
         } catch (\Exception $e) {
-            // An error occurred, rollback the transaction
             DB::rollback();
 
-            // Log the error or handle it in a way that fits your application
-            // You might want to log the error, display a user-friendly message, or redirect to an error page
             throw ValidationException::withMessages(['error' => 'Balance transfer update failed.']);
         }
     }
@@ -211,27 +225,7 @@ class BalanceTransferController extends Controller
         DB::beginTransaction();
 
         try {
-            // Retrieve related transactions
-            $debitTransaction = Transaction::where('reference_id', $balanceTransfer->id)
-                ->where('transaction_type', 'balance_transfer')
-                ->where('type', 'debit')
-                ->first();
-
-            $creditTransaction = Transaction::where('reference_id', $balanceTransfer->id)
-                ->where('transaction_type', 'balance_transfer')
-                ->where('type', 'credit')
-                ->first();
-
-            // Delete related transactions
-            if ($debitTransaction) {
-                $debitTransaction->delete();
-            }
-
-            if ($creditTransaction) {
-                $creditTransaction->delete();
-            }
-
-
+            Transaction::where('trx_id', $balanceTransfer->trx_id)->delete();
             // Delete the balance transfer
             $balanceTransfer->delete();
 

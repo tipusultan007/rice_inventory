@@ -62,6 +62,13 @@
 @endsection
 
 @section('scripts')
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('ajaxForm').submit();
+            this.disabled = true;
+        });
+    </script>
     <script type="module">
         $(".select2").select2({
             theme: "bootstrap-5",

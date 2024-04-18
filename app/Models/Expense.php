@@ -25,8 +25,8 @@ class Expense extends Model
 		'expense_category_id' => 'required',
 		'description' => 'nullable',
 		'amount' => 'required',
-		'user_id' => 'required',
 		'date' => 'required',
+        'account_id' => 'required',
     ];
 
     protected $perPage = 20;
@@ -36,7 +36,7 @@ class Expense extends Model
      *
      * @var array
      */
-    protected $fillable = ['expense_category_id','date','description','amount','user_id'];
+    protected $fillable = ['expense_category_id','date','description','amount','user_id','trx_id'];
 
     public function category()
     {
@@ -47,6 +47,9 @@ class Expense extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'reference_id')->where('transaction_type', 'expense');
+    }
 
 }

@@ -1,7 +1,7 @@
 @extends('tablar::page')
 
 @section('title')
-    Sale Return
+    বিক্রয় ফেরত
 @endsection
 
 @section('content')
@@ -12,10 +12,10 @@
                 <div class="col">
                     <!-- Page pre-title -->
                     <div class="page-pretitle">
-                        List
+                        তালিকা
                     </div>
                     <h2 class="page-title">
-                        {{ __('Sale Return ') }}
+                        বিক্রয় ফেরত
                     </h2>
                 </div>
                 <!-- Page title actions -->
@@ -30,7 +30,7 @@
                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                 <line x1="5" y1="12" x2="19" y2="12"/>
                             </svg>
-                            Create Sale Return
+                            নতুন  বিক্রয় ফেরত
                         </a>
                     </div>
                 </div>
@@ -46,54 +46,17 @@
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Sale Return</h3>
-                        </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="d-flex">
-                                <div class="text-muted">
-                                    Show
-                                    <div class="mx-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm" value="10" size="3"
-                                               aria-label="Invoices count">
-                                    </div>
-                                    entries
-                                </div>
-                                <div class="ms-auto text-muted">
-                                    Search:
-                                    <div class="ms-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm"
-                                               aria-label="Search invoice">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="table-responsive min-vh-100">
                             <table class="table card-table table-vcenter text-nowrap datatable">
                                 <thead>
                                 <tr>
-                                    <th class="w-1"><input class="form-check-input m-0 align-middle" type="checkbox"
-                                                           aria-label="Select all invoices"></th>
-                                    <th class="w-1">No.
-                                        <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="icon icon-sm text-dark icon-thick" width="24" height="24"
-                                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                            <polyline points="6 15 12 9 18 15"/>
-                                        </svg>
-                                    </th>
-                                    
-										<th>Date</th>
-										<th>Customer Id</th>
-										<th>User Id</th>
-										<th>Invoice No</th>
-										<th>Subtotal</th>
-										<th>Dholai</th>
-										<th>Discount</th>
-										<th>Total</th>
-										<th>Note</th>
+                                    <th class="fw-bolder fs-4">তারিখ</th>
+                                    <th class="fw-bolder fs-4">চালান নং</th>
+                                    <th class="fw-bolder fs-4">ক্রেতা</th>
+                                    <th class="fw-bolder fs-4">পরিমাণ</th>
+                                    <th class="fw-bolder fs-4">টাকা</th>
+                                    <th class="fw-bolder fs-4">পরিশোধ</th>
+                                    <th class="fw-bolder fs-4">বকেয়া</th>
 
                                     <th class="w-1"></th>
                                 </tr>
@@ -102,20 +65,13 @@
                                 <tbody>
                                 @forelse ($saleReturns as $saleReturn)
                                     <tr>
-                                        <td><input class="form-check-input m-0 align-middle" type="checkbox"
-                                                   aria-label="Select saleReturn"></td>
-                                        <td>{{ ++$i }}</td>
-                                        
-											<td>{{ $saleReturn->date }}</td>
-											<td>{{ $saleReturn->customer_id }}</td>
-											<td>{{ $saleReturn->user_id }}</td>
-											<td>{{ $saleReturn->invoice_no }}</td>
-											<td>{{ $saleReturn->subtotal }}</td>
-											<td>{{ $saleReturn->dholai }}</td>
-											<td>{{ $saleReturn->discount }}</td>
-											<td>{{ $saleReturn->total }}</td>
-											<td>{{ $saleReturn->note }}</td>
-
+                                        <td>{{ date('d/m/Y',strtotime($saleReturn->date)) }}</td>
+                                        <td>{{ $saleReturn->sale->invoice_no }}</td>
+                                        <td>{{ $saleReturn->customer->name }}</td>
+                                        <td>{{ $saleReturn->saleReturnDetail->sum('quantity') }}</td>
+                                        <td>{{ $saleReturn->total }}</td>
+                                        <td>{{ $saleReturn->paid??'-' }}</td>
+                                        <td>{{ $saleReturn->total - $saleReturn->paid }}</td>
                                         <td>
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">

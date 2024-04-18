@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Loan;
+use App\Models\LoanRepayment;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Class LoanController
@@ -27,45 +32,85 @@ class LoanController extends Controller
 
     public function loanTransactions()
     {
-        $transactions = Transaction::whereNotNull('loan_id')->orderByDesc('id')->paginate(10);
+        $transactions = LoanRepayment::whereNotNull('loan_id')->orderByDesc('id')->paginate(10);
         return view('loan.transactions',compact('transactions'));
     }
 
     public function loanRepayment(Request $request)
     {
+        $request->validate([
+            'amount' => ['required_without:loan_interest'],
+            'loan_interest' => ['required_without:amount'],
+            'account_id' => 'required',
+            'loan_id' => 'required',
+            'date' => 'required|date',
+        ]);
 
-        $data = $request->all();
+        // Start a database transaction
+        DB::beginTransaction();
 
-        if ($request->input('amount')>0) {
-            Transaction::create([
-                'account_id' => $request->input('account_id'),
-                'amount' => $request->input('amount'),
-                'type' => 'debit',
-                'loan_id' => $request->input('loan_id'),
-                'date' => $request->input('date'),
-                'transaction_type' => 'loan_repayment',
-            ]);
+        try {
+            if ($request->input('amount') > 0) {
+                Transaction::create([
+                    'account_id' => $request->input('account_id'),
+                    'amount' => $request->input('amount'),
+                    'type' => 'credit',
+                    'loan_id' => $request->input('loan_id'),
+                    'reference_id' => $request->input('loan_id'),
+                    'date' => $request->input('date'),
+                    'transaction_type' => 'loan_repayment',
+                    'user_id' => Auth::id()
+                ]);
 
-            $loan = Loan::find($request->input('loan_id'));
-            $loan->balance -= $request->input('amount');
-            $loan->save();
+                Transaction::create([
+                    'amount' => $request->input('amount'),
+                    'type' => 'debit',
+                    'loan_id' => $request->input('loan_id'),
+                    'date' => $request->input('date'),
+                    'transaction_type' => 'loan_repayment',
+                    'reference_id' => $request->input('loan_id'),
+                    'user_id' => Auth::id()
+                ]);
+
+                // Update loan balance
+                $loan = Loan::find($request->input('loan_id'));
+                $loan->balance -= $request->input('amount');
+                $loan->save();
+            }
+
+            if ($request->input('loan_interest') > 0) {
+                Transaction::create([
+                    'account_id' => $request->input('account_id'),
+                    'amount' => $request->input('loan_interest'),
+                    'type' => 'debit',
+                    'loan_id' => $request->input('loan_id'),
+                    'date' => $request->input('date'),
+                    'transaction_type' => 'loan_interest',
+                    'reference_id' => $request->input('loan_id'),
+                    'user_id' => Auth::id()
+                ]);
+
+                Transaction::create([
+                    'amount' => $request->input('loan_interest'),
+                    'type' => 'credit',
+                    'loan_id' => $request->input('loan_id'),
+                    'date' => $request->input('date'),
+                    'transaction_type' => 'loan_interest',
+                    'reference_id' => $request->input('loan_id'),
+                    'user_id' => Auth::id()
+                ]);
+            }
+
+            // Commit the transaction
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Loan payment successfully added!');
+        } catch (\Exception $e) {
+            // Something went wrong, rollback the transaction
+            DB::rollback();
+
+            return redirect()->back()->with('error', 'An error occurred while processing the loan payment. Please try again.');
         }
-
-        if ($request->input('loan_interest')>0)
-        // Create a transaction for the balance transfer to the destination account
-        {
-            Transaction::create([
-                'account_id' => $request->input('account_id'),
-                'amount' => $request->input('loan_interest'),
-                'type' => 'debit',
-                'loan_id' => $request->input('loan_id'),
-                'date' => $request->input('date'),
-                'transaction_type' => 'loan_interest',
-            ]);
-        }
-
-
-        return redirect()->back()->with('success','Loan payment successfully added!');
     }
 
     /**
@@ -87,24 +132,50 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
-        request()->validate(Loan::$rules);
+        $request->validate(Loan::$rules);
 
-        $loan = Loan::create($request->all());
-        $loan->balance = $loan->loan_amount;
-        $loan->save();
+        DB::beginTransaction();
 
-        Transaction::create([
-            'amount' => $loan->loan_amount,
-            'type' => 'credit',
-            'loan_id' => $loan->id,
-            'reference_id' => $loan->id,
-            'date' => $request->input('date'),
-            'transaction_type' => 'loan_taken',
-        ]);
+        try {
+            $data = $request->all();
+            $data['trx_id'] = Str::uuid();
+            $loan = Loan::create($data);
 
-        return redirect()->route('loans.index')
-            ->with('success', 'Loan created successfully.');
+            $account = Account::find($request->input('account_id'));
+            Transaction::create([
+                'account_id' => $request->input('account_id'),
+                'account_name' => $account->name,
+                'amount' => $loan->loan_amount,
+                'type' => 'debit',
+                'reference_id' => $loan->id,
+                'date' => $loan->date,
+                'transaction_type' => 'loan_taken',
+                'user_id' => Auth::id(),
+                'trx_id' => $loan->trx_id
+            ]);
+
+            Transaction::create([
+                'account_name' => $loan->name,
+                'amount' => $loan->loan_amount,
+                'type' => 'credit',
+                'reference_id' => $loan->id,
+                'date' => $loan->date,
+                'transaction_type' => 'loan_taken',
+                'user_id' => Auth::id(),
+                'trx_id' => $loan->trx_id
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('loans.index')->with('success', 'Loan created successfully.');
+        } catch (\Exception $e) {
+
+            DB::rollback();
+            \Log::error($e);
+            return redirect()->back()->with('error', 'An error occurred while creating the loan. Please try again.');
+        }
     }
+
 
     /**
      * Display the specified resource.
@@ -116,7 +187,8 @@ class LoanController extends Controller
     {
         $loan = Loan::find($id);
 
-        return view('loan.show', compact('loan'));
+        $transactions = LoanRepayment::where('loan_id', $loan->id)->get();
+        return view('loan.show', compact('loan','transactions'));
     }
 
     /**
@@ -128,8 +200,12 @@ class LoanController extends Controller
     public function edit($id)
     {
         $loan = Loan::find($id);
+        $creditTransaction = Transaction::where('trx_id',$loan->trx_id)
+            ->where('transaction_type','loan_taken')
+            ->where('type','credit')
+            ->first();
 
-        return view('loan.edit', compact('loan'));
+        return view('loan.edit', compact('loan','creditTransaction'));
     }
 
     /**
@@ -141,19 +217,45 @@ class LoanController extends Controller
      */
     public function update(Request $request, Loan $loan)
     {
-        request()->validate(Loan::$rules);
+        $validatedData = $request->validate(Loan::$rules);
+        DB::beginTransaction();
 
-        $loan->update($request->all());
+        try {
+            $loan->update($validatedData);
 
-        $transaction = Transaction::where('loan_id',$loan->id)->first();
-        if ($transaction){
-            $transaction->amount = $loan->loan_amount;
-            $transaction->date = $loan->date;
-            $transaction->save();
+            $loan->update(['balance' => $loan->loan_amount]);
+
+            $transactions = Transaction::where('trx_id', $loan->trx_id)
+                ->where('transaction_type', 'loan_taken')
+                ->whereIn('type', ['credit', 'debit'])
+                ->get();
+
+            foreach ($transactions as $transaction) {
+                if ($transaction->type === 'credit') {
+                    $transaction->update([
+                        'amount' => $loan->loan_amount,
+                        'account_id' => $request->input('account_id'),
+                        'date' => $loan->date
+                    ]);
+                } elseif ($transaction->type === 'debit') {
+                    $account = Account::find($request->input('account_id'));
+                    $transaction->update([
+                        'account_name' => $loan->name,
+                        'amount' => $loan->loan_amount,
+                        'date' => $loan->date
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('loans.index')->with('success', 'Loan updated successfully');
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return redirect()->back()->with('error', 'An error occurred while updating the loan. Please try again.');
         }
-
-        return redirect()->route('loans.index')
-            ->with('success', 'Loan updated successfully');
     }
 
     /**

@@ -100,7 +100,7 @@
                         </div>
 
                         <div class="table-responsive min-vh-100">
-                            <table class="table table-bordered table-vcenter text-nowrap datatable">
+                            <table class="table table-sm table-bordered table-vcenter text-nowrap datatable">
                                 <thead>
                                 <tr>
                                     <th class="fw-bolder fs-4">বিবরণ</th>
@@ -161,6 +161,14 @@
                                 @endforelse
                                 </tbody>--}}
 
+                                <tfoot>
+                                <tr>
+                                    <th class="fs-3 text-end">মোট =</th>
+                                    <th class="fs-3"></th>
+                                    <th class="fs-3"></th>
+                                    <th></th>
+                                </tr>
+                                </tfoot>
                             </table>
 
                         </div>
@@ -179,6 +187,14 @@
         customerTables();
         function customerTables() {
             jQuery('.datatable').DataTable({
+                "dom": '<"d-flex justify-content-between align-items-center header-actions mx-2 row my-3"' +
+                    '<"col-sm-12 col-lg-4 d-flex justify-content-center justify-content-lg-start mb-1" l>' +
+                    '<"col-sm-12 col-lg-8 ps-xl-75 mb-1 ps-0"<"dt-action-buttons d-flex align-items-center justify-content-between justify-content-lg-end flex-lg-nowrap flex-wrap"<"me-1"f>B>>' +
+                    '>t' +
+                    '<"d-flex justify-content-between my-3 row"' +
+                    '<"col-sm-12 col-md-6 mb-1"i>' +
+                    '<"col-sm-12 col-md-6 mb-1 d-flex justify-content-end"p>' +
+                    '>',
                 "processing": true,
                 "serverSide": true,
                 "ajax":{
@@ -192,7 +208,55 @@
                     { "data": "price_rate" },
                     { "data": "stock_value", sorting: false },
                     { "data": "options",sorting: false  },
-                ]
+                ],
+                "buttons": [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="ti ti-file-spreadsheet me-2"></i>Excel',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3]
+                        },
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="ti ti-printer me-2" ></i>Print',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3],
+                        },
+                        messageTop:
+                            '<h2 class="text-center my-3">পণ্য তালিকা</h2>',
+                        customize: function(win) {
+                            // Remove page title
+                            $(win.document.body).find('h1').remove();
+                        },
+                        customizeData: function (data) {
+                            data.styles = {
+                                tableStriped: '', // Remove striped style
+                                tableBorder: '', // Remove table border
+                            };
+                            return data;
+                        }
+                    },
+                ],
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api();
+
+                    // Sum the values in the 'quantity' column
+                    var quantity = api.column(1, { page: 'current' }).data().reduce(function (acc, val) {
+                        return acc + parseFloat(val);
+                    }, 0);
+
+                    // Sum the values in the 'total' column
+                    var total = api.column(3, { page: 'current' }).data().reduce(function (acc, val) {
+                        return acc + parseFloat(val);
+                    }, 0);
+
+
+                    // Update the footer
+                    jQuery(api.column(1).footer()).html(quantity.toFixed(0));
+                    jQuery(api.column(3).footer()).html(total.toFixed(0));
+
+                },
             });
         }
 

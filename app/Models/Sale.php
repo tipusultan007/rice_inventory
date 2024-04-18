@@ -51,7 +51,8 @@ class Sale extends Model
         'note',
         'due',
         'paid',
-        'attachment'
+        'attachment',
+        'trx_id'
     ];
 
     public function saleDetails()

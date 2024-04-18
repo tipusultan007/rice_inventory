@@ -16,3 +16,7 @@ $.fn.select2.defaults = {
     allowClear: true,
 };
 
+import ApexCharts from "apexcharts";
+window.ApexCharts = ApexCharts;
+
+

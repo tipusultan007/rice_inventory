@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('company')->nullable();
             $table->string('image')->nullable();
+            $table->decimal('starting_balance')->default(0);
             $table->timestamps();
         });
     }

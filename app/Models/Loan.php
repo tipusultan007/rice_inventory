@@ -22,6 +22,7 @@ class Loan extends Model
 {
 
     static $rules = [
+		'name' => 'required',
 		'loan_amount' => 'required',
 		'interest_rate' => 'required',
 		'date' => 'required',
@@ -34,7 +35,13 @@ class Loan extends Model
      *
      * @var array
      */
-    protected $fillable = ['loan_amount','interest_rate','date','description','balance'];
+    protected $fillable = ['name','loan_amount','interest_rate','date','trx_id','description'];
+
+
+    public function loanRepayments()
+    {
+        return $this->hasMany(LoanRepayment::class);
+    }
 
 
     public function transactions()
@@ -56,14 +63,18 @@ class Loan extends Model
             ->sum('amount');
     }
 
-    /*public function getBalanceAttribute()
+    public function getBalanceAttribute()
     {
-        return $this->loan_amount - $this->paidLoan();
-    }*/
+        return $this->loan_amount - $this->loanRepayments()->sum('amount');
+    }
 
     public function getPaidInterestAttribute()
     {
         return $this->paidInterest();
     }
 
+    public function getTotalInterestAttribute()
+    {
+        return $this->loanRepayments()->sum('interest');
+    }
 }

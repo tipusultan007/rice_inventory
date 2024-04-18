@@ -38,38 +38,118 @@
     <!-- Page body -->
     <div class="page-body">
         <div class="container-xl">
-            <div class="row row-deck row-cards">
+            <div class="row  row-cards">
                 <div class="col-12">
                     @if(config('tablar','display_alert'))
                         @include('tablar::common.alert')
                     @endif
+                </div>
+                <div class="col-3">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Loan Details</h3>
+                            <h3 class="card-title">লোন বিবরণ</h3>
                         </div>
                         <div class="card-body">
-                            
-<div class="form-group">
-<strong>Loan Amount:</strong>
-{{ $loan->loan_amount }}
-</div>
-<div class="form-group">
-<strong>Interest Rate:</strong>
-{{ $loan->interest_rate }}
-</div>
-<div class="form-group">
-<strong>Date:</strong>
-{{ $loan->date }}
-</div>
-<div class="form-group">
-<strong>Description:</strong>
-{{ $loan->description }}
-</div>
 
+                            <div class="form-group">
+                                <h5 class="mb-1">ঋণ'র নাম</h5>
+                                <p>{{ $loan->name }}</p>
+                            </div>
+                            <div class="form-group">
+                                <h5 class="mb-1">ঋণ'র পরিমাণ</h5>
+                               <p> {{ $loan->loan_amount }}</p>
+                            </div>
+                            <div class="form-group">
+                                <h5 class="mb-1">কমিশন রেট (%)</h5>
+                                <p>{{ $loan->interest_rate }}</p>
+                            </div>
+                            <div class="form-group">
+                                <h5 class="mb-1">তারিখ</h5>
+                                <p>{{ date('d/m/Y',strtotime($loan->date)) }}</p>
+                            </div>
+                            @if($loan->description)
+                                <div class="form-group">
+                                    <h5 class="mb-1">বিবরণ</h5>
+                                    <p>{{ $loan->description }}</p>
+                                </div>
+                            @endif
+
+                            <div class="form-group">
+                                <h5 class="mb-1">ব্যালেন্স</h5>
+                                <p>{{ $loan->balance }}</p>
+                            </div>
+                            <div class="form-group">
+                                <h5 class="mb-1">মোট কমিশন প্রদান</h5>
+                                <p>{{ $loan->total_interest }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th class="fw-bolder fs-4">তারিখ</th>
+                                    <th class="fw-bolder fs-4 text-end">ঋণ পরিশোধ</th>
+                                    <th class="fw-bolder fs-4 text-end">সুদ</th>
+                                    <th class="fw-bolder fs-4 text-end">ঋণের ব্যালেন্স</th>
+                                    <th class="fw-bolder fs-4 text-end">মোট সুদ</th>
+                                    <th class="fw-bolder fs-4 text-end">অ্যাকশন</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @forelse($transactions as $transaction)
+                                    <tr>
+                                        <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
+                                        <td>{{ $transaction->loan->name }} <br>
+                                            {{ $transaction->loan->loan_amount }}
+                                        </td>
+                                        <td class="text-end">{{ $transaction->amount??'-'}}</td>
+                                        <td class="text-end">{{ $transaction->interest??'-'}}</td>
+                                        <td class="text-end">{{$transaction->balance??'-' }}</td>
+                                        <td class="text-end">{{$transaction->total_interest??'-' }}</td>
+                                        <td class="text-end">
+                                            <form
+                                                action="{{ route('loan_repayments.destroy',$transaction->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
+                                                        class="btn btn-sm btn-danger"><i
+                                                        class="fa fa-fw fa-trash"></i>
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                @endforelse
+                                {{--@forelse($payments as $payment)
+                                    <tr>
+                                        <td>{{ date('d/m/Y',strtotime($payment->date)) }}</td>
+                                        <td>{{ $payment->invoice??'-' }}</td>
+                                        <td>{{ $payment->account->name??'-' }}</td>
+                                        <td>
+                                            @if($payment->type === "debit")
+                                                <span class="badge bg-danger text-white">বকেয়া</span>
+                                            @else
+                                                <span class="badge bg-success text-white">পরিশোধ</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $payment->amount }}</td>
+                                    </tr>
+                                @empty
+                                @endforelse--}}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 @endsection

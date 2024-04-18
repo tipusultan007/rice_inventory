@@ -54,6 +54,10 @@
 {{ $saleReturn->date }}
 </div>
 <div class="form-group">
+<strong>Sale Id:</strong>
+{{ $saleReturn->sale_id }}
+</div>
+<div class="form-group">
 <strong>Customer Id:</strong>
 {{ $saleReturn->customer_id }}
 </div>
@@ -62,28 +66,16 @@
 {{ $saleReturn->user_id }}
 </div>
 <div class="form-group">
-<strong>Invoice No:</strong>
-{{ $saleReturn->invoice_no }}
-</div>
-<div class="form-group">
-<strong>Subtotal:</strong>
-{{ $saleReturn->subtotal }}
-</div>
-<div class="form-group">
-<strong>Dholai:</strong>
-{{ $saleReturn->dholai }}
-</div>
-<div class="form-group">
-<strong>Discount:</strong>
-{{ $saleReturn->discount }}
-</div>
-<div class="form-group">
 <strong>Total:</strong>
 {{ $saleReturn->total }}
 </div>
 <div class="form-group">
 <strong>Note:</strong>
 {{ $saleReturn->note }}
+</div>
+<div class="form-group">
+<strong>Attachment:</strong>
+{{ $saleReturn->attachment }}
 </div>
 
                         </div>

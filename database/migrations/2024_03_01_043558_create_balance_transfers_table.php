@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('to_account_id')->constrained('accounts');
             $table->decimal('amount', 10, 2);
             $table->date('date');
+            $table->string('trx_id');
             $table->timestamps();
         });
     }

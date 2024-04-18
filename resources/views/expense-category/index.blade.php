@@ -65,6 +65,7 @@
                                     </th>
 
 										<th>Name</th>
+										<th>Balance</th>
 
                                     <th class="w-1"></th>
                                 </tr>
@@ -76,6 +77,7 @@
                                         <td>{{ ++$i }}</td>
 
 											<td>{{ $expenseCategory->name }}</td>
+											<td>{{ $expenseCategory->total }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">

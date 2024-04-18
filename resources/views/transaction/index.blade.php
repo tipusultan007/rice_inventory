@@ -29,71 +29,66 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter table-sm table-bordered datatable">
+                            <table class="table table-vcenter table-sm table-bordered datatable">
                                 <thead>
                                 <tr>
                                     <th class="fw-bolder fs-4">তারিখ</th>
-                                    <th class="fw-bolder fs-4">লেনদেন'র ধরন</th>
-                                    <th class="fw-bolder fs-4">ক্রেতা</th>
-                                    <th class="fw-bolder fs-4">সরবরাহকারী</th>
+                                    <th class="fw-bolder fs-4">বিবরণ</th>
                                     <th class="fw-bolder fs-4">অ্যাকাউন্ট</th>
-                                    <th class="fw-bolder fs-4">টাকা</th>
-                                    <th class="w-1"></th>
+                                    <th class="fw-bolder fs-4 text-end">ডেবিট</th>
+                                    <th class="fw-bolder fs-4 text-end">ক্রেডিট</th>
+                                    <th class="fw-bolder fs-4">নোট</th>
+                                    <th class="fw-bolder fs-4 text-center">অ্যাকশন</th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
-                                @forelse ($transactions as $transaction)
-
+                                @php
+                                    $previousTrxId = null;
+                                    $rowspan = 0;
+                                @endphp
+                                @forelse($transactions as $transaction)
+                                    @if ($transaction->trx_id !== $previousTrxId)
+                                        @if ($previousTrxId !== null)
+                                            <tr>
+                                                <td colspan="7" class="py-3"></td>
+                                            </tr>
+                                        @endif
+                                        @php
+                                            $rowspan = 0;
+                                        @endphp
+                                    @endif
                                     <tr>
-                                        <td>{{ date('d/m/Y', strtotime($transaction->date)) }}</td>
-                                        <td>{{ $transaction->transaction_type }}</td>
-                                        <td>{{ $transaction->customer->name??'-' }}</td>
-                                        <td>{{ $transaction->supplier->name??'-' }}</td>
-                                        <td>{{ $transaction->account->name??'-' }}</td>
-                                        <td>
-                                            @if($transaction->type === 'credit')
-                                                <span class="text-success">{{ $transaction->amount }}</span>
-                                            @else
-                                                <span class="text-danger">{{ $transaction->amount }}</span>
+                                        <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
+                                        <td>{{ transactionType($transaction->transaction_type) }}</td>
+                                        <td>{{ $transaction->account_name }}</td>
+                                        <td class="text-end">{{ $transaction->type === 'debit'?$transaction->amount:'-' }}</td>
+                                        <td class="text-end">{{ $transaction->type === 'credit'?$transaction->amount:'-' }}</td>
+                                        <td>{{ $transaction->note??'-' }}</td>
+                                        <td class="text-center">
+                                            @if($transaction->transaction_type === 'sale')
+                                                <a class="btn btn-sm btn-primary" target="_blank" href="{{ route('sales.show',$transaction->reference_id) }}">মেমো</a>
+                                            @elseif($transaction->transaction_type === 'purchase')
+                                                <a class="btn btn-sm btn-primary" target="_blank" href="{{ route('purchases.show',$transaction->reference_id) }}">চালান</a>
                                             @endif
-                                        </td>
-                                        <td>
-                                            <div class="btn-list flex-nowrap">
-                                                <div class="dropdown">
-                                                    <button class="btn dropdown-toggle align-text-top"
-                                                            data-bs-toggle="dropdown">
-                                                        Actions
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('transactions.show',$transaction->id) }}">
-                                                            View
-                                                        </a>
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('transactions.edit',$transaction->id) }}">
-                                                            Edit
-                                                        </a>
-                                                        <form
-                                                                action="{{ route('transactions.destroy',$transaction->id) }}"
-                                                                method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                    onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
-                                                                    class="dropdown-item text-red"><i
-                                                                        class="fa fa-fw fa-trash"></i>
-                                                                Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
+
                                         </td>
                                     </tr>
+                                    @php
+                                        $previousTrxId = $transaction->trx_id;
+                                        $rowspan++;
+                                        $transaction->rowspan = $rowspan;
+                                    @endphp
                                 @empty
-                                    <td>No Data Found</td>
+                                    <tr>
+                                        <td colspan="7" class="text-center">No transactions found.</td>
+                                    </tr>
                                 @endforelse
+                                {{--@if (!empty($transactions) && $transactions->last()->trx_id === $previousTrxId)
+                                    <tr>
+                                        <td colspan="6" class="py-3"></td>
+                                    </tr>
+                                @endif--}}
                                 </tbody>
 
                             </table>

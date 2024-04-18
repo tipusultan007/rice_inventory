@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Cassandra\Custom;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -9,14 +10,12 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property $id
  * @property $date
+ * @property $sale_id
  * @property $customer_id
  * @property $user_id
- * @property $invoice_no
- * @property $subtotal
- * @property $dholai
- * @property $discount
  * @property $total
  * @property $note
+ * @property $attachment
  * @property $created_at
  * @property $updated_at
  *
@@ -25,12 +24,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SaleReturn extends Model
 {
-    
+
     static $rules = [
 		'date' => 'required',
+		'sale_id' => 'required',
 		'customer_id' => 'required',
 		'user_id' => 'required',
-		'subtotal' => 'required',
 		'total' => 'required',
     ];
 
@@ -41,8 +40,22 @@ class SaleReturn extends Model
      *
      * @var array
      */
-    protected $fillable = ['date','customer_id','user_id','invoice_no','subtotal','dholai','discount','total','note'];
 
+    protected $fillable = ['date','sale_id','customer_id','user_id','total','note','attachment','paid','trx_id'];
 
+    public function saleReturnDetail()
+    {
+        return $this->hasMany(SaleReturnDetail::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class);
+    }
 
 }

@@ -26,65 +26,70 @@
                 @include('tablar::common.alert')
             @endif
             <div class="row mb-3">
-                <div class="col-12">
+
+            </div>
+            <div class="row  row-cards">
+                <div class="col-4">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header py-1">
                             <h3 class="card-title fw-bolder">ক্রেতা'র পেমেন্ট ফরম</h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('transactions.store') }}" method="POST">
+                            <form id="form" action="{{ route('customer.payment.store') }}" method="POST">
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                            <label class="form-label" for="customer_id">ক্রেতা</label>
-                                            <select name="customer_id" id="customer_id"
-                                                    class="form-control select2" required>
-                                                <option value=""></option>
-                                                @forelse($customers as $customer)
-                                                    <option data-due="{{ $customer->remaining_due }}" value="{{ $customer->id }}">
-                                                        {{ $customer->name }} - {{ $customer->address }} - {{ $customer->remaining_due }}
-                                                    </option>
-                                                @empty
-                                                @endforelse
-                                            </select>
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label" for="customer_id">সরবরাহকারী</label>
+                                        <select name="customer_id" id="customer_id"
+                                                class="form-control select2" required>
+                                            <option value=""></option>
+                                            @forelse($customers as $customer)
+                                                <option data-due="{{ $customer->remaining_due }}" value="{{ $customer->id }}">
+                                                    {{ $customer->name }} - {{ $customer->address }} - {{ $customer->remaining_due }}
+                                                </option>
+                                            @empty
+                                            @endforelse
+                                        </select>
                                     </div>
 
-                                    <input type="hidden" name="transaction_type" value="due_payment">
+                                    <input type="hidden" name="transaction_type" value="customer_payment">
                                     <input type="hidden" name="type" value="credit">
-                                    <div class="col-md-2 mb-3">
+                                    <div class="col-12 mb-3">
                                         <label class="form-label" for="date">তারিখ</label>
                                         <input type="text" class="form-control flatpicker" name="date" required>
                                     </div>
-                                    <div class="col-md-2 mb-3">
-                                            <label class="form-label" for="amount">টাকা</label>
-                                            <input type="number" class="form-control" name="amount" value="" required>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label" for="amount">পরিশোধ</label>
+                                        <input type="number" class="form-control" name="amount" value="">
                                     </div>
-
-                                    <div class="col-md-4 mb-3">
-
-                                            <label class="form-label" for="payment_method_id">পেমেন্ট মাধ্যম</label>
-                                            <select name="payment_method_id"
-                                                    class="form-control select2" required>
-                                                @forelse($accounts as $account)
-                                                    <option value="{{ $account->id }}">{{ $account->name }}</option>
-                                                @empty
-                                                @endforelse
-                                            </select>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label" for="amount">ডিস্কাউন্ট</label>
+                                        <input type="number" class="form-control" name="discount" value="">
                                     </div>
-                                    <div class="col-md-2 mb-3">
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label" for="account_id">পেমেন্ট মাধ্যম</label>
+                                        <select name="account_id" id="account_id"
+                                                class="form-control select2" required>
+                                            @forelse($accounts as $account)
+                                                <option value="{{ $account->id }}">{{ $account->name }}</option>
+                                            @empty
+                                            @endforelse
+                                        </select>
+                                    </div>
+                                    <div class="col-12 mb-3 bank" style="display: none">
                                         <label class="form-label" for="cheque_no">চেক নং</label>
                                         <input type="text" name="cheque_no" id="cheque_no" class="form-control">
                                     </div>
-                                    <div class="col-md-2 mb-3">
+                                    <div class="col-12 mb-3 bank" style="display: none">
                                         <label class="form-label" for="cheque_details">চেক বিবরণ</label>
                                         <input type="text" name="cheque_details" id="cheque_details" class="form-control">
                                     </div>
-                                    <div class="col-md-4 mb-3">
-                                            <label class="form-label" for="note">নোট</label>
-                                            <input type="text" name="note" id="note" class="form-control">
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label" for="note">নোট</label>
+                                        <input type="text" name="note" id="note" class="form-control">
                                     </div>
-                                    <div class="col-md-2 mb-3 d-flex align-items-end">
-                                            <button class="btn btn-primary w-100" type="submit">সাবমিট</button>
+                                    <div class="col-md-12 mb-3 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100" type="submit" id="submitButton">সাবমিট</button>
                                     </div>
                                 </div>
 
@@ -92,76 +97,52 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row row-deck row-cards">
-                <div class="col-12">
+                <div class="col-8">
                     <div class="card">
                         <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter table-sm table-bordered datatable">
+                            <table class="table table-vcenter table-sm table-bordered datatable">
                                 <thead>
                                 <tr>
-                                    <th class="fs-4">ক্রেতা</th>
-                                    <th class="text-center fs-4">লেনদেন ধরন</th>
-                                    <th class="fs-4">অ্যাকাউন্ট</th>
-                                    <th class="fs-4">টাকা</th>
-                                    <th class="text-center fs-4">ধরন</th>
-                                    <th class="fs-4">তারিখ</th>
-                                    <th class="w-1 fs-4"></th>
+                                    <th class="fw-bolder fs-4">তারিখ</th>
+                                    <th class="fw-bolder fs-4">ক্রেতা</th>
+                                    <th class="fw-bolder fs-4 text-end">টাকা</th>
+                                    <th class="fw-bolder fs-4 text-end">ব্যালেন্স</th>
+                                    <th class="w-1"></th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
-                                @forelse ($transactions as $transaction)
+                                @forelse($transactions as $transaction)
                                     <tr>
-                                        <td>{{ $transaction->customer->name??'-' }}</td>
-                                        <td class="text-center">
-                                            {{ $transaction->transaction_type }}
-                                        </td>
-                                        <td>{{ $transaction->account->name??'-' }}</td>
-                                        <td>{{ $transaction->amount }}</td>
-                                        <td class="text-center">
-                                            @if($transaction->type === 'credit')
-                                                <span class="badge bg-success text-white">পরিশোধ</span>
-                                            @else
-                                                <span class="badge bg-danger text-white">বকেয়া</span>
-                                            @endif
-                                        </td>
                                         <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
-                                        <td>
-                                            <div class="btn-list flex-nowrap">
-                                                <div class="dropdown">
-                                                    <button class="btn dropdown-toggle align-text-top"
-                                                            data-bs-toggle="dropdown">
-                                                        Actions
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('transactions.show',$transaction->id) }}">
-                                                            View
-                                                        </a>
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('transactions.edit',$transaction->id) }}">
-                                                            Edit
-                                                        </a>
-                                                        <form
-                                                            action="{{ route('transactions.destroy',$transaction->id) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                    onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
-                                                                    class="dropdown-item text-red"><i
-                                                                    class="fa fa-fw fa-trash"></i>
-                                                                Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <td>{{ $transaction->customer->name }}</td>
+                                        <td class="text-end">{{ $transaction->amount }}</td>
+                                        <td class="text-end">{{ $transaction->balance }}</td>
+                                        <td class="text-center">
+                                            @if($transaction->transaction_type === 'sale')
+                                                <a class="btn btn-sm btn-primary" target="_blank"
+                                                   href="{{ route('sales.show',$transaction->reference_id) }}">চালান</a>
+                                            @endif
+                                            <form
+                                                action="{{ route('transactions.destroy',$transaction->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
+                                                        class="btn btn-sm btn-danger"><i
+                                                        class="fa fa-fw fa-trash"></i>
+                                                    ডিলেট
+                                                </button>
+                                            </form>
+
                                         </td>
                                     </tr>
+
                                 @empty
-                                    <td>No Data Found</td>
+                                    <tr>
+                                        <td colspan="6" class="text-center">No transactions found.</td>
+                                    </tr>
                                 @endforelse
                                 </tbody>
 
@@ -177,6 +158,13 @@
     </div>
 @endsection
 @section('scripts')
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('form').submit();
+            this.disabled = true;
+        });
+    </script>
     <script type="module">
         $(document).ready(function () {
             $(".select2").select2({
@@ -185,6 +173,17 @@
                 allowClear: true,
                 placeholder: 'সিলেক্ট করুন'
             });
+
+            $("#account_id").on("select2:select",function () {
+                var id = $(this).val();
+                console.log(id)
+                if (id > 1){
+                    $(".bank").show();
+                }else {
+                    $(".bank").hide();
+                    $("#cheque_no,#cheque_details").val("");
+                }
+            })
         })
     </script>
     <script type="module">
@@ -194,7 +193,7 @@
                 allowInput: true,
                 altFormat: "d-m-Y",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ $lastTrx->date }}"
+                defaultDate: "{{ $lastTrx?$lastTrx->date:date('Y-m-d') }}"
             });
         });
     </script>

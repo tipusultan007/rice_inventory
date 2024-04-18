@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class Account
@@ -31,7 +32,7 @@ class Account extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','details'];
+    protected $fillable = ['name','details','starting_balance'];
 
     public function transactions()
     {
@@ -61,6 +62,18 @@ class Account extends Model
 
     public function getBalanceAttribute()
     {
-        return $this->creditSum() - $this->debitSum();
+        $total = DB::table('transactions')
+            ->select(DB::raw('SUM(
+            CASE
+                WHEN type = "debit" THEN amount
+                WHEN type = "credit" THEN -amount
+                ELSE 0
+            END
+        ) AS total_due'))
+            ->where('account_id', $this->id)
+            ->value('total_due');
+
+        return $total;
+        //return $this->creditSum() - $this->debitSum();
     }
 }

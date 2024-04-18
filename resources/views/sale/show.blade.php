@@ -135,6 +135,12 @@
                                         <th class="text-end" colspan="3">সর্বমোট</th>
                                         <th class="text-end">{{ $sale->total }}</th>
                                     </tr>
+                                   @if($sale->paid > 0)
+                                       <tr>
+                                           <th class="text-end" colspan="3">পরিশোধ</th>
+                                           <th class="text-end">{{ $sale->paid }}</th>
+                                       </tr>
+                                   @endif
                                     </tfoot>
                                 </table>
                             </div>

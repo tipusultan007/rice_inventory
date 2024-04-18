@@ -16,22 +16,30 @@
         </select>
     </div>
 </div>
-<div class="form-group mb-3">
+{{--<div class="form-group mb-3">
     <label class="form-label">   {{ Form::label('quantity','পরিমাণ') }}</label>
     <div>
         {{ Form::text('quantity', $product->quantity, ['class' => 'form-control' .
         ($errors->has('quantity') ? ' is-invalid' : ''), 'placeholder' => 'Quantity']) }}
         {!! $errors->first('quantity', '<div class="invalid-feedback">:message</div>') !!}
     </div>
-</div>
+</div>--}}
 <div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('initial_stock','শুরুর পরিমাণ') }}</label>
+    <div>
+        {{ Form::text('initial_stock', $product->quantity, ['class' => 'form-control' .
+        ($errors->has('initial_stock') ? ' is-invalid' : ''), 'placeholder' => 'Initial Stock']) }}
+        {!! $errors->first('initial_stock', '<div class="invalid-feedback">:message</div>') !!}
+    </div>
+</div>
+{{--<div class="form-group mb-3">
     <label class="form-label">   {{ Form::label('quantity_alt','পরিমাণ (মেট্রিক টন)') }}</label>
     <div>
         {{ Form::text('quantity_alt', $product->quantity_alt, ['class' => 'form-control' .
         ($errors->has('quantity_alt') ? ' is-invalid' : ''), 'placeholder' => 'Quantity Alt']) }}
         {!! $errors->first('quantity_alt', '<div class="invalid-feedback">:message</div>') !!}
     </div>
-</div>
+</div>--}}
 <div class="form-group mb-3">
     <label class="form-label">   {{ Form::label('price_rate','দর') }}</label>
     <div>
@@ -45,7 +53,7 @@
         <div class="text-end">
             <div class="d-flex">
                 <a href="#" class="btn btn-danger">বাতিল</a>
-                <button type="submit" class="btn btn-primary ms-auto ajax-submit">সাবমিট</button>
+                <button id="submitButton" type="submit" class="btn btn-primary ms-auto ajax-submit">সাবমিট</button>
             </div>
         </div>
     </div>

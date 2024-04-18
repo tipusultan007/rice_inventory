@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class AccountController
@@ -61,7 +63,18 @@ class AccountController extends Controller
     {
         $account = Account::find($id);
 
-        return view('account.show', compact('account'));
+        $transactions = Transaction::where('account_id',$id)
+            ->orderBy('date','desc')
+            ->paginate(30);
+
+        $totalDebit = Transaction::where('account_id',$id)
+            ->where('type','debit')
+            ->sum('amount');
+        $totalCredit = Transaction::where('account_id',$id)
+            ->where('type','credit')
+            ->sum('amount');
+
+        return view('account.show', compact('account','transactions','totalDebit','totalCredit'));
     }
 
     /**

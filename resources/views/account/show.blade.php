@@ -10,10 +10,10 @@
                 <div class="col">
                     <!-- Page pre-title -->
                     <div class="page-pretitle">
-                        View
+                        অ্যাকাউন্ট
                     </div>
                     <h2 class="page-title">
-                        {{ __('Account ') }}
+                        {{ $account->name }}
                     </h2>
                 </div>
                 <!-- Page title actions -->
@@ -28,7 +28,7 @@
                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                 <line x1="5" y1="12" x2="19" y2="12"/>
                             </svg>
-                            Account List
+                            অ্যাকাউন্ট তালিকা
                         </a>
                     </div>
                 </div>
@@ -43,26 +43,65 @@
                     @if(config('tablar','display_alert'))
                         @include('tablar::common.alert')
                     @endif
+                </div>
+                <div class="col-3">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Account Details</h3>
-                        </div>
                         <div class="card-body">
-                            
-<div class="form-group">
-<strong>Name:</strong>
-{{ $account->name }}
-</div>
-<div class="form-group">
-<strong>Details:</strong>
-{{ $account->details }}
-</div>
-<div class="form-group">
-<strong>Balance:</strong>
-{{ $account->balance }}
-</div>
-
+                            <div class="card-header">
+                                <h4 class="card-title">
+                                    মোট ডেবিট
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                {{ $totalDebit }}
+                            </div>
                         </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-header">
+                                <h4 class="card-title">
+                                    মোট ক্রেডিট
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                {{ $totalCredit }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 my-3">
+                    <div class="card">
+                        <table class="table table-sm table-bordered">
+                            <tr>
+                                <th>তারিখ</th>
+                                <th>বিবরণ</th>
+                                <th>ডেবিট</th>
+                                <th>ক্রেডিট</th>
+                                <th class="w-1"></th>
+                            </tr>
+                            @forelse($transactions as $transaction)
+                                <tr>
+                                    <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
+                                    <td>{{ transactionType($transaction->transaction_type) }}</td>
+                                    <td>{{ $transaction->type === 'debit'? $transaction->amount:'-' }}</td>
+                                    <td>{{ $transaction->type === 'credit'? $transaction->amount:'-' }}</td>
+                                    <td>
+                                        @if($transaction->transaction_type === 'sale')
+                                            <a class="btn btn-sm btn-primary" target="_blank" href="{{ route('sales.show',$transaction->reference_id) }}">মেমো</a>
+                                        @elseif($transaction->transaction_type === 'purchase')
+                                            <a class="btn btn-sm btn-primary" target="_blank" href="{{ route('purchases.show',$transaction->reference_id) }}">চালান</a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">কোনো লেনদেন পাওয়া যায়নি!</td>
+                                </tr>
+                            @endforelse
+                        </table>
                     </div>
                 </div>
             </div>

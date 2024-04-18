@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\DataTables\ProductsDataTable;
 use App\Models\Product;
+use App\Models\PurchaseDetail;
+use App\Models\PurchaseReturnDetail;
+use App\Models\SaleDetail;
+use App\Models\SaleReturnDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -133,6 +137,7 @@ class ProductController extends Controller
         }else{
             $product->name .= " - ৫০ কেজি";
         }
+        $product->quantity = $product->initial_stock;
         $product->save();
 
         return redirect()->route('products.index')
@@ -149,7 +154,25 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
 
-        return view('product.show', compact('product'));
+        $purchases = PurchaseDetail::with('product','purchase')
+            ->where('product_id',$id)
+            ->paginate(30);
+        $sales = SaleDetail::with('product','sale')
+            ->where('product_id',$id)
+            ->paginate(30);
+        $purchaseReturns = PurchaseReturnDetail::with('product','purchaseReturn')
+            ->where('product_id',$id)
+            ->paginate(30);
+        $saleReturns = SaleReturnDetail::with('product','saleReturn')
+            ->where('product_id',$id)
+            ->paginate(30);
+
+        return view('product.show', compact('product',
+            'purchases',
+            'sales',
+        'saleReturns',
+        'purchaseReturns'
+        ));
     }
 
     /**

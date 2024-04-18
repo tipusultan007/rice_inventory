@@ -12,7 +12,7 @@
                 <div class="col">
                     <!-- Page pre-title -->
                     <h2 class="page-title">
-                        লোন পেমেন্ট
+                        ব্যক্তিগত ঋন/সুদ পেমেন্ট
                     </h2>
                 </div>
                 <!-- Page title actions -->
@@ -27,80 +27,112 @@
                 @include('tablar::common.alert')
             @endif
             <div class="row mb-3">
-                <div class="col-12">
+                <div class="col-12 mb-3">
                     <div class="card">
                         <div class="card-body">
-                            <form method="POST" action="{{ route('loans.repayment') }}" id="ajaxForm">
+                            <form method="POST" action="{{ route('loan_repayments.store') }}" class="row" id="ajaxForm">
                                 @csrf
-                                <div class="row">
                                     @php
                                         use App\Models\Account;
                                         $accounts = Account::pluck('name','id');
-                                        $loans = \App\Models\Loan::where('balance','>',0)->orderByDesc('balance')->get();
+                                        $loans = \App\Models\Loan::all();
                                     @endphp
 
-                                    <div class="col-md-3 mb-3">
-                                        <select name="account_id" id="account_id" class="form-control select2"
-                                                data-placeholder="অ্যাকাউন্ট">
-                                            <option value=""></option>
-                                            @foreach($accounts as $key => $account)
-                                                <option value="{{ $key }}">{{ $account }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-3 mb-3">
+                                    <div class="form-group mb-3 col-3">
                                         <select name="loan_id" id="loan_id" class="form-control select2"
                                                 data-placeholder="লোন সিলেক্ট করুন">
                                             <option value=""></option>
                                             @foreach($loans as $loan)
-                                                <option value="{{ $loan->id }}">{{ $loan->loan_amount }}</option>
+                                                @if($loan->balance > 0)
+                                                    <option value="{{ $loan->id }}">{{ $loan->name }} - {{ $loan->loan_amount }}</option>
+                                                @endif
+
                                             @endforeach
                                         </select>
+                                        @error('loan_id')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                    <div class="col-md-3">
-                                        <input type="number" name="amount" placeholder="লোন পেমেন্ট" class="form-control">
+                                    <div class="form-group mb-3 col-2">
+                                        <input type="number" name="amount" placeholder="ঋণ পরিশোধ" class="form-control">
+                                        @error('amount')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                    <div class="col-md-3">
-                                        <input type="number" name="loan_interest" placeholder="লোন কমিশন" class="form-control">
+                                    <div class="form-group mb-3 col-2">
+                                        <input type="number" name="interest" placeholder="সুদ" class="form-control">
+                                        @error('loan_interest')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="form-group mb-3 col-2">
                                         <input type="text" name="date" placeholder="তারিখ" class="form-control flatpicker">
+                                        @error('date')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                    <div class="col-md-2">
-                                        <button class="btn btn-primary w-100" type="submit">সাবমিট</button>
-                                    </div>
+                                <div class="form-group mb-3 col-3">
+                                    <select name="account_id" id="account_id" class="form-control select2"
+                                            data-placeholder="অ্যাকাউন্ট">
+                                        <option value=""></option>
+                                        @foreach($accounts as $key => $account)
+                                            <option value="{{ $key }}">{{ $account }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('account_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
+                                    <div class="form-group d-flex justify-content-end">
+                                        <button class="btn btn-primary w-25" type="submit">সাবমিট</button>
+                                    </div>
                             </form>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
                         <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter table-bordered table-sm datatable">
+                            <table class="table table-vcenter table-sm table-bordered datatable">
                                 <thead>
                                 <tr>
-                                    <th class="fw-bolder fs-4">অ্যাকাউন্ট</th>
-                                    <th class="fw-bolder fs-4">লেনদেন ধরন</th>
-                                    <th class="fw-bolder fs-4">টাকা</th>
                                     <th class="fw-bolder fs-4">তারিখ</th>
+                                    <th class="fw-bolder fs-4">ঋণের নাম</th>
+                                    <th class="fw-bolder fs-4 text-end">ঋণ পরিশোধ</th>
+                                    <th class="fw-bolder fs-4 text-end">সুদ</th>
+                                    <th class="fw-bolder fs-4 text-end">ঋণ ব্যালেন্স</th>
+                                    <th class="fw-bolder fs-4 text-end">মোট সুদ</th>
+                                    <th class="fw-bolder fs-4 w-1">অ্যাকশন</th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
-                                @forelse ($transactions as $transaction)
+                                @forelse($transactions as $transaction)
                                     <tr>
-                                        <td>{{ $transaction->account->name??'-' }}</td>
-                                        <td>{{ $transaction->transaction_type}}</td>
-                                        <td>{{ $transaction->amount }}</td>
                                         <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
+                                        <td>{{ $transaction->loan->name }} <br>
+                                        {{ $transaction->loan->loan_amount }}
+                                        </td>
+                                        <td class="text-end">{{ $transaction->amount??'-'}}</td>
+                                        <td class="text-end">{{ $transaction->interest??'-'}}</td>
+                                        <td class="text-end">{{$transaction->balance??'-' }}</td>
+                                        <td class="text-end">{{$transaction->total_interest??'-' }}</td>
+                                        <td class="text-end">
+                                            <form
+                                                action="{{ route('loan_repayments.destroy',$transaction->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
+                                                        class="btn btn-sm btn-danger"><i
+                                                        class="fa fa-fw fa-trash"></i>
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @empty
-                                    <td>No Data Found</td>
                                 @endforelse
                                 </tbody>
 
@@ -112,6 +144,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 @endsection

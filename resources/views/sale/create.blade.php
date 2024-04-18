@@ -48,7 +48,7 @@
                             <h3 class="card-title">বিক্রয় বিবরণ</h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('sales.store') }}" method="post">
+                            <form id="form" action="{{ route('sales.store') }}" method="post">
                                 @csrf
 
                                 <div class="row">
@@ -135,7 +135,7 @@
                                                     </select>
                                                 </td>
                                                 <td><input type="number" name="products[0][price_rate]" class="form-control"
-                                                           value="{{ old("products.0.price_rate") }}" required></td>
+                                                           value="{{ old("products.0.price_rate") }}" step="any" required></td>
                                                 <td><input type="number" name="products[0][quantity]" class="form-control"
                                                            value="{{ old("products.0.quantity") }}" required></td>
                                                 <td><input type="number" name="products[0][amount]" class="form-control"
@@ -227,7 +227,7 @@
                                             <tr>
                                                 <th colspan="3"></th>
                                                 <td>
-                                                    <button type="submit" class="btn btn-primary w-100">সাবমিট</button>
+                                                    <button type="submit" id="submitButton" class="btn btn-primary w-100">সাবমিট</button>
                                                 </td>
                                                 <td></td>
                                             </tr>
@@ -246,6 +246,13 @@
 @endsection
 
 @section('scripts')
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('form').submit();
+            this.disabled = true;
+        });
+    </script>
     <script type="module">
         window.addProductEntry = function () {
 

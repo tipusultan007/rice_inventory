@@ -19,3 +19,36 @@ input::-webkit-inner-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+.buttons-excel {
+    background: #0054A6 !important;
+    height: 38px;
+}
+.buttons-print {
+    background: #EB4432 !important;
+    height: 38px;
+}
+
+select#dt-length-1 {
+    height: 38px;
+}
+input#dt-search-1 {
+    height: 38px;
+}
+.dt-length, .dt-info {
+    margin-left: 0 !important;
+}
+
+li.nav-item.menu-title {
+    background: rgba(255,255,255,0.1);
+}
+.menu-title a.nav-link {
+    color: #fff;
+}
+li.nav-item.active {
+    background-color: #0054a6;
+}
+.navbar-brand-image {
+    height: 3rem !important;
+    width: auto;
+}

@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Asset extends Model
 {
-    
+
     static $rules = [
 		'name' => 'required',
 		'value' => 'required',
@@ -34,8 +34,16 @@ class Asset extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','description','value','date'];
+    protected $fillable = ['name','description','value','date','trx_id'];
 
+    public function assetSells()
+    {
+        return $this->hasMany(AssetSell::class);
+    }
 
+    public function getBalanceAttribute()
+    {
+        return $this->value - $this->assetSells()->sum('purchase_price');
+    }
 
 }

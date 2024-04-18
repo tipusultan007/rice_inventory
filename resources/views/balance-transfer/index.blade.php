@@ -64,7 +64,7 @@
                         <input type="text" name="date" placeholder="তারিখ" class="form-control flatpicker">
                     </div>
                     <div class="col-md-2">
-                        <button class="btn btn-primary" type="submit">সাবমিট</button>
+                        <button id="submitButton" class="btn btn-primary" type="submit">সাবমিট</button>
                     </div>
                 </div>
             </form>
@@ -146,6 +146,13 @@
 @endsection
 
 @section('scripts')
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('ajaxForm').submit();
+            this.disabled = true;
+        });
+    </script>
     <script type="module">
         $(".select2").select2({
             theme: "bootstrap-5",

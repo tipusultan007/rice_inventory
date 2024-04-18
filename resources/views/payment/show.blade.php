@@ -58,24 +58,36 @@
 {{ $payment->supplier_id }}
 </div>
 <div class="form-group">
-<strong>Payment Method Id:</strong>
-{{ $payment->payment_method_id }}
+<strong>Sale Id:</strong>
+{{ $payment->sale_id }}
+</div>
+<div class="form-group">
+<strong>Purchase Id:</strong>
+{{ $payment->purchase_id }}
+</div>
+<div class="form-group">
+<strong>Sale Return Id:</strong>
+{{ $payment->sale_return_id }}
+</div>
+<div class="form-group">
+<strong>Purchase Return Id:</strong>
+{{ $payment->purchase_return_id }}
 </div>
 <div class="form-group">
 <strong>Amount:</strong>
 {{ $payment->amount }}
 </div>
 <div class="form-group">
-<strong>Type:</strong>
-{{ $payment->type }}
-</div>
-<div class="form-group">
-<strong>Invoice:</strong>
-{{ $payment->invoice }}
+<strong>Balance:</strong>
+{{ $payment->balance }}
 </div>
 <div class="form-group">
 <strong>Date:</strong>
 {{ $payment->date }}
+</div>
+<div class="form-group">
+<strong>Trx Id:</strong>
+{{ $payment->trx_id }}
 </div>
 <div class="form-group">
 <strong>User Id:</strong>

@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Product extends Model
 {
-    
+
     static $rules = [
 		'name' => 'required',
 		'type' => 'required',
@@ -34,8 +34,26 @@ class Product extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','type','quantity','quantity_alt','price_rate'];
+    protected $fillable = ['name','type','quantity','quantity_alt','price_rate','initial_stock'];
 
 
+    public function purchases()
+    {
+        return $this->hasMany(PurchaseDetail::class);
+    }
 
+    public function purchaseReturns()
+    {
+        return $this->hasMany(PurchaseReturnDetail::class);
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(SaleDetail::class);
+    }
+
+    public function saleReturns()
+    {
+        return $this->hasMany(SaleReturnDetail::class);
+    }
 }

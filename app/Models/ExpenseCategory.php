@@ -33,7 +33,15 @@ class ExpenseCategory extends Model
 
     public function expenses()
     {
-        return $this->hasMany(ExpenseCategory::class);
+        return $this->hasMany(Expense::class);
+    }
+    public function total()
+    {
+        return $this->expenses()->sum('amount');
     }
 
+    public function getTotalAttribute()
+    {
+        return $this->total();
+    }
 }

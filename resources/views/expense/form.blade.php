@@ -1,39 +1,54 @@
-
+@php
+$categories = \App\Models\ExpenseCategory::all();
+ @endphp
+@php
+    use App\Models\Account;
+    $accounts = Account::pluck('name','id');
+@endphp
 <div class="form-group mb-3">
-    <label class="form-label">   {{ Form::label('expense_category_id') }}</label>
+    <label class="form-label">   {{ Form::label('expense_category_id','ক্যাটেগরি') }}</label>
     <div>
-        {{ Form::text('expense_category_id', $expense->expense_category_id, ['class' => 'form-control' .
-        ($errors->has('expense_category_id') ? ' is-invalid' : ''), 'placeholder' => 'Expense Category Id']) }}
-        {!! $errors->first('expense_category_id', '<div class="invalid-feedback">:message</div>') !!}
-        <small class="form-hint">expense <b>expense_category_id</b> instruction.</small>
+        <select name="expense_category_id" id="expense_category_id" class="select2 form-control">
+            <option value=""></option>
+            @forelse($categories as $category)
+                <option value="{{ $category->id }}" {{ $expense->expense_category_id==$category->id?'selected':'' }}>{{ $category->name }}</option>
+            @empty
+            @endforelse
+        </select>
     </div>
 </div>
+
 <div class="form-group mb-3">
-    <label class="form-label">   {{ Form::label('description') }}</label>
+    <label class="form-label">   {{ Form::label('description','বিবরণ') }}</label>
     <div>
         {{ Form::text('description', $expense->description, ['class' => 'form-control' .
         ($errors->has('description') ? ' is-invalid' : ''), 'placeholder' => 'Description']) }}
         {!! $errors->first('description', '<div class="invalid-feedback">:message</div>') !!}
-        <small class="form-hint">expense <b>description</b> instruction.</small>
     </div>
 </div>
 <div class="form-group mb-3">
-    <label class="form-label">   {{ Form::label('amount') }}</label>
+    <label class="form-label">   {{ Form::label('amount','পরিমাণ') }}</label>
     <div>
         {{ Form::text('amount', $expense->amount, ['class' => 'form-control' .
         ($errors->has('amount') ? ' is-invalid' : ''), 'placeholder' => 'Amount']) }}
         {!! $errors->first('amount', '<div class="invalid-feedback">:message</div>') !!}
-        <small class="form-hint">expense <b>amount</b> instruction.</small>
     </div>
 </div>
 <div class="form-group mb-3">
-    <label class="form-label">   {{ Form::label('user_id') }}</label>
-    <div>
-        {{ Form::text('user_id', $expense->user_id, ['class' => 'form-control' .
-        ($errors->has('user_id') ? ' is-invalid' : ''), 'placeholder' => 'User Id']) }}
-        {!! $errors->first('user_id', '<div class="invalid-feedback">:message</div>') !!}
-        <small class="form-hint">expense <b>user_id</b> instruction.</small>
-    </div>
+    <select name="account_id" id="account_id" class="form-control select2"
+            data-placeholder="অ্যাকাউন্ট" required>
+        <option value=""></option>
+        @foreach($accounts as $key => $account)
+            <option value="{{ $key }}" {{ $transaction->account_id == $key ? 'selected':'' }}>{{ $account }}</option>
+        @endforeach
+    </select>
+    @error('account_id')
+    <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+<div class="form-group mb-3">
+    <label for="date" class="form-label">তারিখ</label>
+    <input name="date" id="date" type="text" class="form-control flatpicker">
 </div>
 
     <div class="form-footer">
@@ -44,3 +59,29 @@
             </div>
         </div>
     </div>
+<script>
+    document.getElementById('submitButton').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('ajaxForm').submit();
+        this.disabled = true;
+    });
+</script>
+<script type="module">
+    $(".select2").select2({
+        width: '100%',
+        theme: 'bootstrap-5',
+        placeholder: 'সিলেক্ট ক্যাটেগরি',
+        allowClear: true,
+    })
+</script>
+<script type="module">
+    document.addEventListener('DOMContentLoaded', function () {
+        window.flatpickr(".flatpicker", {
+            altInput: true,
+            allowInput: true,
+            altFormat: "d-m-Y",
+            dateFormat: "Y-m-d",
+            defaultDate: "{{ $expense->date }}"
+        });
+    });
+</script>

@@ -27,10 +27,9 @@ return new class extends Migration
             $table->integer('due')->nullable();
             $table->string('attachment')->nullable();
             $table->integer('paid')->nullable();
+            $table->string('trx_id');
             $table->timestamps();
 
-            $table->foreign('supplier_id')->references('id')->on('suppliers');
-            $table->foreign('user_id')->references('id')->on('users');
         });
 
         Schema::create('purchase_details', function (Blueprint $table) {
@@ -43,8 +42,6 @@ return new class extends Migration
             $table->decimal('price_rate', 10, 2); // Added column
             $table->timestamps();
 
-            $table->foreign('purchase_id')->references('id')->on('purchases')->onDelete('cascade');
-            $table->foreign('product_id')->references('id')->on('products');
         });
     }
 

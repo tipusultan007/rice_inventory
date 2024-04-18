@@ -9,12 +9,10 @@
             width: 100%;
             margin: 0 auto;
             padding: 2rem;
-          /*  border: 1px solid #ddd;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);*/
             background: #fff;
         }
         .invoice-header {
-            text-align: left; /* Align supplier information to the left */
+            text-align: left;
         }
 
 
@@ -113,12 +111,7 @@
                                     <th class="text-end" colspan="3">মোট</th>
                                     <th class="text-end">{{ $purchase->subtotal }}</th>
                                 </tr>
-                               {{-- @if($purchase->carrying_cost>0)
-                                <tr>
-                                    <th class="text-end" colspan="3">গাড়ি ভাড়া</th>
-                                    <th class="text-end">{{ $purchase->carrying_cost }}</th>
-                                </tr>
-                                @endif--}}
+
                                 @if($purchase->discount>0)
                                     <tr>
                                         <th class="text-end" colspan="3">ডিস্কাউন্ট</th>
@@ -135,6 +128,13 @@
                                     <th class="text-end" colspan="3">সর্বমোট</th>
                                     <th class="text-end">{{ $purchase->total }}</th>
                                 </tr>
+
+                                @if($purchase->paid > 0)
+                                    <tr>
+                                        <th class="text-end" colspan="3">পরিশোধ</th>
+                                        <th class="text-end">{{ $purchase->paid }}</th>
+                                    </tr>
+                                @endif
                                 </tfoot>
                             </table>
                         </div>

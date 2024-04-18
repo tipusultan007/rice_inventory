@@ -54,23 +54,12 @@
                             <table class="table card-table table-vcenter table-bordered datatable">
                                 <thead>
                                 <tr>
-                                    <th class="w-1">No.
-                                        <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="icon icon-sm text-dark icon-thick" width="24" height="24"
-                                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                            <polyline points="6 15 12 9 18 15"/>
-                                        </svg>
-                                    </th>
-
+										<th>Name</th>
 										<th>Loan Amount</th>
 										<th>Interest Rate</th>
 										<th>Balance</th>
 										<th>Date</th>
 										<th>Description</th>
-
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
@@ -78,8 +67,7 @@
                                 <tbody>
                                 @forelse ($loans as $loan)
                                     <tr>
-                                        <td>{{ ++$i }}</td>
-
+											<td>{{ $loan->name }}</td>
 											<td>{{ $loan->loan_amount }}</td>
 											<td>{{ $loan->interest_rate }}</td>
 											<td>{{ $loan->balance }}</td>
@@ -87,6 +75,7 @@
 											<td>{{ $loan->description }}</td>
 
                                         <td>
+                                            <a class="btn btn-sm btn-primary me-2 mb-2" href="{{ route('loans.show',$loan->id) }}">দেখুন</a>
                                             <form
                                                 action="{{ route('loans.destroy',$loan->id) }}"
                                                 method="POST">

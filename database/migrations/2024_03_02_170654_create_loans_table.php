@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->decimal('loan_amount', 10, 2);
+            $table->string('name');
+            $table->bigInteger('loan_amount');
             $table->decimal('interest_rate', 10, 2);
-            $table->decimal('balance', 10, 2)->default(0);
             $table->date('date');
+            $table->string('trx_id');
             $table->text('description')->nullable();
             $table->timestamps();
         });

@@ -1,6 +1,6 @@
 @extends('tablar::page')
 
-@section('title', 'View Supplier')
+@section('title', $supplier->name.' - সরবরাহকারী')
 
 @section('content')
     <!-- Page header -->
@@ -46,33 +46,40 @@
                 </div>
                 <div class="col-6">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">সরবরাহকারী'র বিবরণ</h3>
+                        <div class="card-header py-1">
+                            <h3 class="card-title fw-bolder">সরবরাহকারী'র বিবরণ</h3>
                         </div>
                         <div class="card-body">
 
                             <table class="table table-bordered">
                                 @if ($supplier->image)
-                                <tr>
-                                    <th colspan="2" class="text-center">
-                                            <img height="100" class="img-fluid mt-2" src="{{ asset('storage/' . $supplier->image) }}" alt="{{ $supplier->name }} Image">
-                                    </th>
-                                </tr>
+                                    <tr>
+                                        <th colspan="2" class="text-center">
+                                            <img height="100" class="img-fluid mt-2"
+                                                 src="{{ asset('storage/' . $supplier->image) }}"
+                                                 alt="{{ $supplier->name }} Image">
+                                        </th>
+                                    </tr>
                                 @endif
                                 <tr>
-                                    <th>নাম</th><td>{{ $supplier->name }}</td>
+                                    <th>নাম</th>
+                                    <td>{{ $supplier->name }}</td>
                                 </tr>
                                 <tr>
-                                    <th>মোবাইল নং</th><td>{{ $supplier->phone }}</td>
+                                    <th>মোবাইল নং</th>
+                                    <td>{{ $supplier->phone }}</td>
                                 </tr>
                                 <tr>
-                                    <th>কোম্পানি'র নাম</th><td>{{ $supplier->phone }}</td>
+                                    <th>কোম্পানি'র নাম</th>
+                                    <td>{{ $supplier->phone }}</td>
                                 </tr>
                                 <tr>
-                                    <th>ঠিকানা</th><td>{{ $supplier->address }}</td>
+                                    <th>ঠিকানা</th>
+                                    <td>{{ $supplier->address }}</td>
                                 </tr>
                                 <tr>
-                                    <th>বকেয়া</th><td>{{ $supplier->remainingDue }}</td>
+                                    <th>বকেয়া</th>
+                                    <td>{{ $supplier->remainingDue }}</td>
                                 </tr>
                             </table>
 
@@ -81,62 +88,58 @@
                 </div>
                 <div class="col-6">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">বকেয়া পরিশোধ ফরম</h3>
+                        <div class="card-header py-1">
+                            <h3 class="card-title fw-bolder">বকেয়া পরিশোধ ফরম</h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('transactions.store') }}" method="POST">
+                            <form id="form" class="row" action="{{ route('supplier.payment.store') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="supplier_id" value="{{ $supplier->id }}">
                                 <input type="hidden" name="transaction_type" value="supplier_payment">
                                 <input type="hidden" name="type" value="debit">
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
+                                <div class="col-6 mb-3">
                                         <label for="date">তারিখ</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control flatpicker" name="date" required>
-                                    </div>
+                                        <input type="text" class="form-control  flatpicker" name="date" required>
                                 </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
+                                <div class="col-6 mb-3">
                                         <label for="amount">পরিশোধ</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="number" class="form-control" name="amount" value="" required>
-                                    </div>
+                                        <input type="number" class="form-control " name="amount" value="" >
+                                </div>
+                                <div class="col-6 mb-3">
+                                        <label for="amount">ডিস্কাউন্ট</label>
+                                        <input type="number" class="form-control " name="discount" value="">
+
                                 </div>
                                 @php
                                     $methods = \App\Models\Account::all();
                                 @endphp
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
+                                <div class="col-6 mb-3">
                                         <label for="account_id">পেমেন্ট মাধ্যম</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <select name="account_id" id="account_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
+                                        <select name="account_id" id="account_id" class="form-control  select2"
+                                                data-placeholder="সিলেক্ট করুন">
                                             @forelse($methods as $method)
                                                 <option value="{{ $method->id }}">{{ $method->name }}</option>
                                             @empty
                                             @endforelse
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="note">নোট</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" name="note" value="">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
 
-                                    </div>
-                                    <div class="col-md-9">
-                                        <button class="btn btn-primary" type="submit">সাবমিট</button>
-                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                        <label for="cheque_no">চেক নং</label>
+                                        <input type="text" class="form-control " name="cheque_no" id="cheque_no"
+                                               value="">
+                                </div>
+                                <div class="col-6 mb-3">
+                                        <label for="cheque_details">চেক বিবরণ</label>
+                                        <input type="text" class="form-control " name="cheque_details"
+                                               id="cheque_details" value="">
+                                </div>
+                                <div class="col-12 mb-3">
+                                        <label for="note">নোট</label>
+                                        <input type="text" class="form-control " name="note" value="">
+                                </div>
+                                <div class="col-12 mb-3 d-flex justify-content-end">
+                                        <button class="btn btn-primary w-50" id="submitButton" type="submit">সাবমিট</button>
                                 </div>
                             </form>
                         </div>
@@ -144,45 +147,55 @@
                 </div>
             </div>
             <div class="card my-3">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        সকল লেনদেন
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead class="thead-light">
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-sm table-bordered datatable">
+                        <thead>
                         <tr>
-                            <th class="fw-bolder fs-5">তারিখ</th>
-                            <th class="fw-bolder fs-5">চালান নং</th>
-                            <th class="fw-bolder fs-5">অ্যাকাউন্ট</th>
-                            <th class="fw-bolder fs-5">ধরণ</th>
-                            <th class="fw-bolder fs-5">টাকা</th>
+                            <th class="fw-bolder fs-4">তারিখ</th>
+                            <th class="fw-bolder fs-4">বিবরণ</th>
+                            <th class="fw-bolder fs-4 text-end">টাকা</th>
+                            <th class="fw-bolder fs-4 text-end">ব্যালেন্স</th>
+                            <th class="fw-bolder fs-4 text-center">অ্যাকশন</th>
                         </tr>
                         </thead>
+
                         <tbody>
-                        @forelse($payments as $payment)
+                        @forelse($transactions as $transaction)
                             <tr>
-                                <td>{{ date('d/m/Y',strtotime($payment->date)) }}</td>
-                                <td>{{ $payment->invoice??'-' }}</td>
-                                <td>{{ $payment->account->name??'-' }}</td>
-                                <td>
-                                    @if($payment->type === "credit")
-                                        <span class="badge bg-danger text-white">বকেয়া</span>
-                                    @else
-                                        <span class="badge bg-success text-white">পরিশোধ</span>
+                                <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
+                                <td>{{ transactionType($transaction->transaction_type) }}</td>
+                                <td class="text-end">{{ $transaction->amount }}</td>
+                                <td class="text-end">{{ $transaction->balance }}</td>
+                                <td class="d-flex justify-content-center">
+                                    @if($transaction->transaction_type === 'purchase')
+                                        <a class="btn btn-sm btn-primary me-2" target="_blank"
+                                           href="{{ route('purchases.show',$transaction->reference_id) }}">চালান</a>
                                     @endif
+
+                                    <form
+                                        action="{{ route('transactions.destroy',$transaction->id) }}"
+                                        method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
+                                                class="btn btn-sm btn-danger"><i
+                                                class="fa fa-fw fa-trash"></i>
+                                            ডিলেট
+                                        </button>
+                                    </form>
+
                                 </td>
-                                <td>{{ $payment->amount }}</td>
                             </tr>
+
                         @empty
+                            <tr>
+                                <td colspan="4" class="text-center">No transactions found.</td>
+                            </tr>
                         @endforelse
                         </tbody>
-                    </table>
 
-                </div>
-                <div class="card-footer d-flex align-items-center">
-                    {!! $payments->links('tablar::pagination') !!}
+                    </table>
                 </div>
             </div>
         </div>
@@ -191,6 +204,13 @@
 
 
 @section('scripts')
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById('form').submit();
+            this.disabled = true;
+        });
+    </script>
     <script type="module">
         $(document).ready(function () {
             $(".select2").select2({
@@ -209,7 +229,7 @@
                 allowInput: true,
                 altFormat: "d-m-Y",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ $lastTrx->date }}"
+                defaultDate: "{{ $lastTrx?$lastTrx->date:date('Y-m-d') }}"
             });
         });
     </script>

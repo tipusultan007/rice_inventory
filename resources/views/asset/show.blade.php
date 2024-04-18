@@ -38,34 +38,85 @@
     <!-- Page body -->
     <div class="page-body">
         <div class="container-xl">
-            <div class="row row-deck row-cards">
-                <div class="col-12">
+            <div class="row  row-cards">
+                <div class="col-3">
                     @if(config('tablar','display_alert'))
                         @include('tablar::common.alert')
                     @endif
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Asset Details</h3>
+                            <h3 class="card-title">সম্পদের বিবরণ</h3>
                         </div>
                         <div class="card-body">
-                            
-<div class="form-group">
-<strong>Name:</strong>
-{{ $asset->name }}
-</div>
-<div class="form-group">
-<strong>Description:</strong>
-{{ $asset->description }}
-</div>
-<div class="form-group">
-<strong>Value:</strong>
-{{ $asset->value }}
-</div>
-<div class="form-group">
-<strong>Date:</strong>
-{{ $asset->date }}
-</div>
 
+                            <div class="form-group">
+                                <h5 class="mb-1">সম্পদ'র নাম</h5>
+                                <p>{{ $asset->name }}</p>
+                            </div>
+                            <div class="form-group">
+                                <h5 class="mb-1">মূল্য</h5>
+                                <p> {{ $asset->value }}</p>
+                            </div>
+                            <div class="form-group">
+                                <h5 class="mb-1">ব্যালেন্স</h5>
+                                <p> {{ $asset->balance }}</p>
+                            </div>
+                            <div class="form-group">
+                                <h5 class="mb-1">তারিখ:</h5>
+                                <p>{{ date('d/m/Y',strtotime($asset->date)) }}</p>
+                            </div>
+                            <div class="form-group">
+                                <h5 class="mb-1">বিবরণ:</h5>
+                                <p>{{ $asset->description }}</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th class="fw-bolder fs-4">তারিখ</th>
+                                    <th class="fw-bolder text-center fs-4">অ্যাকাউন্ট</th>
+                                    <th class="fw-bolder fs-4 text-end">ক্রয়</th>
+                                    <th class="fw-bolder fs-4 text-end">বিক্রয়</th>
+                                    <th class="fw-bolder fs-4">বিবরণ</th>
+                                    <th class="w-1"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @forelse($assetSells as $transaction)
+                                    <tr>
+                                        <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
+                                        <td>{{ $transaction->account->name }}</td>
+                                        <td>{{ $transaction->purchase_price }}</td>
+                                        <td>{{ $transaction->sale_price }}</td>
+                                        <td>{{ $transaction->note??'-' }}</td>
+                                        <td></td>
+                                    </tr>
+                                @empty
+                                @endforelse
+                                {{--@forelse($payments as $payment)
+                                    <tr>
+                                        <td>{{ date('d/m/Y',strtotime($payment->date)) }}</td>
+                                        <td>{{ $payment->invoice??'-' }}</td>
+                                        <td>{{ $payment->account->name??'-' }}</td>
+                                        <td>
+                                            @if($payment->type === "debit")
+                                                <span class="badge bg-danger text-white">বকেয়া</span>
+                                            @else
+                                                <span class="badge bg-success text-white">পরিশোধ</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $payment->amount }}</td>
+                                    </tr>
+                                @empty
+                                @endforelse--}}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

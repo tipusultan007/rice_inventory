@@ -61,3 +61,12 @@
     </div>
 @endsection
 
+@section('scripts')
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('ajaxForm').submit();
+            this.disabled = true;
+        });
+    </script>
+@endsection

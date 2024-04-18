@@ -33,8 +33,7 @@ class SupplierController extends Controller
     {
         $columns = array(
             0 =>'name',
-            1 =>'phone',
-            2=> 'address',
+            3 =>'remaining_due',
         );
 
         $totalData = Supplier::count();
@@ -140,6 +139,18 @@ class SupplierController extends Controller
         }
 
         $supplier = Supplier::create($data);
+        if ($supplier->starting_balance > 0){
+           $creditTransaction = Transaction::create([
+                'account_name' => $supplier->name,
+                'amount' => $supplier->starting_balance,
+                'transaction_type' => 'supplier_opening_balance',
+                'type' => 'credit',
+                'reference_id' => $supplier->id,
+                'supplier_id' => $supplier->id,
+                'user_id' => Auth::id(),
+                'date' => $request->date,
+            ]);
+        }
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Supplier created successfully.');
@@ -156,9 +167,27 @@ class SupplierController extends Controller
         $supplier = Supplier::find($id);
         $lastTrx = Transaction::where('user_id',Auth::id())->latest()->first();
 
-        $payments = Transaction::where('supplier_id', $supplier->id)->orderByDesc('id')->paginate(10);
+        $transactions = Transaction::where('supplier_id', $supplier->id)
+            /*->whereIn('transaction_type',['purchase','supplier_payment','purchase_return','supplier_opening_balance'])*/
+            ->where(function($query) {
+                $query->where(function($query) {
+                    $query->where('transaction_type', 'supplier_payment')
+                        ->where('type', 'credit');
+                })->orWhere(function($query) {
+                    $query->where('transaction_type', 'purchase')
+                        ->where('type', 'debit');
+                })->orWhere(function($query) {
+                    $query->where('transaction_type', 'supplier_opening_balance')
+                        ->where('type', 'credit');
+                })->orWhere(function($query) {
+                    $query->where('transaction_type', 'purchase_return')
+                        ->where('type', 'credit');
+                });
+            })
+            ->orderBy('id', 'asc')
+            ->get();
 
-        return view('supplier.show', compact('supplier','payments','lastTrx'));
+        return view('supplier.show', compact('supplier','transactions','lastTrx'));
     }
 
     /**
@@ -204,6 +233,30 @@ class SupplierController extends Controller
         }
         $supplier->update($data);
 
+        $creditTransaction = Transaction::where('transaction_type','supplier_opening_balance')
+            ->where('reference_id', $supplier->id)->first();
+        if ($creditTransaction){
+            if ($supplier->starting_balance > 0) {
+                $creditTransaction->amount = $supplier->starting_balance;
+                $creditTransaction->date = $request->date;
+                $creditTransaction->save();
+            }else{
+                $creditTransaction->delete();
+            }
+        }else {
+            if ($supplier->starting_balance > 0){
+                $creditTransaction = Transaction::create([
+                    'account_name' => $supplier->name,
+                    'amount' => $supplier->starting_balance,
+                    'transaction_type' => 'supplier_opening_balance',
+                    'type' => 'credit',
+                    'reference_id' => $supplier->id,
+                    'supplier_id' => $supplier->id,
+                    'user_id' => Auth::id(),
+                    'date' => $request->date,
+                ]);
+            }
+        }
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Supplier updated successfully');
@@ -216,10 +269,7 @@ class SupplierController extends Controller
      */
     public function destroy($id)
     {
-        Purchase::where('supplier_id', $id)->delete();
-        Payment::where('supplier_id', $id)->delete();
         $supplier = Supplier::find($id)->delete();
-
         return response()->json([
             'status' => 'success'
         ]);

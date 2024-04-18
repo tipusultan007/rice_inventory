@@ -10,10 +10,10 @@
                 <div class="col">
                     <!-- Page pre-title -->
                     <div class="page-pretitle">
-                        Create
+                        নতুন
                     </div>
                     <h2 class="page-title">
-                        {{ __('Customer ') }}
+                        ক্রেতা
                     </h2>
                 </div>
                 <!-- Page title actions -->
@@ -28,7 +28,7 @@
                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                 <line x1="5" y1="12" x2="19" y2="12"/>
                             </svg>
-                            Customer List
+                            ক্রেতা'র তালিকা
                         </a>
                     </div>
                 </div>
@@ -44,9 +44,7 @@
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Customer Details</h3>
-                        </div>
+
                         <div class="card-body">
                             <form method="POST" action="{{ route('customers.store') }}" id="ajaxForm" role="form"
                                   enctype="multipart/form-data">
@@ -60,4 +58,12 @@
         </div>
     </div>
 @endsection
-
+@section('scripts')
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('ajaxForm').submit();
+            this.disabled = true;
+        });
+    </script>
+@endsection

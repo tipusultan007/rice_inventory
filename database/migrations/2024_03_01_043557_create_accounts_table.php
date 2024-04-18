@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('details')->nullable();
+            $table->decimal('starting_balance')->default(0);
             $table->timestamps();
         });
     }

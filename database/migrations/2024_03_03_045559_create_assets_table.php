@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('value', 10, 2);
             $table->date('date');
+            $table->string('trx_id');
             $table->timestamps();
         });
     }

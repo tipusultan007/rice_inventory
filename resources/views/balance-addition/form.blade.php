@@ -20,7 +20,14 @@
         {!! $errors->first('amount', '<div class="invalid-feedback">:message</div>') !!}
     </div>
 </div>
-
+<div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('date','তারিখ') }}</label>
+    <div>
+        {{ Form::text('date', $balanceAddition->date, ['class' => 'form-control flatpicker' .
+        ($errors->has('date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
+        {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
+    </div>
+</div>
     <div class="form-footer">
         <div class="text-end">
             <div class="d-flex">

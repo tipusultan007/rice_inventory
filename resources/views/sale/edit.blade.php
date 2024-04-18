@@ -47,15 +47,6 @@
                         <div class="card-header">
                             <h3 class="card-title">Sale Details</h3>
                         </div>
-                        {{--<div class="card-body">
-                            <form method="POST"
-                                  action="{{ route('sales.update', $sale->id) }}" id="ajaxForm" role="form"
-                                  enctype="multipart/form-data">
-                                {{ method_field('PATCH') }}
-                                @csrf
-                                @include('sale.form')
-                            </form>
-                        </div>--}}
 
                         <div class="card-body">
                             <form action="{{ route('sales.update', $sale->id) }}" method="post">
@@ -141,7 +132,9 @@
                                                 <td>
 
                                                     <button class="btn btn-primary btn-icon" type="button" onclick="addProductEntry()"><i class="ti ti-plus"></i></button>
-
+                                                    @if($index>0)
+                                                        <button type="button" class="btn btn-danger btn-icon" onclick="removeProductEntry(this)"><i class="ti ti-x"></i></button>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach

@@ -47,17 +47,18 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="table-responsive min-vh-100">
-                            <table class="table table-vcenter text-nowrap datatable">
-                                <thead>
+                            <table class="table table-vcenter text-nowrap table-bordered datatable">
+
                                 <tr>
-										<th>Name</th>
-										<th>Description</th>
-										<th>Value</th>
-										<th>Date</th>
+										<th>নাম</th>
+										<th>বিবরণ</th>
+										<th>ক্রয়মূল্য</th>
+										<th>ব্যালেন্স</th>
+										<th>তারিখ</th>
 
                                     <th class="w-1"></th>
                                 </tr>
-                                </thead>
+
 
                                 <tbody>
                                 @forelse ($assets as $asset)
@@ -65,7 +66,8 @@
 											<td>{{ $asset->name }}</td>
 											<td>{{ $asset->description }}</td>
 											<td>{{ $asset->value }}</td>
-											<td>{{ $asset->date }}</td>
+											<td>{{ $asset->balance }}</td>
+											<td>{{ date('d/m/Y',strtotime($asset->date)) }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">

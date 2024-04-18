@@ -9,7 +9,7 @@
                 aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <h1 class="navbar-brand navbar-brand-autodark">
+        <h1 class="navbar-brand ">
             @include('tablar::partials.common.logo')
         </h1>
         <div class="navbar-nav flex-row d-lg-none">

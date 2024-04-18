@@ -10,10 +10,13 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "takielias/tablar": "^4.9",
-        "takielias/tablar-kit": "^0.6.0"
+        "league/csv": "^9.15",
+        "pusher/pusher-php-server": "^7.2",
+        "takielias/tablar": "10",
+        "takielias/tablar-kit": "10"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.12",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",

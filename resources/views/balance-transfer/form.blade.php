@@ -30,7 +30,14 @@
         <small class="form-hint">balanceTransfer <b>amount</b> instruction.</small>
     </div>
 </div>
-
+<div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('date','তারিখ') }}</label>
+    <div>
+        {{ Form::text('date', $balanceTransfer->date, ['class' => 'form-control flatpicker' .
+        ($errors->has('date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
+        {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
+    </div>
+</div>
 <div class="form-footer">
     <div class="text-end">
         <div class="d-flex">
@@ -45,5 +52,16 @@
         theme: "bootstrap-5",
         width: "100%",
         placeholder: "একাউন্ট সিলেক্ট করুন"
+    });
+</script>
+<script type="module">
+    document.addEventListener('DOMContentLoaded', function () {
+        window.flatpickr(".flatpicker", {
+            altInput: true,
+            allowInput: true,
+            altFormat: "d-m-Y",
+            dateFormat: "Y-m-d",
+            defaultDate: "{{ $balanceTransfer->date }}"
+        });
     });
 </script>

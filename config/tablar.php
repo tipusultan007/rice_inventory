@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'logo' => '<b>Tab</b>LAR',
+    'logo' => 'SA Rice',
     'logo_img_alt' => 'Admin Logo',
 
     /*
@@ -42,11 +42,11 @@ return [
     'auth_logo' => [
         'enabled' => false,
         'img' => [
-            'path' => 'assets/tablar-logo.png',
+            'path' => 'assets/sarice.svg',
             'alt' => 'Auth Logo',
             'class' => '',
-            'width' => 50,
-            'height' => 50,
+            'width' => 230,
+            'height' => 60,
         ],
     ],
 
@@ -145,9 +145,9 @@ return [
     'menu' => [
         // Navbar items:
         [
-            'text' => 'Home',
+            'text' => 'ড্যাশবোর্ড',
             'icon' => 'ti ti-home',
-            'url' => 'home'
+            'url' => '/'
         ],
         [
             'text' => 'পণ্য',
@@ -156,70 +156,22 @@ return [
         ],
         [
             'text' => 'ক্রয়',
-            'route' => 'purchases.index',
-            'icon' => 'ti ti-building-store',
-        ],
-        [
-            'text' => 'বিক্রয়',
-            'route' => 'sales.index',
-            'icon' => 'ti ti-shopping-cart',
-        ],
-        [
-            'text' => 'ক্রেতা',
-            'route' => 'customers.index',
-            'icon' => 'ti ti-users',
-        ],
-        [
-            'text' => 'সরবরাহকারী',
-            'route' => 'suppliers.index',
-            'icon' => 'ti ti-users',
-        ],
-        [
-            'text' => 'ব্যবহারকারীসমূহ',
-            'route' => 'users.index',
-            'icon' => 'ti ti-users',
-        ],
-        [
-            'text' => 'অ্যাকাউন্টসমূহ',
-            'route' => 'accounts.index',
-            'icon' => 'ti ti-currency-taka',
-        ],
-        [
-            'text' => 'লোন ম্যানেজমেন্ট',
-            'url' => '#',
-            'icon' => 'ti ti-coin-taka',
+            'icon' => 'ti ti-direction-sign',
             'submenu' => [
                 [
-                    'text' => 'সকল লোন',
-                    'route' => 'loans.index',
-                    'icon' => 'ti ti-coin-taka',
+                    'text' => 'ক্রয়',
+                    'route' => 'purchases.index',
+                    'icon' => 'ti ti-building-store',
                 ],
                 [
-                    'text' => 'লোন পেমেন্ট',
-                    'route' => 'loans.transactions',
-                    'icon' => 'ti ti-category',
-                ],
-            ]
-        ],
-        [
-            'text' => 'ব্যালেন্স ট্রান্সফার',
-            'route' => 'balance_transfers.index',
-            'icon' => 'ti ti-currency-taka',
-        ],
-        [
-            'text' => 'লেনদেন',
-            'url' => '#',
-            'icon' => 'ti ti-currency-taka',
-            'submenu' => [
-                [
-                    'text' => 'সকল লেনদেন',
-                    'route' => 'transactions.index',
-                    'icon' => 'ti ti-cash-banknote',
+                    'text' => 'ক্রয় ফেরত',
+                    'route' => 'purchase_returns.index',
+                    'icon' => 'ti ti-building-store',
                 ],
                 [
-                    'text' => 'ক্রেতা\'র লেনদেন',
-                    'route' => 'transactions.customer',
-                    'icon' => 'ti ti-cash-banknote',
+                    'text' => 'সরবরাহকারী',
+                    'route' => 'suppliers.index',
+                    'icon' => 'ti ti-users',
                 ],
                 [
                     'text' => 'সরবরাহকারী\'র লেনদেন',
@@ -228,28 +180,160 @@ return [
                 ],
             ]
         ],
+
         [
-            'text' => 'লোন ম্যানেজমেন্ট',
-            'url' => '#',
-            'icon' => 'ti ti-coin-taka',
+            'text' => 'বিক্রয়',
+            'icon' => 'ti ti-direction-sign',
             'submenu' => [
                 [
-                    'text' => 'সকল লোন',
+                    'text' => 'বিক্রয়',
+                    'route' => 'sales.index',
+                    'icon' => 'ti ti-shopping-cart',
+                ],
+                [
+                    'text' => 'বিক্রয়কৃত পণ্য',
+                    'route' => 'sale_details.index',
+                    'icon' => 'ti ti-shopping-cart',
+                ],
+                [
+                    'text' => 'বিক্রয় ফেরত',
+                    'route' => 'sale_returns.index',
+                    'icon' => 'ti ti-shopping-cart',
+                ],
+                [
+                    'text' => 'ক্রেতা',
+                    'route' => 'customers.index',
+                    'icon' => 'ti ti-users',
+                ],
+                [
+                    'text' => 'ক্রেতা\'র লেনদেন',
+                    'route' => 'transactions.customer',
+                    'icon' => 'ti ti-cash-banknote',
+                ],
+            ]
+        ],
+
+        [
+            'text' => 'ঋণ',
+            'icon' => 'ti ti-direction-sign',
+            'submenu' => [
+                [
+                    'text' => 'ব্যাক্তিগত ঋণ',
                     'route' => 'loans.index',
                     'icon' => 'ti ti-coin-taka',
                 ],
                 [
-                    'text' => 'লোন পেমেন্ট',
-                    'route' => 'loans.transactions',
+                    'text' => 'ব্যাক্তিগত ঋণ পেমেন্ট',
+                    'route' => 'loan_repayments.index',
+                    'icon' => 'ti ti-category',
+                ],
+                [
+                    'text' => 'ব্যাংক ঋণ',
+                    'route' => 'bank_loans.index',
+                    'icon' => 'ti ti-currency-taka',
+                ],
+                [
+                    'text' => 'ব্যাংক ঋণ পেমেন্ট',
+                    'route' => 'bank_loan_repayments.index',
+                    'icon' => 'ti ti-currency-taka',
+                ],
+            ]
+        ],
+        [
+            'text' => 'মূলধন',
+            'icon' => 'ti ti-coin-taka',
+            'submenu' => [
+                [
+                    'text' => 'মূলধন',
+                    'route' => 'capitals.index',
+                    'icon' => 'ti ti-coin-taka',
+                ],
+                [
+                    'text' => 'উত্তোলন',
+                    'route' => 'capital_withdraws.index',
                     'icon' => 'ti ti-category',
                 ],
             ]
         ],
         [
-            'text' => 'ব্যয় সমুহ',
-            'url' => '#',
+            'text' => 'বিনিয়োগ',
             'icon' => 'ti ti-coin-taka',
             'submenu' => [
+                [
+                    'text' => 'বিনিয়োগ',
+                    'route' => 'investments.index',
+                    'icon' => 'ti ti-coin-taka',
+                ],
+                [
+                    'text' => 'পেমেন্ট',
+                    'route' => 'investment_repayments.index',
+                    'icon' => 'ti ti-category',
+                ],
+                [
+                    'text' => 'সম্পদ',
+                    'route' => 'asset.index',
+                    'icon' => 'ti ti-box',
+                ],
+                [
+                    'text' => 'সম্পদ বিক্রয়',
+                    'route' => 'asset_sells.index',
+                    'icon' => 'ti ti-box',
+                ],
+            ]
+        ],
+        [
+            'text' => 'স্টাফ',
+            'icon' => 'ti ti-users',
+            'submenu' => [
+                [
+                    'text' => 'ব্যবহারকারীসমূহ',
+                    'route' => 'users.index',
+                    'icon' => 'ti ti-users',
+                ],
+                [
+                    'text' => 'কর্মী তালিকা',
+                    'route' => 'employees.index',
+                    'icon' => 'ti ti-users',
+                ],
+                [
+                    'text' => 'বেতন',
+                    'route' => 'salaries.index',
+                    'icon' => 'ti ti-currency-taka',
+                ],
+            ]
+        ],
+
+        [
+            'text' => 'অ্যাকাউন্টস',
+            'icon' => 'ti ti-currency-taka',
+            'submenu' => [
+                [
+                    'text' => 'অ্যাকাউন্ট তালিকা',
+                    'route' => 'accounts.index',
+                    'icon' => 'ti ti-currency-taka',
+                ],
+                [
+                    'text' => 'ব্যালেন্স ট্রান্সফার',
+                    'route' => 'balance_transfers.index',
+                    'icon' => 'ti ti-currency-taka',
+                ],
+            ]
+        ],
+
+        [
+            'text' => 'আয়/ব্যয় সমুহ',
+            'icon' => 'ti ti-coin-taka',
+            'submenu' => [
+                [
+                    'text' => 'আয়',
+                    'route' => 'incomes.index',
+                    'icon' => 'ti ti-coin-taka',
+                ],
+                [
+                    'text' => 'আয় ক্যাটেগরি',
+                    'route' => 'income_categories.index',
+                    'icon' => 'ti ti-category',
+                ],
                 [
                     'text' => 'ব্যয়',
                     'route' => 'expenses.index',
@@ -259,18 +343,18 @@ return [
                     'text' => 'ব্যয় ক্যাটেগরি',
                     'route' => 'expense_categories.index',
                     'icon' => 'ti ti-category',
-                ],
+                ]
             ]
         ],
+
         [
-            'text' => 'সম্পদ',
-            'route' => 'asset.index',
-            'icon' => 'ti ti-box',
+            'text' => 'সকল লেনদেন',
+            'route' => 'transactions.index',
+            'icon' => 'ti ti-cash-banknote',
         ],
         [
             'text' => 'রিপোর্ট',
-            'url' => '#',
-            'icon' => 'ti ti-report-analytics',
+            'icon' => 'ti ti-direction-sign',
             'submenu' => [
                 [
                     'text' => 'দৈনিক রিপোর্ট',
@@ -278,13 +362,42 @@ return [
                     'icon' => 'ti ti-report',
                 ],
                 [
-                    'text' => 'পেমেন্ট রিপোর্ট',
-                    'route' => 'report.payment',
+                    'text' => 'ক্রয় রিপোর্ট',
+                    'route' => 'report.purchases',
+                    'icon' => 'ti ti-report',
+                ],
+                [
+                    'text' => 'বিক্রয় রিপোর্ট',
+                    'route' => 'report.sales',
+                    'icon' => 'ti ti-report',
+                ],
+                [
+                    'text' => 'স্টক রিপোর্ট',
+                    'route' => 'report.stock',
+                    'icon' => 'ti ti-report',
+                ],
+                [
+                    'text' => 'সরবরাহকারী ব্যালেন্স রিপোর্ট',
+                    'route' => 'report.supplier.balance',
+                    'icon' => 'ti ti-report',
+                ],
+                [
+                    'text' => 'ক্রেতা ব্যালেন্স রিপোর্ট',
+                    'route' => 'report.customer.balance',
+                    'icon' => 'ti ti-report',
+                ],
+                [
+                    'text' => 'ক্রয়-বিক্রয় রিপোর্ট',
+                    'route' => 'report.purchase.sales',
+                    'icon' => 'ti ti-report',
+                ],
+                [
+                    'text' => 'ব্যালেন্স শীট',
+                    'route' => 'report.balance.sheet',
                     'icon' => 'ti ti-report',
                 ]
             ]
-        ],
-
+        ]
     ],
 
     /*

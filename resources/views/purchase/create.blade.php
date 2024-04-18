@@ -114,7 +114,7 @@
                         $lastPurchase = \App\Models\Purchase::where('user_id',auth()->id())->latest()->first();
                         @endphp
                         <div class="card-body">
-                            <form action="{{ route('purchases.store') }}" method="post">
+                            <form id="form" action="{{ route('purchases.store') }}" method="post">
                                 @csrf
                                 <div class="row">
                                     <div class="col-md-2 mb-3">
@@ -128,7 +128,7 @@
                                     <div class="col-md-2 mb-3">
                                         <label for="invoice_no" class="form-label">চালান নং:</label>
                                         <input type="text" name="invoice_no" class="form-control"
-                                               value="">
+                                               value="{{ generatePurchaseInvoiceNo() }}">
                                         @error('invoice_no')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
@@ -214,11 +214,11 @@
                                             <tr>
                                                 <th colspan="2" class="text-end border-0 py-0">গাড়ি ভাড়া</th>
                                                 <th class="carrying_cost border-0 py-2">
-                                                    <input type="number" name="carrying_cost" class="form-control" value="0" min="0">
+                                                    <input type="number" name="carrying_cost" class="form-control" value="{{ old('carrying_cost') }}" min="0">
                                                 </th>
                                                 <th class="text-end border-0 py-0">মোট</th>
                                                 <th class="subtotal border-0 py-2">
-                                                    <input type="number" name="subtotal" class="form-control" value="0" readonly>
+                                                    <input type="number" name="subtotal" class="form-control" value="{{ old('subtotal') }}" readonly>
                                                 </th>
                                                 <th class="border-0 py-0 border-0 py-0"></th>
                                             </tr>
@@ -226,11 +226,11 @@
                                             <tr>
                                                 <th colspan="2" class="text-end border-0 py-0">ডিস্কাউন্ট</th>
                                                 <th class="discount border-0 py-2">
-                                                    <input type="number" name="discount" class="form-control" value="0" min="0">
+                                                    <input type="number" name="discount" class="form-control" value="{{ old('discount') }}" min="0">
                                                 </th>
                                                 <th class="text-end border-0 py-0">তহরি</th>
                                                 <th class="tohori border-0 py-2">
-                                                    <input type="number" name="tohori" class="form-control" value="0" min="0">
+                                                    <input type="number" name="tohori" class="form-control" value="{{ old('tohori') }}" min="0">
                                                 </th>
                                                 <th class="border-0 py-0"></th>
                                             </tr>
@@ -267,8 +267,7 @@
                                                     <label for="account_id">একাউন্ট</label>
                                                 </th>
                                                 <td class="total border-0 py-2">
-                                                    <select name="account_id" id="account_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
-                                                        <option value=""></option>
+                                                    <select name="account_id" id="account_id" class="form-control select2">
                                                         @forelse($accounts as $account)
                                                             <option value="{{ $account->id }}">{{ $account->name }}</option>
                                                         @empty
@@ -334,7 +333,7 @@
                                             <tr>
                                                 <th colspan="4"></th>
                                                 <td>
-                                                    <button type="submit" class="btn btn-primary w-100">সাবমিট</button>
+                                                    <button type="submit" id="submitButton" class="btn btn-primary w-100">সাবমিট</button>
                                                 </td>
                                                 <td></td>
                                             </tr>
@@ -352,7 +351,13 @@
 @endsection
 
 @section('scripts')
-
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('form').submit();
+            this.disabled = true;
+        });
+    </script>
     <script type="module">
         window.addProductEntry = function () {
 
@@ -399,7 +404,7 @@
             });
 
             // Update total when carrying cost or discount changes
-            $(' input[name="discount"], input[name="tohori"]').on('input', function () {
+            $(' input[name="discount"]').on('input', function () {
                 updateTotal();
             });
 
@@ -438,8 +443,8 @@
             var discount = parseFloat($('input[name="discount"]').val()) || 0;
             total -= discount;
 
-            var tohori = parseFloat($('input[name="tohori"]').val()) || 0;
-            total -= tohori;
+            //var tohori = parseFloat($('input[name="tohori"]').val()) || 0;
+            //total -= tohori;
 
             // Update the total input field
             $('input[name="total"]').val(total.toFixed(2));

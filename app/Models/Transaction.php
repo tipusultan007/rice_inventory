@@ -28,7 +28,6 @@ class Transaction extends Model
 
     static $rules = [
 		'amount' => 'required',
-		'type' => 'required',
     ];
 
     protected $perPage = 20;
@@ -40,10 +39,12 @@ class Transaction extends Model
      */
     protected $fillable = [
         'account_id',
+        'account_name',
+        'trx_id',
         'customer_id',
         'supplier_id',
-        'loan_id',
         'amount',
+        'balance',
         'type',
         'reference_id',
         'transaction_type',
@@ -68,63 +69,37 @@ class Transaction extends Model
     {
         return $this->belongsTo(Supplier::class);
     }
-
-
-    public function setUserIdAttribute($value)
+    public function loan()
     {
-
-        $this->attributes['user_id'] = Auth::id();
+        return $this->belongsTo(Loan::class);
     }
 
-    public function getTransactionTypeAttribute()
+    public function capital()
     {
-        switch ($this->attributes['transaction_type']) {
-            case 'balance_transfer_out':
-                return __('ব্যালেন্স স্থানান্তর (বাহিরভুক্ত)');
-                break;
+        return $this->belongsTo(Capital::class);
+    }
+    public function asset()
+    {
+        return $this->belongsTo(Asset::class,'reference_id');
+    }
 
-            case 'balance_transfer_in':
-                return __('ব্যালেন্স স্থানান্তর (অভ্যন্তরভুক্ত)');
-                break;
+    public function incomeCategory()
+    {
+        return $this->belongsTo(IncomeCategory::class);
+    }
 
-            case 'external_payment_received':
-                return __('বাইরে থেকে পেমেন্ট প্রাপ্ত');
-                break;
+    public function income()
+    {
+        return $this->belongsTo(Income::class);
+    }
 
-            case 'external_payment_made':
-                return __('বাইরে পেমেন্ট হয়েছে');
-                break;
+    public function expenseCategory()
+    {
+        return $this->belongsTo(ExpenseCategory::class);
+    }
 
-            case 'due_payment':
-                return __('বকেয়া পেমেন্ট');
-                break;
-
-            case 'supplier_payment':
-                return __('সরবরাহকারী পেমেন্ট');
-                break;
-
-            case 'sale':
-                return __('বিক্রয়');
-                break;
-
-            case 'purchase':
-                return __('ক্রয়');
-                break;
-
-            case 'loan_taken':
-                return __('লোন সংগ্রহ');
-                break;
-            case 'loan_repayment':
-                return __('লোন পেমেন্ট');
-                break;
-            case 'loan_interest':
-                return __('লোন কমিশন');
-                break;
-            case 'asset':
-                return __('সম্পদ');
-                break;
-            default:
-                return '-';
-        }
+    public function expense()
+    {
+        return $this->belongsTo(Expense::class);
     }
 }

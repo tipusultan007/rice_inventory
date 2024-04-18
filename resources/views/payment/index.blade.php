@@ -19,6 +19,21 @@
                     </h2>
                 </div>
                 <!-- Page title actions -->
+                <div class="col-12 col-md-auto ms-auto d-print-none">
+                    <div class="btn-list">
+                        <a href="{{ route('payments.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                            <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Create Payment
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -28,194 +43,6 @@
             @if(config('tablar','display_alert'))
                 @include('tablar::common.alert')
             @endif
-            <div class="row mb-3">
-                <div class="col-6">
-                    <div class="card">
-                        <div class="card-header bg-success">
-                            <h3 class="card-title text-white">ক্রেতা'র পেমেন্ট ফরম</h3>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('customer.make.payment') }}" method="POST">
-                                @csrf
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="customer_id">ক্রেতা</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <select name="customer_id" id="customer_id"
-                                                class="form-control select2" required>
-                                            <option value=""></option>
-                                            @forelse($customers as $customer)
-                                                <option data-due="{{ $customer->remaining_due }}" value="{{ $customer->id }}">
-                                                    {{ $customer->name }} - {{ $customer->address }} - {{ $customer->remaining_due }}
-                                                </option>
-                                            @empty
-                                            @endforelse
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="due">পূর্বের বকেয়া</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" name="due" id="customerDue"
-                                               value="0" readonly>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="amount">টাকা</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="number" class="form-control" name="amount" value="" required>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="date">তারিখ</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control flatpicker" name="date" required>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="payment_method_id">পেমেন্ট মাধ্যম</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <select name="payment_method_id"
-                                                class="form-control select2" required>
-                                            <option value=""></option>
-                                            @forelse($methods as $method)
-                                                <option value="{{ $method->id }}">{{ $method->name }}</option>
-                                            @empty
-                                            @endforelse
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="cheque_no">চেক নং</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" name="cheque_no" id="cheque_no" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="cheque_details">চেক বিবরণ</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" name="cheque_details" id="cheque_details" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-
-                                    </div>
-                                    <div class="col-md-9">
-                                        <button class="btn btn-primary" type="submit">সাবমিট</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="card">
-                        <div class="card-header bg-danger">
-                            <h3 class="card-title text-white">সরবরাহকারী'র পেমেন্ট ফরম</h3>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('supplier.make.payment') }}" method="POST">
-                                @csrf
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="supplier_id">সরবরাহকারী</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <select name="supplier_id" id="supplier_id"
-                                                class="form-control select2" required>
-                                            <option value=""></option>
-                                            @forelse($suppliers as $supplier)
-                                                <option data-due="{{ $supplier->remaining_due }}" value="{{ $supplier->id }}">
-                                                    {{ $supplier->name }} - {{ $supplier->address }}
-                                                </option>
-                                            @empty
-                                            @endforelse
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="due">পূর্বের বকেয়া</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" name="due" id="supplierDue"
-                                               value="0" readonly>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="amount">টাকা</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="number" class="form-control" name="amount" value="" required>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="date">তারিখ</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control flatpicker" name="date" required>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="payment_method_id">পেমেন্ট মাধ্যম</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <select name="payment_method_id"
-                                                class="form-control select2" required>
-                                            <option value=""></option>
-                                            @forelse($methods as $method)
-                                                <option value="{{ $method->id }}">{{ $method->name }}</option>
-                                            @empty
-                                            @endforelse
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="cheque_no">চেক নং</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" name="cheque_no" id="cheque_no" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label for="cheque_details">চেক বিবরণ</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <input type="text" name="cheque_details" id="cheque_details" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-
-                                    </div>
-                                    <div class="col-md-9">
-                                        <button class="btn btn-primary" type="submit">সাবমিট</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
@@ -242,17 +69,34 @@
                             </div>
                         </div>
                         <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter text-nowrap datatable table-bordered">
+                            <table class="table card-table table-vcenter text-nowrap datatable">
                                 <thead>
                                 <tr>
-                                    <th class="fw-bolder fs-4">তারিখ</th>
-                                    <th class="fw-bolder fs-4 bg-success text-white">ক্রেতা</th>
-                                    <th class="fw-bolder fs-4 bg-danger text-white">সরবরাহকারী</th>
-                                    <th class="fw-bolder fs-4">চালান নং</th>
-                                    <th class="fw-bolder fs-4">পেমেন্ট মাধ্যম</th>
-                                    <th class="fw-bolder fs-4">পেমেন্ট'র ধরন</th>
-                                    <th class="fw-bolder fs-4">টাকা</th>
-                                    <th class="fw-bolder fs-4">নোট</th>
+                                    <th class="w-1"><input class="form-check-input m-0 align-middle" type="checkbox"
+                                                           aria-label="Select all invoices"></th>
+                                    <th class="w-1">No.
+                                        <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                             class="icon icon-sm text-dark icon-thick" width="24" height="24"
+                                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                             stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <polyline points="6 15 12 9 18 15"/>
+                                        </svg>
+                                    </th>
+                                    
+										<th>Customer Id</th>
+										<th>Supplier Id</th>
+										<th>Sale Id</th>
+										<th>Purchase Id</th>
+										<th>Sale Return Id</th>
+										<th>Purchase Return Id</th>
+										<th>Amount</th>
+										<th>Balance</th>
+										<th>Date</th>
+										<th>Trx Id</th>
+										<th>User Id</th>
+
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
@@ -260,33 +104,21 @@
                                 <tbody>
                                 @forelse ($payments as $payment)
                                     <tr>
-                                        <td>{{ date('d/m/Y',strtotime($payment->date)) }}</td>
-                                        <td class="bg-success text-white">{{ $payment->customer->name??'-' }}</td>
-                                        <td class="bg-danger text-white">{{ $payment->supplier->name??'-' }}</td>
-                                        <td>{{ $payment->invoice??'-' }}</td>
-                                        <td>{{ $payment->paymentMethod->name??'-' }}</td>
-                                        <td>
-
-                                            @if($payment->customer_id != "")
-                                                @if($payment->type === 'debit')
-                                                    <span class="badge bg-danger text-white">বকেয়া</span>
-                                                @elseif($payment->type === 'credit')
-                                                    <span class="badge bg-success text-white">পরিশোধ</span>
-                                                @else
-                                                    <span class="badge bg-info text-white">ডিস্কাউন্ট</span>
-                                                @endif
-                                            @else
-                                                @if($payment->type === 'credit')
-                                                    <span class="badge bg-danger text-white">বকেয়া</span>
-                                                @elseif($payment->type === 'debit')
-                                                    <span class="badge bg-success text-white">পরিশোধ</span>
-                                                @else
-                                                    <span class="badge bg-warning text-white">ডিস্কাউন্ট</span>
-                                                @endif
-                                            @endif
-                                        </td>
-                                        <td>{{ $payment->amount }}</td>
-                                        <td>{!! $payment->note??'-' !!}</td>
+                                        <td><input class="form-check-input m-0 align-middle" type="checkbox"
+                                                   aria-label="Select payment"></td>
+                                        <td>{{ ++$i }}</td>
+                                        
+											<td>{{ $payment->customer_id }}</td>
+											<td>{{ $payment->supplier_id }}</td>
+											<td>{{ $payment->sale_id }}</td>
+											<td>{{ $payment->purchase_id }}</td>
+											<td>{{ $payment->sale_return_id }}</td>
+											<td>{{ $payment->purchase_return_id }}</td>
+											<td>{{ $payment->amount }}</td>
+											<td>{{ $payment->balance }}</td>
+											<td>{{ $payment->date }}</td>
+											<td>{{ $payment->trx_id }}</td>
+											<td>{{ $payment->user_id }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">
@@ -328,7 +160,7 @@
 
                             </table>
                         </div>
-                        <div class="card-footer d-flex align-items-center">
+                       <div class="card-footer d-flex align-items-center">
                             {!! $payments->links('tablar::pagination') !!}
                         </div>
                     </div>
@@ -336,36 +168,4 @@
             </div>
         </div>
     </div>
-@endsection
-@section('scripts')
-    <script type="module">
-        $(document).ready(function () {
-            $(".select2").select2({
-                width: '100%',
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'সিলেক্ট করুন'
-            });
-            $("#customer_id").on("change.select2",function () {
-                var due = $(this).find(':selected').data('due');
-                $("#customerDue").val(due);
-            });
-            $("#supplier_id").on("change.select2",function () {
-                var due = $(this).find(':selected').data('due');
-                console.log("hi")
-                $("#supplierDue").val(due);
-            })
-        })
-    </script>
-    <script type="module">
-        document.addEventListener('DOMContentLoaded', function () {
-            window.flatpickr(".flatpicker", {
-                altInput: true,
-                allowInput: true,
-                altFormat: "d-m-Y",
-                dateFormat: "Y-m-d",
-                defaultDate: "{{ date('Y-m-d') }}"
-            });
-        });
-    </script>
 @endsection

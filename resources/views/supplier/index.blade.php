@@ -12,7 +12,7 @@
                 <div class="col">
                     <!-- Page pre-title -->
                     <div class="page-pretitle">
-                        List
+                        তালিকা
                     </div>
                     <h2 class="page-title">
                         সরবরাহকারী
@@ -46,43 +46,9 @@
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">সরবরাহকারী</h3>
-                        </div>
-                        {{--<div class="card-body border-bottom py-3">
-                            <div class="d-flex">
-                                <div class="text-muted">
-                                    Show
-                                    <div class="mx-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm" value="10" size="3"
-                                               aria-label="Invoices count">
-                                    </div>
-                                    entries
-                                </div>
-                                <div class="ms-auto text-muted">
-                                    Search:
-                                    <div class="ms-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm"
-                                               aria-label="Search invoice">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>--}}
                         <div class="table-responsive">
-                            <table class="table table-vcenter table-bordered datatable">
+                            <table class="table table-sm table-vcenter table-bordered datatable">
                                 <thead>
-                                <tr>
-                                   {{-- <th class="w-1 fw-bolder fs-5">নং.
-                                        <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="icon icon-sm text-dark icon-thick" width="24" height="24"
-                                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                            <polyline points="6 15 12 9 18 15"/>
-                                        </svg>
-                                    </th>--}}
-
                                 <tr>
                                     <th class="fw-bolder fs-4">নাম</th>
                                     <th class="fw-bolder fs-4">মোবাইল নং</th>
@@ -91,56 +57,15 @@
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
-
-                              {{--  <tbody>
-                                @forelse ($suppliers as $supplier)
-                                    <tr>
-                                        <td>{{ ++$i }}</td>
-
-											<td>{{ $supplier->name }}</td>
-											<td>{{ $supplier->phone }}</td>
-											<td>{{ $supplier->address }}</td>
-											<td>{{ $supplier->company }}</td>
-                                        <td class="text-danger fw-bolder text-end">{{ $supplier->remainingDue }}</td>
-
-                                        <td>
-                                            <div class="btn-list flex-nowrap">
-                                                <div class="dropdown">
-                                                    <button class="btn dropdown-toggle align-text-top"
-                                                            data-bs-toggle="dropdown">
-                                                        Actions
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('suppliers.show',$supplier->id) }}">
-                                                            View
-                                                        </a>
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('suppliers.edit',$supplier->id) }}">
-                                                            Edit
-                                                        </a>
-                                                        <form
-                                                            action="{{ route('suppliers.destroy',$supplier->id) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                    onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
-                                                                    class="dropdown-item text-red"><i
-                                                                    class="fa fa-fw fa-trash"></i>
-                                                                Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <td>No Data Found</td>
-                                @endforelse
-                                </tbody>--}}
-
+                                <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th class="text-end">মোট =</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                </tfoot>
                             </table>
                         </div>
                        <div class="card-footer d-flex align-items-center">
@@ -158,8 +83,17 @@
         customerTables();
         function customerTables() {
             jQuery('.datatable').DataTable({
+                "dom": '<"d-flex justify-content-between align-items-center header-actions mx-2 row my-3"' +
+                    '<"col-sm-12 col-lg-4 d-flex justify-content-center justify-content-lg-start mb-1" l>' +
+                    '<"col-sm-12 col-lg-8 ps-xl-75 mb-1 ps-0"<"dt-action-buttons d-flex align-items-center justify-content-between justify-content-lg-end flex-lg-nowrap flex-wrap"<"me-1"f>B>>' +
+                    '>t' +
+                    '<"d-flex justify-content-between my-3 row"' +
+                    '<"col-sm-12 col-md-6 mb-1"i>' +
+                    '<"col-sm-12 col-md-6 mb-1 d-flex justify-content-end"p>' +
+                    '>',
                 "processing": true,
                 "serverSide": true,
+                "ordering": true,
                 "ajax":{
                     "url": "{{ url('dataSuppliers') }}",
                     "dataType": "json",
@@ -167,14 +101,58 @@
                 },
                 "columns": [
                     { "data": "name" },
-                    { "data": "phone" },
-                    { "data": "address" },
+                    { "data": "phone", sorting: false },
+                    { "data": "address", sorting: false },
                     { "data": "due" },
-                    { "data": "options" },
-                ]
+                    { "data": "options", sorting: false },
+                ],
+                "columnDefs": [
+                    { "sorting": [ "desc", "asc" ], "targets": [ "_all" ] }
+                ],
+                "order": [[ 3, "desc" ]],
+                "buttons": [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="ti ti-file-spreadsheet me-2"></i>Excel',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3]
+                        },
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="ti ti-printer me-2" ></i>Print',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3],
+                        },
+                        messageTop:
+                            '<h2 class="text-center my-3">পণ্য তালিকা</h2>',
+                        customize: function(win) {
+                            // Remove page title
+                            $(win.document.body).find('h1').remove();
+                        },
+                        customizeData: function (data) {
+                            data.styles = {
+                                tableStriped: '', // Remove striped style
+                                tableBorder: '', // Remove table border
+                            };
+                            return data;
+                        }
+                    },
+                ],
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api();
+
+
+                    // Sum the values in the 'total' column
+                    var total = api.column(3, { page: 'current' }).data().reduce(function (acc, val) {
+                        return acc + parseFloat(val);
+                    }, 0);
+
+                    jQuery(api.column(3).footer()).html(total.toFixed(0));
+
+                },
             });
         }
-
 
         $(document).on("click", ".delete", function () {
             var id = $(this).data('id');

@@ -56,7 +56,8 @@ class Purchase extends Model
         'note',
         'due',
         'paid',
-        'attachment'
+        'attachment',
+        'trx_id'
     ];
 
 

@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\Asset;
+use App\Models\AssetSell;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 /**
  * Class AssetController
@@ -35,7 +38,7 @@ class AssetController extends Controller
     public function create()
     {
         $asset = new Asset();
-        $accounts = Account::all();
+
         return view('asset.create', compact('asset','accounts'));
     }
 
@@ -49,15 +52,32 @@ class AssetController extends Controller
     {
         request()->validate(Asset::$rules);
 
-        $asset = Asset::create($request->all());
+        $data = $request->all();
+        $data['trx_id'] = Str::uuid();
+        $asset = Asset::create($data);
 
-        Transaction::create([
+        $account = Account::find($request->input('account_id'));
+        $creditTransaction = Transaction::create([
             'account_id' => $request->input('account_id'),
+            'account_name' => $account->name,
+            'amount' => $asset->value,
+            'type' => 'credit',
+            'reference_id' => $asset->id,
+            'date' => $asset->date,
+            'transaction_type' => 'asset',
+            'user_id' => Auth::id(),
+            'trx_id' => $asset->trx_id
+        ]);
+
+        $debitTransaction = Transaction::create([
+            'account_name' => $asset->name,
             'amount' => $asset->value,
             'type' => 'debit',
             'reference_id' => $asset->id,
             'date' => $asset->date,
             'transaction_type' => 'asset',
+            'user_id' => Auth::id(),
+            'trx_id' => $asset->trx_id
         ]);
 
         return redirect()->route('asset.index')
@@ -73,8 +93,9 @@ class AssetController extends Controller
     public function show($id)
     {
         $asset = Asset::find($id);
+        $assetSells = AssetSell::where('asset_id',$asset->id)->orderBy('id','desc')->get();
 
-        return view('asset.show', compact('asset'));
+        return view('asset.show', compact('asset','assetSells'));
     }
 
     /**
@@ -90,6 +111,7 @@ class AssetController extends Controller
 
         $transaction = Transaction::where('transaction_type','asset')
             ->where('reference_id', $asset->id)->first();
+
 
         return view('asset.edit', compact('asset','accounts','transaction'));
     }
@@ -107,13 +129,28 @@ class AssetController extends Controller
 
         $asset->update($request->all());
 
-        $assetTransaction = Transaction::where('transaction_type','asset')
+        $creditTransaction = Transaction::where('transaction_type','asset')
+            ->where('type','credit')
             ->where('reference_id', $asset->id)->first();
 
-        if ($assetTransaction){
-            $asset->amount = $asset->value;
-            $asset->date = $asset->date;
-            $asset->save();
+        $debitTransaction = Transaction::where('transaction_type','asset')
+            ->where('type','debit')
+            ->where('reference_id', $asset->id)->first();
+
+        $account = Account::find($request->input('account_id'));
+
+        if ($debitTransaction){
+            $debitTransaction->amount = $asset->value;
+            $debitTransaction->date = $asset->date;
+            $debitTransaction->save();
+        }
+
+        if ($creditTransaction){
+            $creditTransaction->account_id = $request->input('account_id');
+            $creditTransaction->account_name = $account->name;
+            $creditTransaction->amount = $asset->value;
+            $creditTransaction->date = $asset->date;
+            $creditTransaction->save();
         }
 
         return redirect()->route('asset.index')

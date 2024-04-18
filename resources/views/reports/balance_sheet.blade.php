@@ -44,17 +44,8 @@
                 @include('tablar::common.alert')
             @endif
                 @php
-                    function calculateBalance($transactions)
-                    {
-                        $balance = 0;
-
-                        foreach ($transactions as $transaction) {
-                            $amount = $transaction->amount * ($transaction->type === 'credit' ? 1 : -1);
-                            $balance += $amount;
-                        }
-
-                        return $balance;
-                    }
+                    $totalAssets = 0;
+                    $totalLiabilities = 0;
                 @endphp
             <div class="row">
                 <div class="col-12 justify-content-center">
@@ -64,8 +55,8 @@
                             <h3 class="mt-2">তারিখঃ {{ date('d/m/Y') }}</h3>
                         </div>
                 </div>
-            {{--    <div class="col-12 d-print-none">
-                    <form action="{{ route('report.daily') }}" method="get">
+                <div class="col-12 mb-3 d-print-none">
+                    <form action="{{ route('report.balance.sheet') }}" method="get">
                         <div class="row">
                             <div class="col-md-2">
                                 <input type="text" class="form-control flatpicker" name="date">
@@ -75,7 +66,7 @@
                             </div>
                         </div>
                     </form>
-                </div>--}}
+                </div>
 
                 <div class="col-6">
                     <table class="table table-sm table-bordered">
@@ -87,22 +78,38 @@
                         </thead>
                         <tbody>
                         @foreach ($accounts as $account)
+                            @php
+                                $totalAccountBalance = calculateBalance($account->transactions);
+                                $totalAssets += $totalAccountBalance;
+                            @endphp
                             <tr>
                                 <td>{{ $account->name }}</td>
-                                <td class="text-end">{{ calculateBalance($account->transactions) }}</td>
+                                <td class="text-end">{{ $totalAccountBalance }}</td>
                             </tr>
                         @endforeach
-                        <tr>
-                            <td>পণ্য স্টক</td>
-                            <td class="text-end">{{ $product_stock->total_price }}</td>
-                        </tr>
+
+                        @php
+                            //$customerDue = $customer_due->credit - $customer_due->debit;
+                            $totalAssets += $customer_due;
+                            $totalAssets += $investmentBalance;
+                        @endphp
                         <tr>
                             <td>ক্রেতা'র বকেয়া</td>
-                            <td class="text-end">{{ $customer_due->debit - $customer_due->credit }}</td>
+                            <td class="text-end">{{ $customer_due }}</td>
                         </tr>
+                        <tr>
+                            <td>বিনিয়োগ</td>
+                            <td class="text-end">{{ $investmentBalance }}</td>
+                        </tr>
+
                         <tr>
                             <td>সম্পদ</td>
                             <td class="text-end">{{ $assets }}</td>
+                        </tr>
+
+                        <tr>
+                            <th class="text-end">মোট =</th>
+                            <th class="text-end">{{ $totalAssets + $assets }}</th>
                         </tr>
                         </tbody>
                     </table>
@@ -116,13 +123,34 @@
                         </tr>
                         </thead>
                         <tbody>
+                        @php
+
+    //$supplierDue = $supplier_due->debit - $supplier_due->credit;
+    $totalLiabilities = $supplier_due + $loanBalance + $bankloanBalance + $capitalBalance + $netProfit;
+ @endphp
                         <tr>
                             <td>সরবরাহকারী'র বকেয়া</td>
-                            <td class="text-end">{{ $supplier_due->credit - $supplier_due->debit }}</td>
+                            <td class="text-end">{{ $supplier_due }}</td>
                         </tr>
                         <tr>
-                            <td>লোন </td>
-                            <td class="text-end">{{ $loans }}</td>
+                            <td>ঋণ </td>
+                            <td class="text-end">{{ $loanBalance }}</td>
+                        </tr>
+                        <tr>
+                            <td>ব্যাংক ঋণ </td>
+                            <td class="text-end">{{ $bankloanBalance }}</td>
+                        </tr>
+                        <tr>
+                            <td>মূলধন </td>
+                            <td class="text-end">{{ $capitalBalance }}</td>
+                        </tr>
+                        <tr>
+                            <td>নিট মুনাফা </td>
+                            <td class="text-end">{{ number_format($netProfit) }}</td>
+                        </tr>
+                        <tr>
+                            <th>মোট =</th>
+                            <th class="text-end">{{ number_format($totalLiabilities) }}</th>
                         </tr>
                         </tbody>
                     </table>

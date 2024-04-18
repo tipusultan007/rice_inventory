@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class Customer
@@ -32,27 +33,76 @@ class Customer extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','phone','address','image'];
+
+    protected $appends = ['remaining_due'];
+    protected $fillable = ['name','phone','address','image','starting_balance'];
 
 
+    public function customerDue()
+    {
+        return $this->payments()->where('transaction_type','sale')
+            ->where('type', 'credit')
+            ->sum('amount');
+    }
+
+    public function customerPayment()
+    {
+        return $this->payments()->where('transaction_type','customer_payment')
+            ->where('type', 'debit')
+            ->sum('amount');
+    }
     public function payments()
     {
         return $this->hasMany(Transaction::class);
     }
-
-    public function debitSum()
-    {
-        return $this->payments()->where('type', 'debit')->sum('amount');
-    }
-
-    public function creditSum()
-    {
-        return $this->payments()->where('type', 'credit')->sum('amount');
-    }
-
     public function getRemainingDueAttribute()
     {
-        return $this->debitSum() - $this->creditSum();
-    }
+        $total = DB::table('transactions')
+            ->select(DB::raw('SUM(
+            CASE
+                WHEN transaction_type = "customer_opening_balance" AND type = "debit" THEN amount
+                WHEN transaction_type = "sale" AND type = "credit" THEN amount
+                WHEN transaction_type = "customer_payment" AND type = "debit" THEN -amount
+                WHEN transaction_type = "discount" AND type = "debit" THEN -amount
+                WHEN transaction_type = "payment_to_customer" AND type = "credit" THEN -amount
+                ELSE 0
+            END
+        ) AS total_due'))
+            ->where('customer_id', $this->id)
+            ->value('total_due');
 
+        return $total;
+    }
+    /*public function getRemainingDueAttribute()
+    {
+        $total = $this->payments()->where('transaction_type','customer_opening_balance')
+            ->where('type', 'debit')
+            ->sum('amount');
+
+        $total += $this->payments()->where('transaction_type','sale')
+            ->where('type', 'credit')
+            ->sum('amount');
+
+        $total -= $this->payments()->where('transaction_type','customer_payment')
+            ->where('type', 'debit')
+            ->sum('amount');
+        $total -= $this->payments()->where('transaction_type','discount')
+            ->where('type', 'debit')
+            ->sum('amount');
+        $total -= $this->payments()->where('transaction_type','payment_to_customer')
+            ->where('type', 'credit')
+            ->sum('amount');
+
+        return $total;
+
+    }*/
+
+    public function saleReturn()
+    {
+        return $this->payments()->where('transaction_type','sale_return')
+                ->where('type', 'debit')
+                ->sum('amount') - $this->payments()->where('transaction_type','payment_to_customer')
+                ->where('type', 'credit')
+                ->sum('amount');
+    }
 }
