@@ -137,23 +137,32 @@ class ReportController extends Controller
             $query->where('date', '<=', $date);
         })->get();
 
+
+
         // Retrieve all sale details for the given date
         $saleDetails = SaleDetail::whereHas('sale', function ($query) use ($date) {
             $query->where('date', '<=', $date);
         })->get();
+
+
+
 
         // Group purchase details by product ID and sum the quantities
         $totalPurchaseQuantities = $purchaseDetails->groupBy('product_id')->map(function ($items) {
             return $items->sum('quantity');
         });
 
+
         // Group sale details by product ID and sum the quantities
         $totalSaleQuantities = $saleDetails->groupBy('product_id')->map(function ($items) {
             return $items->sum('quantity');
         });
 
+
+
+
         // Retrieve initial stock for each product
-        $initialStocks = Product::whereIn('id', $totalPurchaseQuantities->keys())
+        /*$initialStocks = Product::whereIn('id', $totalPurchaseQuantities->keys())
             ->pluck('initial_stock', 'id');
 
         // Calculate the net quantity for each product by considering initial stock
@@ -163,6 +172,8 @@ class ReportController extends Controller
             $initialStock = $initialStocks->get($productId, 0);
             return $initialStock + $totalPurchaseQuantity - $totalSaleQuantity;
         });
+
+
 
         // Retrieve product information based on product IDs
         $products25 = Product::where('type', '25')->whereIn('id', $productQuantities->keys())->get();
@@ -184,7 +195,71 @@ class ReportController extends Controller
                 'quantity' => $quantity,
                 'price_rate' => $product->price_rate,
             ];
+        });*/
+        // Retrieve initial stock for each product
+        // Retrieve initial stock for each product
+        $purchaseReturnDetails = PurchaseReturnDetail::whereHas('purchaseReturn', function ($query) use ($date) {
+            $query->where('date', '<=', $date);
+        })->get();
+        $saleReturnDetails = SaleReturnDetail::whereHas('saleReturn', function ($query) use ($date) {
+            $query->where('date', '<=', $date);
+        })->get();
+        $totalPurchaseReturnQuantities = $purchaseReturnDetails->groupBy('product_id')->map(function ($items) {
+            return $items->sum('quantity');
         });
+        $totalSaleReturnQuantities = $saleReturnDetails->groupBy('product_id')->map(function ($items) {
+            return $items->sum('quantity');
+        });
+        $initialStocks = Product::whereIn('id', $totalPurchaseQuantities->keys())
+            ->pluck('initial_stock', 'id');
+
+// Initialize product quantities array
+        $productQuantities = [];
+
+// Merge total purchase quantities
+        foreach ($totalPurchaseQuantities as $productId => $totalPurchaseQuantity) {
+            $totalSaleQuantity = $totalSaleQuantities->get($productId, 0);
+            $totalPurchaseReturnQuantity = $totalPurchaseReturnQuantities->get($productId, 0);
+            $totalSaleReturnQuantity = $totalSaleReturnQuantities->get($productId, 0);
+
+            $initialStock = $initialStocks->get($productId, 0);
+
+            // Calculate net quantity for each product
+            $productQuantities[$productId] = $initialStock + $totalPurchaseQuantity - $totalSaleQuantity - $totalPurchaseReturnQuantity + $totalSaleReturnQuantity;
+        }
+
+// Merge total sale quantities for products not found in purchase details
+        foreach ($totalSaleQuantities as $productId => $totalSaleQuantity) {
+            if (!isset($productQuantities[$productId])) {
+                $initialStock = $initialStocks->get($productId, 0);
+                $productQuantities[$productId] = $initialStock - $totalSaleQuantity;
+            }
+        }
+
+// Retrieve product information based on product IDs
+        $products25 = Product::where('type', '25')->whereIn('id', array_keys($productQuantities))->get();
+        $products50 = Product::where('type', '50')->whereIn('id', array_keys($productQuantities))->get();
+
+// Combine product information with quantities
+        $productData25 = $products25->map(function ($product) use ($productQuantities) {
+            $quantity = $productQuantities[$product->id];
+            return [
+                'product_name' => $product->name,
+                'quantity' => $quantity,
+                'price_rate' => $product->price_rate,
+            ];
+        });
+
+        $productData50 = $products50->map(function ($product) use ($productQuantities) {
+            $quantity = $productQuantities[$product->id];
+            return [
+                'product_name' => $product->name,
+                'quantity' => $quantity,
+                'price_rate' => $product->price_rate,
+            ];
+        });
+
+
 
         //return view('reports.daily', compact('sales', 'purchases', 'supplierPayments', 'customerPayments', 'productData25', 'productData50'));
         return view('reports.daily',compact(
@@ -364,32 +439,60 @@ class ReportController extends Controller
         });
 
         // Retrieve initial stock for each product
+        $purchaseReturnDetails = PurchaseReturnDetail::whereHas('purchaseReturn', function ($query) use ($date) {
+            $query->where('date', '<=', $date);
+        })->get();
+        $saleReturnDetails = SaleReturnDetail::whereHas('saleReturn', function ($query) use ($date) {
+            $query->where('date', '<=', $date);
+        })->get();
+        $totalPurchaseReturnQuantities = $purchaseReturnDetails->groupBy('product_id')->map(function ($items) {
+            return $items->sum('quantity');
+        });
+        $totalSaleReturnQuantities = $saleReturnDetails->groupBy('product_id')->map(function ($items) {
+            return $items->sum('quantity');
+        });
         $initialStocks = Product::whereIn('id', $totalPurchaseQuantities->keys())
             ->pluck('initial_stock', 'id');
 
-        // Calculate the net quantity for each product by considering initial stock
-        $productQuantities = $totalPurchaseQuantities->merge($totalSaleQuantities)->map(function ($total, $productId) use ($totalPurchaseQuantities,$totalSaleQuantities, $initialStocks) {
-            $totalPurchaseQuantity = $totalPurchaseQuantities->get($productId, 0);
+// Initialize product quantities array
+        $productQuantities = [];
+
+// Merge total purchase quantities
+        foreach ($totalPurchaseQuantities as $productId => $totalPurchaseQuantity) {
             $totalSaleQuantity = $totalSaleQuantities->get($productId, 0);
+            $totalPurchaseReturnQuantity = $totalPurchaseReturnQuantities->get($productId, 0);
+            $totalSaleReturnQuantity = $totalSaleReturnQuantities->get($productId, 0);
+
             $initialStock = $initialStocks->get($productId, 0);
-            return $initialStock + $totalPurchaseQuantity - $totalSaleQuantity;
-        });
 
-        // Retrieve product information based on product IDs
-        $products25 = Product::where('type', '25')->whereIn('id', $productQuantities->keys())->get();
-        $products50 = Product::where('type', '50')->whereIn('id', $productQuantities->keys())->get();
+            // Calculate net quantity for each product
+            $productQuantities[$productId] = $initialStock + $totalPurchaseQuantity - $totalSaleQuantity - $totalPurchaseReturnQuantity + $totalSaleReturnQuantity;
+        }
 
-        // Combine product information with quantities
+// Merge total sale quantities for products not found in purchase details
+        foreach ($totalSaleQuantities as $productId => $totalSaleQuantity) {
+            if (!isset($productQuantities[$productId])) {
+                $initialStock = $initialStocks->get($productId, 0);
+                $productQuantities[$productId] = $initialStock - $totalSaleQuantity;
+            }
+        }
+
+// Retrieve product information based on product IDs
+        $products25 = Product::where('type', '25')->whereIn('id', array_keys($productQuantities))->get();
+        $products50 = Product::where('type', '50')->whereIn('id', array_keys($productQuantities))->get();
+
+// Combine product information with quantities
         $productData25 = $products25->map(function ($product) use ($productQuantities) {
-            $quantity = $productQuantities->get($product->id, 0);
+            $quantity = $productQuantities[$product->id];
             return [
                 'product_name' => $product->name,
                 'quantity' => $quantity,
                 'price_rate' => $product->price_rate,
             ];
         });
+
         $productData50 = $products50->map(function ($product) use ($productQuantities) {
-            $quantity = $productQuantities->get($product->id, 0);
+            $quantity = $productQuantities[$product->id];
             return [
                 'product_name' => $product->name,
                 'quantity' => $quantity,

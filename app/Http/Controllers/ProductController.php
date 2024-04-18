@@ -160,9 +160,11 @@ class ProductController extends Controller
         $sales = SaleDetail::with('product','sale')
             ->where('product_id',$id)
             ->paginate(30);
+
         $purchaseReturns = PurchaseReturnDetail::with('product','purchaseReturn')
             ->where('product_id',$id)
             ->paginate(30);
+
         $saleReturns = SaleReturnDetail::with('product','saleReturn')
             ->where('product_id',$id)
             ->paginate(30);
@@ -200,6 +202,9 @@ class ProductController extends Controller
         request()->validate(Product::$rules);
 
         $product->update($request->all());
+
+        $product->quantity += $product->initial_stock;
+        $product->save();
 
         if ($product->type === '25') {
             $product->name .= " - ২৫ কেজি";
