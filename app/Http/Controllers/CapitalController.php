@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\Capital;
 use App\Models\CapitalWithdraw;
+use App\Models\Expense;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -278,7 +279,15 @@ class CapitalController extends Controller
     public function destroy($id)
     {
         $capital = Capital::find($id);
-        Transaction::where('capital_id', $capital->id)->delete();
+        Transaction::where('trx_id', $capital->trx_id)->delete();
+        $capital_withdraws = CapitalWithdraw::where('capital_id', $capital->id)->get();
+        if ($capital_withdraws){
+            foreach ($capital_withdraws as $withdraw){
+                Expense::where('trx_id', $withdraw->trx_id)->delete();
+                Transaction::where('trx_id', $withdraw->trx_id)->delete();
+                $withdraw->delete();
+            }
+        }
         $capital->delete();
 
         return redirect()->route('capitals.index')

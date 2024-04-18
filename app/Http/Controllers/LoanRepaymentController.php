@@ -373,12 +373,7 @@ class LoanRepaymentController extends Controller
     {
         $loanRepayment = LoanRepayment::find($id);
 
-        $expenses = Expense::where('trx_id', $loanRepayment->id)->get();
-        foreach ($expenses as $expense){
-            Transaction::where('trx_id', $expense->trx_id)->delete();
-            $expense->delete();
-        }
-
+        Expense::where('trx_id', $loanRepayment->trx_id)->delete();
         Transaction::where('trx_id',$loanRepayment->trx_id)->delete();
         $loanRepayment->delete();
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Expense;
 use App\Models\Loan;
 use App\Models\LoanRepayment;
 use App\Models\Transaction;
@@ -266,7 +267,15 @@ class LoanController extends Controller
     public function destroy($id)
     {
         $loan = Loan::find($id);
-        Transaction::where('loan_id', $loan->id)->delete();
+        Transaction::where('trx_id', $loan->trx_id)->delete();
+        $repayments = LoanRepayment::where('loan_id', $loan->id)->get();
+        if ($repayments->count() > 0) {
+            foreach ($repayments as $repayment) {
+                Expense::where('trx_id', $repayment->trx_id)->delete();
+                Transaction::where('trx_id', $repayment->trx_id)->delete();
+                $repayment->delete();
+            }
+        }
         $loan->delete();
 
         return redirect()->route('loans.index')

@@ -250,6 +250,8 @@ class BankLoanController extends Controller
                 }
             }
 
+            Transaction::where('trx_id', $bankLoan->trx_id)->delete();
+
             // Delete the bank loan
             $bankLoan->delete();
 

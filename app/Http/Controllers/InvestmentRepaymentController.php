@@ -207,7 +207,10 @@ class InvestmentRepaymentController extends Controller
      */
     public function destroy($id)
     {
-        $investmentRepayment = InvestmentRepayment::find($id)->delete();
+        $investmentRepayment = InvestmentRepayment::find($id);
+        Income::where('trx_id', $investmentRepayment->trx_id)->delete();
+        Transaction::where('trx_id', $investmentRepayment->trx_id)->delete();
+        $investmentRepayment->delete();
 
         return redirect()->route('investment_repayments.index')
             ->with('success', 'InvestmentRepayment deleted successfully');

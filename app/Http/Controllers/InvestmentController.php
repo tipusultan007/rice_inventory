@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\Expense;
+use App\Models\Income;
 use App\Models\Investment;
 use App\Models\InvestmentRepayment;
 use App\Models\Transaction;
@@ -184,12 +185,12 @@ class InvestmentController extends Controller
 
             if ($repayments->isNotEmpty()) {
                 foreach ($repayments as $repayment) {
-                    Expense::where('trx_id', $investment->trx_id)->delete();
-                    Transaction::where('trx_id', $investment->trx_id)->delete();
+                    Income::where('trx_id', $repayment->trx_id)->delete();
+                    Transaction::where('trx_id', $repayment->trx_id)->delete();
                     $repayment->delete();
                 }
             }
-
+            Transaction::where('trx_id', $investment->trx_id)->delete();
             // Delete the bank loan
             $investment->delete();
 
