@@ -201,9 +201,11 @@ class ProductController extends Controller
     {
         request()->validate(Product::$rules);
 
+        $oldStock = $product->initial_stock;
         $product->update($request->all());
-
-        $product->quantity += $product->initial_stock;
+        $newStock = $product->initial_stock;
+        $stockDifference = $newStock - $oldStock;
+        $product->quantity += $stockDifference;
         $product->save();
 
         if ($product->type === '25') {
