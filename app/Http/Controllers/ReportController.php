@@ -198,7 +198,7 @@ class ReportController extends Controller
         });*/
         // Retrieve initial stock for each product
         // Retrieve initial stock for each product
-        $purchaseReturnDetails = PurchaseReturnDetail::whereHas('purchaseReturn', function ($query) use ($date) {
+        /*$purchaseReturnDetails = PurchaseReturnDetail::whereHas('purchaseReturn', function ($query) use ($date) {
             $query->where('date', '<=', $date);
         })->get();
         $saleReturnDetails = SaleReturnDetail::whereHas('saleReturn', function ($query) use ($date) {
@@ -257,12 +257,14 @@ class ReportController extends Controller
                 'quantity' => $quantity,
                 'price_rate' => $product->price_rate,
             ];
-        });
+        });*/
 
-
+        $productData25 = Product::where('type','25')->get();
+        $productData50 = Product::where('type','50')->get();
 
         //return view('reports.daily', compact('sales', 'purchases', 'supplierPayments', 'customerPayments', 'productData25', 'productData50'));
         return view('reports.daily',compact(
+            'date',
             'debitTransactions',
             'creditTransactions',
             'sales',
@@ -418,7 +420,7 @@ class ReportController extends Controller
     {
         $date = $request->input('date', date('Y-m-d'));
 
-        // Retrieve all purchase details for the given date
+        /*// Retrieve all purchase details for the given date
         $purchaseDetails = PurchaseDetail::whereHas('purchase', function ($query) use ($date) {
             $query->where('date', '<=', $date);
         })->get();
@@ -498,9 +500,12 @@ class ReportController extends Controller
                 'quantity' => $quantity,
                 'price_rate' => $product->price_rate,
             ];
-        });
+        });*/
 
-        return view('reports.stock', compact('productData25', 'productData50'));
+        $productData25 = Product::where('type','25')->get();
+        $productData50 = Product::where('type','50')->get();
+
+        return view('reports.stock', compact('productData25', 'productData50','date'));
     }
 
     public function purchasesReport(Request $request)

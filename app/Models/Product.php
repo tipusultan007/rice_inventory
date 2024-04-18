@@ -36,7 +36,36 @@ class Product extends Model
      */
     protected $fillable = ['name','type','quantity','quantity_alt','price_rate','initial_stock'];
 
+    public function getStockForDate($date) {
+        $initialStock = $this->initial_stock;
+        $totalSales = $this->sales()
+            ->whereHas('sale', function ($query) use ($date) {
+                $query->whereDate('date', '<=', $date);
+            })
+            ->sum('quantity');
 
+        $totalPurchases = $this->purchases()
+            ->whereHas('purchase', function ($query) use ($date) {
+                $query->whereDate('date', '<=', $date);
+            })
+            ->sum('quantity');
+
+        $totalSaleReturns = $this->saleReturns()
+            ->whereHas('saleReturn', function ($query) use ($date) {
+                $query->whereDate('date', '<=', $date);
+            })
+            ->sum('quantity');
+
+        $totalPurchaseReturns = $this->purchaseReturns()
+            ->whereHas('purchaseReturn', function ($query) use ($date) {
+                $query->whereDate('date', '<=', $date);
+            })
+            ->sum('quantity');
+
+        $currentStock = $initialStock + $totalPurchases - $totalSales + $totalPurchaseReturns - $totalSaleReturns;
+
+        return $currentStock < 0 ? 0 : $currentStock;
+    }
     public function purchases()
     {
         return $this->hasMany(PurchaseDetail::class);

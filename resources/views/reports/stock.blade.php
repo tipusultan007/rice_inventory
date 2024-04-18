@@ -88,13 +88,14 @@
                         <tbody>
                         @foreach ($productData25 as $data)
                             @php
-                                $total25 += $data['quantity'];
-                                $totalValue25 += ($data['price_rate'] * $data['quantity']);
+                                $stock = $data->getStockForDate($date);
+                                    $total25 += $stock;
+                                    $totalValue25 += ($data->price_rate * $stock);
                             @endphp
                             <tr>
-                                <td>{{ $data['product_name'] }}</td>
-                                <td class="text-end">{{ $data['quantity'] }}</td>
-                                <td class="text-end">{{ $data['price_rate'] * $data['quantity'] }}</td>
+                                <td>{{ $data->name }}</td>
+                                <td class="text-end">{{ $stock }}</td>
+                                <td class="text-end">{{ $data->price_rate * $stock }}</td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -122,14 +123,15 @@
                         <tbody>
                         @foreach ($productData50 as $data)
                             @php
-                                $total50 += $data['quantity'];
-                                $totalValue50 += ($data['price_rate'] * $data['quantity']);
+                            $stock = $data->getStockForDate($date);
+                                $total50 += $stock;
+                                $totalValue50 += ($data->price_rate * $stock);
                             @endphp
-                            <tr>
-                                <td>{{ $data['product_name'] }}</td>
-                                <td class="text-end">{{ $data['quantity'] }}</td>
-                                <td class="text-end">{{ $data['price_rate'] * $data['quantity'] }}</td>
-                            </tr>
+                           <tr>
+                               <td>{{ $data->name }}</td>
+                               <td class="text-end">{{ $stock }}</td>
+                               <td class="text-end">{{ $data->price_rate * $stock }}</td>
+                           </tr>
                         @endforeach
                         </tbody>
                         <tfoot>

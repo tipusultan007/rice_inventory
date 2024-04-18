@@ -189,7 +189,7 @@ class SaleController extends Controller
     {
         $sale = new Sale();
         $customers = Customer::all();
-        $products = Product::all();
+        $products = Product::orderBy('quantity','desc')->get();
         $users = User::all();
         $accounts = Account::all();
         $lastSale = Sale::where('user_id', auth()->id())->latest()->first();
