@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\AssetSell;
+use App\Models\Expense;
+use App\Models\Income;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -166,8 +168,17 @@ class AssetController extends Controller
     {
         $asset = Asset::find($id);
 
-        $transaction = Transaction::where('transaction_type','asset')
-            ->where('reference_id', $asset->id)->delete();
+        $transaction = Transaction::where('trx_id',$asset->trx_id)->delete();
+
+        $sells = AssetSell::where('asset_id',$asset->id)->get();
+        if ($sells->count() > 0){
+            foreach ($sells as $sell){
+                Expense::where('trx_id', $sell->trx_id)->delete();
+                Income::where('trx_id', $sell->trx_id)->delete();
+                Transaction::where('trx_id', $sell->trx_id)->delete();
+                $sell->delete();
+            }
+        }
 
         $asset->delete();
 
