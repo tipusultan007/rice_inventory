@@ -124,12 +124,12 @@ class ReportController extends Controller
 
 
         $expenses = Expense::join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
-            ->groupBy('expenses.expense_category_id')
+            ->groupBy('expenses.expense_category_id','expense_categories.name')
             ->select('expense_categories.name as category', \DB::raw('SUM(expenses.amount) as total'))
             ->get();
 
         $incomes = Income::join('income_categories', 'incomes.income_category_id', '=', 'income_categories.id')
-            ->groupBy('incomes.income_category_id')
+            ->groupBy('incomes.income_category_id','income_categories.name')
             ->select('income_categories.name as category', \DB::raw('SUM(incomes.amount) as total'))
             ->get();
 
