@@ -663,6 +663,7 @@ class PurchaseController extends Controller
                     Storage::delete('public/purchase_return_attachments/' . $purchaseReturn->attachment);
                 }
 
+                Transaction::where('trx_id', $purchaseReturn->trx_id)->delete();
                 $purchaseReturn->delete();
             }
 

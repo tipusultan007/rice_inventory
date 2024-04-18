@@ -219,8 +219,9 @@ class PurchaseReturnController extends Controller
     public function destroy($id)
     {
         $purchaseReturn = PurchaseReturn::find($id);
+        Transaction::where('trx_id', $purchaseReturn->trx_id)->delete();
 
-        Transaction::where('transaction_type','purchase_return')->where('reference_id', $purchaseReturn->id)->delete();
+        //Transaction::where('transaction_type','purchase_return')->where('reference_id', $purchaseReturn->id)->delete();
 
         foreach ($purchaseReturn->purchaseReturnDetail as $detail){
             $product = $detail->product;
