@@ -208,7 +208,6 @@ class SaleController extends Controller
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
             'user_id' => 'required|exists:users,id',
-            'customer_id' => 'required|exists:customers,id',
             'invoice_no' => 'nullable|unique:sales,invoice_no',
             'book_no' => 'nullable',
             'subtotal' => 'required|numeric',
@@ -227,11 +226,22 @@ class SaleController extends Controller
 
         DB::beginTransaction();
         try {
+            $customerId = $request->input('customer_id');
+            if ($request->customer_id === 'new'){
+                $customer = Customer::create([
+                    'name' => $request->input('name'),
+                    'phone' => $request->input('phone'),
+                    'address' => $request->input('address'),
+                ]);
+            }else{
+                $customer = Customer::find($request->input('customer_id'));
+            }
+
             $trxId = Str::uuid();
             $sale = Sale::create([
                 'date' => $request->input('date'),
                 'user_id' => $request->input('user_id'),
-                'customer_id' => $request->input('customer_id'),
+                'customer_id' => $customer->id,
                 'invoice_no' => $request->input('invoice_no'),
                 'book_no' => $request->input('book_no'),
                 'subtotal' => $request->input('subtotal'),
