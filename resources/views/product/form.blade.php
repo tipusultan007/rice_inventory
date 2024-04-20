@@ -43,7 +43,7 @@
 <div class="form-group mb-3">
     <label class="form-label">   {{ Form::label('price_rate','দর') }}</label>
     <div>
-        {{ Form::text('price_rate', $product->price_rate, ['class' => 'form-control' .
+        {{ Form::number('price_rate', $product->price_rate, ['class' => 'form-control' .
         ($errors->has('price_rate') ? ' is-invalid' : ''), 'placeholder' => 'Price Rate']) }}
         {!! $errors->first('price_rate', '<div class="invalid-feedback">:message</div>') !!}
     </div>
