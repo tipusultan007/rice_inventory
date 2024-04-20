@@ -67,7 +67,47 @@
                         </div>
                     </form>
                 </div>
+                <div class="col-6">
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="fw-bolder fs-4">বিবরণ</th>
+                            <th class="fw-bolder fs-4 text-end">টাকা</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @php
 
+                            //$supplierDue = $supplier_due->debit - $supplier_due->credit;
+                            $totalLiabilities = $supplier_due + $loanBalance + $bankloanBalance + $capitalBalance + $netProfit;
+                        @endphp
+                        <tr>
+                            <td>সরবরাহকারী'র বকেয়া</td>
+                            <td class="text-end">{{ $supplier_due }}</td>
+                        </tr>
+                        <tr>
+                            <td>ঋণ </td>
+                            <td class="text-end">{{ $loanBalance }}</td>
+                        </tr>
+                        <tr>
+                            <td>ব্যাংক ঋণ </td>
+                            <td class="text-end">{{ $bankloanBalance }}</td>
+                        </tr>
+                        <tr>
+                            <td>মূলধন </td>
+                            <td class="text-end">{{ $capitalBalance }}</td>
+                        </tr>
+                        <tr>
+                            <td>নিট মুনাফা </td>
+                            <td class="text-end">{{ number_format($netProfit) }}</td>
+                        </tr>
+                        <tr>
+                            <th>মোট =</th>
+                            <th class="text-end">{{ number_format($totalLiabilities) }}</th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="col-6">
                     <table class="table table-sm table-bordered">
                         <thead>
@@ -112,52 +152,12 @@
                         </tr>
                         <tr>
                             <th class="text-end">মোট =</th>
-                            <th class="text-end">{{ $totalAssets + $assets }}</th>
+                            <th class="text-end">{{ $totalAssets + $assets + $totalValue }}</th>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="col-6">
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                        <tr>
-                            <th class="fw-bolder fs-4">বিবরণ</th>
-                            <th class="fw-bolder fs-4 text-end">টাকা</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @php
 
-    //$supplierDue = $supplier_due->debit - $supplier_due->credit;
-    $totalLiabilities = $supplier_due + $loanBalance + $bankloanBalance + $capitalBalance + $netProfit;
- @endphp
-                        <tr>
-                            <td>সরবরাহকারী'র বকেয়া</td>
-                            <td class="text-end">{{ $supplier_due }}</td>
-                        </tr>
-                        <tr>
-                            <td>ঋণ </td>
-                            <td class="text-end">{{ $loanBalance }}</td>
-                        </tr>
-                        <tr>
-                            <td>ব্যাংক ঋণ </td>
-                            <td class="text-end">{{ $bankloanBalance }}</td>
-                        </tr>
-                        <tr>
-                            <td>মূলধন </td>
-                            <td class="text-end">{{ $capitalBalance }}</td>
-                        </tr>
-                        <tr>
-                            <td>নিট মুনাফা </td>
-                            <td class="text-end">{{ number_format($netProfit) }}</td>
-                        </tr>
-                        <tr>
-                            <th>মোট =</th>
-                            <th class="text-end">{{ number_format($totalLiabilities) }}</th>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </div>
     </div>
