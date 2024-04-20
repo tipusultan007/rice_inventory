@@ -371,10 +371,8 @@ class SaleController extends Controller
         $sale = Sale::find($id);
         $customers = Customer::all();
         $products = Product::all();
-        $payment = Transaction::where('reference_id', $sale->id)
+        $payment = Transaction::where('trx_id', $sale->trx_id)
             ->where('transaction_type', 'customer_payment')
-            ->where('type', 'credit')
-            ->where('customer_id', $sale->customer_id)
             ->first();
         return view('sale.edit', compact('sale', 'customers', 'products', 'payment'));
     }
