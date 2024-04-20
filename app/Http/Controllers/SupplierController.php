@@ -24,6 +24,19 @@ class SupplierController extends Controller
     public function index()
     {
 
+        /*$suppliers = Supplier::all();
+        foreach ($suppliers as $supplier) {
+            Transaction::create([
+                'account_name' => $supplier->name,
+                'amount' => $supplier->starting_balance,
+                'transaction_type' => 'supplier_opening_balance',
+                'type' => 'credit',
+                'reference_id' => $supplier->id,
+                'supplier_id' => $supplier->id,
+                'user_id' => Auth::id(),
+                'date' => '2024-04-09',
+            ]);
+        }*/
         return view('supplier.index');
         /*return view('supplier.index', compact('suppliers'))
             ->with('i', (request()->input('page', 1) - 1) * $suppliers->perPage());*/

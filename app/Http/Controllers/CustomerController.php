@@ -23,6 +23,19 @@ class CustomerController extends Controller
      */
     public function index()
     {
+        /*$customers = Customer::all();
+        foreach ($customers as $customer) {
+            Transaction::create([
+                'account_name' => $customer->name,
+                'amount' => $customer->starting_balance,
+                'transaction_type' => 'customer_opening_balance',
+                'type' => 'debit',
+                'reference_id' => $customer->id,
+                'customer_id' => $customer->id,
+                'user_id' => Auth::id(),
+                'date' => '2024-04-09',
+            ]);
+        }*/
         return view('customer.index');
     }
 
@@ -75,7 +88,7 @@ class CustomerController extends Controller
                     $nestedData['name'] = $post->name;
                     $nestedData['phone'] = $post->phone??'-';
                     $nestedData['address'] = $post->address??'-';
-                    $nestedData['due'] = $post->remaining_due;
+                    $nestedData['due'] = $post->remaining_due??'0';
 
                     $nestedData['options'] = '<div class="dropdown">
                                               <a href="#" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown">Action</a>
