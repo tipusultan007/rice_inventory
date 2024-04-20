@@ -106,7 +106,10 @@
                             <td>সম্পদ</td>
                             <td class="text-end">{{ $assets }}</td>
                         </tr>
-
+                        <tr>
+                            <td>মোট পণ্য - {{ $totalStock }}</td>
+                            <td class="text-end">{{ $totalValue }}</td>
+                        </tr>
                         <tr>
                             <th class="text-end">মোট =</th>
                             <th class="text-end">{{ $totalAssets + $assets }}</th>

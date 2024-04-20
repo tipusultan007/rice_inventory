@@ -335,8 +335,21 @@ class ReportController extends Controller
         $capitalBalance = $capitals - $capitalWithdraw;
         $netProfit = $this->getNetProfit($date);
 
+        $product = new Product();
+
+// Call the getTotalStockAndValue method with the provided date
+        $result = $product->getTotalStockAndValue($date);
+
+// Output the total products count and total value
+        $totalProducts = $result['total_products'];
+        $totalValue = $result['total_value'];
+        $totalStock = $result['total_stock'];
+
         return view('reports.balance_sheet',
             compact('accounts',
+                'totalProducts',
+                'totalValue',
+                'totalStock',
                 'customer_due',
                 'assets',
                 'supplier_due',
