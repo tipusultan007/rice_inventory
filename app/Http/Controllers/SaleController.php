@@ -35,6 +35,7 @@ class SaleController extends Controller
      */
     public function index()
     {
+
         $sales = Sale::with('saleDetails')->orderByDesc('id')->paginate(10);
 
         $firstEntry = Sale::orderBy('date','asc')->first();

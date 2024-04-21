@@ -31,6 +31,7 @@ class PurchaseController extends Controller
      */
     public function index()
     {
+       
         /* $allPurchases = Purchase::all();
          foreach ($allPurchases as $purchase)
          {

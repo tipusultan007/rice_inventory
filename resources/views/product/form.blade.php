@@ -27,7 +27,7 @@
 <div class="form-group mb-3">
     <label class="form-label">   {{ Form::label('initial_stock','শুরুর পরিমাণ') }}</label>
     <div>
-        {{ Form::text('initial_stock', $product->quantity, ['class' => 'form-control' .
+        {{ Form::text('initial_stock', $product->initial_stock, ['class' => 'form-control' .
         ($errors->has('initial_stock') ? ' is-invalid' : ''), 'placeholder' => 'Initial Stock']) }}
         {!! $errors->first('initial_stock', '<div class="invalid-feedback">:message</div>') !!}
     </div>
