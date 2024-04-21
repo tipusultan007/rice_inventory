@@ -92,20 +92,22 @@ class ReportController extends Controller
             ];
         });*/
 
-        $debitTransactions = Transaction::groupBy('account_name')
-            ->select(
-                'account_name',
-                \DB::raw('SUM(CASE WHEN type = "debit" THEN amount ELSE 0 END) as total_debit')
-            )
-            ->havingRaw('total_debit > 0')
+
+        $debitTransactions = Transaction::where('type', 'debit')
+            ->whereNotNull('account_id')
+            ->whereDate('date', $date)
+            ->with('account')
+            ->select('account_id', DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('account_id')
             ->get();
 
-        $creditTransactions = Transaction::groupBy('account_name')
-            ->select(
-                'account_name',
-                \DB::raw('SUM(CASE WHEN type = "credit" THEN amount ELSE 0 END) as total_credit')
-            )
-            ->havingRaw('total_credit > 0')
+        // Filter credit transactions for the specific date and group by account
+        $creditTransactions = Transaction::where('type', 'credit')
+            ->whereNotNull('account_id')
+            ->whereDate('date', $date)
+            ->with('account')
+            ->select('account_id', DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('account_id')
             ->get();
 
         $sales = Sale::with('saleDetails')
@@ -274,7 +276,8 @@ class ReportController extends Controller
             'expenses',
             'incomes',
             'productData25',
-            'productData50'
+            'productData50',
+
         ));
     }
 

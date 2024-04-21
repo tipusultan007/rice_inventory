@@ -400,7 +400,7 @@
                 allowInput: true,
                 altFormat: "d-m-Y",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ $lastSale?$lastSale->date:date('Y-m-d') }}"
+                defaultDate: "{{ date('Y-m-d') }}"
             });
         });
     </script>

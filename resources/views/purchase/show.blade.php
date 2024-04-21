@@ -85,6 +85,9 @@
                                     <tr><th>কোম্পানির</th>  <td>:</td> <td>{{ $purchase->supplier->company }}</td></tr>
                                     <tr><th>ঠিকানা</th>  <td>:</td> <td>{{ $purchase->supplier->address }}</td></tr>
                                     <tr><th>ট্রাক নং</th> <td>:</td> <td> {{ $purchase->truck_no}}</td></tr>
+                                    @if($purchase->attachment)
+                                        <tr><th>ডকুমেন্ট</th> <td>:</td> <td><a href="{{ asset('storage/purchase_attachments/' . $purchase->attachment) }}">ডাউনলোড</a> </td></tr>
+                                    @endif
                                 </table>
                             </div>
                             <table class="table table-bordered table-sm">
