@@ -31,7 +31,7 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-       
+
         /* $allPurchases = Purchase::all();
          foreach ($allPurchases as $purchase)
          {
@@ -363,6 +363,7 @@ class PurchaseController extends Controller
                 $creditTransaction1 = Transaction::create([
                     'account_name' => $purchase->supplier->name,
                     'supplier_id' => $purchase->supplier_id,
+                    'account_id' => 13,
                     'amount' => $purchase->tohori,
                     'type' => 'credit',
                     'reference_id' => $purchase->id,

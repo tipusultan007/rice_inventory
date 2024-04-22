@@ -53,7 +53,7 @@ class BankLoanRepaymentController extends Controller
         DB::beginTransaction();
 
         try {
-            $data = $request->validate(BankLoanRepayment::$rules);
+            $data = $request->all();
 
             $data['trx_id'] = Str::uuid();
             $data['user_id'] = Auth::id();

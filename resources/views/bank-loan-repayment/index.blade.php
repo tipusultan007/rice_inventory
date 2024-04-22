@@ -68,7 +68,7 @@
                                 <div class="form-group mb-3 ">
                                     <label class="form-label">   {{ Form::label('amount','ঋণ পরিশোধ') }}</label>
                                     <div>
-                                        {{ Form::text('amount', old('amount'), ['class' => 'form-control' .
+                                        {{ Form::number('amount', old('amount'), ['class' => 'form-control' .
                                         ($errors->has('amount') ? ' is-invalid' : ''), 'placeholder' => 'Amount']) }}
                                         {!! $errors->first('amount', '<div class="invalid-feedback">:message</div>') !!}
                                     </div>

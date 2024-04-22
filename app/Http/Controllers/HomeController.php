@@ -40,7 +40,7 @@ class HomeController extends Controller
 
     public function totalDueForAllCustomers()
     {
-        // Calculate total payments
+       /* // Calculate total payments
         $totalPayments = DB::table('transactions')
             ->where('transaction_type', 'customer_payment')
             ->where('type', 'credit')
@@ -53,12 +53,27 @@ class HomeController extends Controller
             ->sum('amount');
 
         // Calculate total due after deducting total payments
-        return $totalDue - $totalPayments;
+        return $totalDue - $totalPayments;*/
+        $total = DB::table('transactions')
+            ->select(DB::raw('SUM(
+            CASE
+                WHEN transaction_type = "customer_opening_balance" AND type = "debit" THEN amount
+                WHEN transaction_type = "sale" AND type = "credit" THEN amount
+                WHEN transaction_type = "customer_payment" AND type = "debit" THEN -amount
+                WHEN transaction_type = "discount" AND type = "debit" THEN -amount
+                WHEN transaction_type = "payment_to_customer" AND type = "credit" THEN -amount
+                ELSE 0
+            END
+        ) AS total_due'))
+            ->whereNotNull('customer_id')
+            ->value('total_due');
+
+        return $total;
     }
 
     public function totalDueForAllSuppliers()
     {
-        // Calculate total payments to suppliers
+        /*// Calculate total payments to suppliers
         $totalPayments = DB::table('transactions')
             ->where('transaction_type', 'purchase')
             ->where('type', 'credit')
@@ -71,6 +86,23 @@ class HomeController extends Controller
             ->sum('amount');
 
         // Calculate total due for all suppliers
-        return $totalPayments - $totalSupplierPayments;
+        return $totalPayments - $totalSupplierPayments;*/
+
+        $total = DB::table('transactions')
+            ->select(DB::raw('SUM(
+            CASE
+                WHEN transaction_type = "supplier_opening_balance" AND type = "credit" THEN amount
+                WHEN transaction_type = "purchase" AND type = "debit" THEN amount
+                WHEN transaction_type = "supplier_payment" AND type = "credit" THEN -amount
+                WHEN transaction_type = "tohori" AND type = "credit" THEN -amount
+                WHEN transaction_type = "discount" AND type = "credit" THEN -amount
+                WHEN transaction_type = "payment_from_supplier" AND type = "debit" THEN -amount
+                ELSE 0
+            END
+        ) AS total_due'))
+            ->whereNotNull('supplier_id')
+            ->value('total_due');
+
+        return $total;
     }
 }
