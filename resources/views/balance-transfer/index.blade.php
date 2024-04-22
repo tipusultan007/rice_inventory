@@ -29,78 +29,82 @@
             @if(config('tablar','display_alert'))
                 @include('tablar::common.alert')
             @endif
-            <form method="POST" action="{{ route('balance_transfers.store') }}" id="ajaxForm">
-                @csrf
-                <div class="row">
-                    @php
-                        use App\Models\Account;
-                        $accounts = Account::pluck('name','id');
-                    @endphp
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="POST" action="{{ route('balance_transfers.store') }}" id="ajaxForm">
+                                @csrf
+                                @php
+                                    use App\Models\Account;
+                                    $accounts = Account::pluck('name','id');
+                                @endphp
 
-                    <div class="col-md-3 mb-3">
-                        <select name="from_account_id" id="from_account_id" class="form-control select2"
-                                data-placeholder="From Account">
-                            <option value=""></option>
-                            @foreach($accounts as $key => $account)
-                                <option value="{{ $key }}">{{ $account }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                                <div class="form-group mb-2">
+                                    <select name="from_account_id" id="from_account_id" class="form-control select2"
+                                            data-placeholder="From Account">
+                                        <option value=""></option>
+                                        @foreach($accounts as $key => $account)
+                                            <option value="{{ $key }}">{{ $account }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                    <div class="col-md-3 mb-3">
-                        <select name="to_account_id" id="to_account_id" class="form-control select2"
-                                data-placeholder="To Account">
-                            <option value=""></option>
-                            @foreach($accounts as $key => $account)
-                                <option value="{{ $key }}">{{ $account }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" name="amount" placeholder="Amount" class="form-control">
-                    </div>
+                                <div class="form-group mb-2">
+                                    <select name="to_account_id" id="to_account_id" class="form-control select2"
+                                            data-placeholder="To Account">
+                                        <option value=""></option>
+                                        @foreach($accounts as $key => $account)
+                                            <option value="{{ $key }}">{{ $account }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <input type="number" name="amount" placeholder="টাকা" class="form-control">
+                                </div>
 
-                    <div class="col-md-2">
-                        <input type="text" name="date" placeholder="তারিখ" class="form-control flatpicker">
-                    </div>
-                    <div class="col-md-2">
-                        <button id="submitButton" class="btn btn-primary" type="submit">সাবমিট</button>
+                                <div class="form-group mb-2">
+                                    <input type="text" name="date" placeholder="তারিখ" class="form-control flatpicker">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <input type="text" name="note" placeholder="বিবরণ" class="form-control">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <button id="submitButton" class="btn btn-primary w-100" type="submit">সাবমিট</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </form>
-
-            <div class="row row-deck row-cards">
-                <div class="col-12">
+                <div class="col-md-9">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Balance Transfer</h3>
                         </div>
 
-                        <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter table-bordered table-sm datatable">
-                                <thead>
+                        <div class="table-responsive">
+                            <table class="table card-table table-sm table-vcenter table-bordered table-sm datatable">
                                 <tr>
-                                    <th>From Account Id</th>
-                                    <th>To Account Id</th>
-                                    <th>Amount</th>
+                                    <th>একাউন্ট হতে</th>
+                                    <th>একাউন্ট</th>
+                                    <th>টাকা</th>
+                                    <th>নোট</th>
 
                                     <th class="w-1"></th>
                                 </tr>
-                                </thead>
-
                                 <tbody>
                                 @forelse ($balanceTransfers as $balanceTransfer)
                                     <tr>
                                         <td>{{ $balanceTransfer->fromAccount->name }}</td>
                                         <td>{{ $balanceTransfer->toAccount->name}}</td>
                                         <td>{{ $balanceTransfer->amount }}</td>
-
+                                        <td>{{ $balanceTransfer->note??'-' }}</td>
                                         <td>
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">
-                                                    <button class="btn dropdown-toggle align-text-top"
+                                                    <button class="btn btn-sm dropdown-toggle align-text-top"
                                                             data-bs-toggle="dropdown">
-                                                        Actions
+                                                        ...
                                                     </button>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a class="dropdown-item"
@@ -141,6 +145,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 @endsection

@@ -26,7 +26,7 @@ class BankLoanController extends Controller
      */
     public function index()
     {
-        $bankLoans = BankLoan::paginate(10);
+        $bankLoans = BankLoan::orderBy('date','asc')->paginate(50);
 
         return view('bank-loan.index', compact('bankLoans'))
             ->with('i', (request()->input('page', 1) - 1) * $bankLoans->perPage());
@@ -62,6 +62,8 @@ class BankLoanController extends Controller
             $data['total_loan'] = $request->input('interest') + $request->input('loan_amount');
 
             $bankLoan = BankLoan::create($data);
+            $bankLoan->total_loan = $bankLoan->interest + $bankLoan->loan_amount;
+            $bankLoan->save();
 
             $account = Account::find($request->input('account_id'));
 

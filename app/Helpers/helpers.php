@@ -96,6 +96,9 @@ function transactionType($type)
         case 'sale':
             return __('বিক্রয়');
             break;
+        case 'salary':
+            return __('বেতন');
+            break;
         case 'sale_return':
             return __('বিক্রয় ফেরত');
             break;

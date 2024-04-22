@@ -39,20 +39,28 @@
             {!! $errors->first('duration', '<div class="invalid-feedback">:message</div>') !!}
         </div>
     </div>
-    <div class="form-group col-3 mb-3">
+   {{-- <div class="form-group col-3 mb-3">
         <label class="form-label">   {{ Form::label('total_loan','সর্বমোট ঋণ') }}</label>
         <div>
             {{ Form::text('total_loan', $bankLoan->total_loan, ['class' => 'form-control' .
             ($errors->has('total_loan') ? ' is-invalid' : ''), 'placeholder' => 'Total Loan']) }}
             {!! $errors->first('total_loan', '<div class="invalid-feedback">:message</div>') !!}
         </div>
-    </div>
+    </div>--}}
 
     <div class="form-group col-3 mb-3">
         <label class="form-label">   {{ Form::label('date','তারিখ') }}</label>
         <div>
             {{ Form::text('date', $bankLoan->date, ['class' => 'form-control flatpicker' .
             ($errors->has('date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
+            {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
+    </div>
+    <div class="form-group col-3 mb-3">
+        <label class="form-label">   {{ Form::label('expire','মেয়াদ তারিখ') }}</label>
+        <div>
+            {{ Form::text('expire', $bankLoan->expire, ['class' => 'form-control flatpicker' .
+            ($errors->has('expire') ? ' is-invalid' : ''), 'placeholder' => 'Expire date']) }}
             {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
         </div>
     </div>

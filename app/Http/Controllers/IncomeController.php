@@ -173,7 +173,7 @@ class IncomeController extends Controller
     public function edit($id)
     {
         $income = Income::find($id);
-        $transaction = Transaction::where('reference_id', $income->id)
+        $transaction = Transaction::where('trx_id', $income->trx_id)
             ->where('transaction_type','income')->first();
 
         return view('income.edit', compact('income','transaction'));

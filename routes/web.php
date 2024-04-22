@@ -122,10 +122,11 @@ Route::middleware(['auth'])->group(function () {
     })->name('download_csv');
 
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class,'index'])->name('notifications.index');
+
+    Route::get('dataExpenseByCategory',[ExpenseCategoryController::class,'dataExpenseByCategory'])->name('dataExpenseByCategory');
+    Route::get('dataIncomeByCategory',[\App\Http\Controllers\IncomeCategoryController::class,'dataIncomeByCategory'])->name('dataIncomeByCategory');
+
+    Route::resource('/purchase_details', App\Http\Controllers\PurchaseDetailController::class);
+
 });
 
-Route::post('send-notification',function (Request $request){
-    event(new \App\Events\PushNotification($request->message));
-    return ['success' => true];
-});
-Route::resource('/purchase_details', App\Http\Controllers\PurchaseDetailController::class);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -48,6 +49,18 @@ class AccountController extends Controller
         request()->validate(Account::$rules);
 
         $account = Account::create($request->all());
+
+        if ($account->starting_balance > 0){
+            Transaction::create([
+                'account_name' => $account->name,
+                'amount' => $account->starting_balance,
+                'transaction_type' => 'account_opening_balance',
+                'type' => 'debit',
+                'account_id' => $account->id,
+                'user_id' => Auth::id(),
+                'date' => $request->date,
+            ]);
+        }
 
         return redirect()->route('accounts.index')
             ->with('success', 'Account created successfully.');
@@ -102,6 +115,30 @@ class AccountController extends Controller
         request()->validate(Account::$rules);
 
         $account->update($request->all());
+
+        $debitTransaction = Transaction::where('transaction_type','account_opening_balance')
+            ->where('account_id', $account->id)->first();
+        if ($debitTransaction){
+            if ($account->starting_balance > 0) {
+                $debitTransaction->amount = $account->starting_balance;
+                $debitTransaction->date = $request->date;
+                $debitTransaction->save();
+            }else{
+                $debitTransaction->delete();
+            }
+        }else {
+            if ($account->starting_balance > 0) {
+                Transaction::create([
+                    'account_name' => $account->name,
+                    'account_id' => $account->id,
+                    'amount' => $account->starting_balance,
+                    'transaction_type' => 'account_opening_balance',
+                    'type' => 'debit',
+                    'user_id' => Auth::id(),
+                    'date' => $request->date,
+                ]);
+            }
+        }
 
         return redirect()->route('accounts.index')
             ->with('success', 'Account updated successfully');

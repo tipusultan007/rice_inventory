@@ -30,7 +30,6 @@ class BankLoan extends Model
 		'name' => 'required',
 		'loan_amount' => 'required',
 		'interest' => 'required',
-		'total_loan' => 'required',
 		'duration' => 'required',
 		'date' => 'required',
     ];
@@ -42,7 +41,7 @@ class BankLoan extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','loan_amount','interest','duration','total_loan','grace','date','trx_id','description'];
+    protected $fillable = ['name','loan_amount','interest','duration','total_loan','grace','date','expire','trx_id','description'];
 
     public function loanRepayments()
     {

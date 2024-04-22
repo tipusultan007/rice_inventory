@@ -33,7 +33,7 @@ class BalanceTransfer extends Model
      *
      * @var array
      */
-    protected $fillable = ['from_account_id','to_account_id','amount','date','trx_id'];
+    protected $fillable = ['from_account_id','to_account_id','amount','date','note','trx_id'];
 
     public function fromAccount()
     {

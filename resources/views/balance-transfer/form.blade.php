@@ -4,7 +4,7 @@
 @endphp
 
 <div class="form-group mb-3">
-    <label class="form-label" for="from_account_id">From Account</label>
+    <label class="form-label" for="from_account_id">একাউন্ট হতে</label>
     <select name="from_account_id" id="from_account_id" class="form-control select2">
         @foreach($accounts as $key => $account)
             <option value="{{ $key }}" {{ $balanceTransfer->from_account_id == $key ?'selected':'' }}>{{ $account }}</option>
@@ -13,7 +13,7 @@
 </div>
 
 <div class="form-group mb-3">
-    <label class="form-label" for="to_account_id">To Account</label>
+    <label class="form-label" for="to_account_id">একাউন্ট</label>
     <select name="to_account_id" id="to_account_id" class="form-control select2">
         @foreach($accounts as $key => $account)
             <option value="{{ $key }}" {{ $balanceTransfer->to_account_id == $key ?'selected':'' }}>{{ $account }}</option>
@@ -22,12 +22,11 @@
 </div>
 
 <div class="form-group mb-3">
-    <label class="form-label">   {{ Form::label('amount') }}</label>
+    <label class="form-label">   {{ Form::label('amount','টাকা') }}</label>
     <div>
         {{ Form::text('amount', $balanceTransfer->amount, ['class' => 'form-control' .
         ($errors->has('amount') ? ' is-invalid' : ''), 'placeholder' => 'Amount']) }}
         {!! $errors->first('amount', '<div class="invalid-feedback">:message</div>') !!}
-        <small class="form-hint">balanceTransfer <b>amount</b> instruction.</small>
     </div>
 </div>
 <div class="form-group mb-3">
@@ -36,6 +35,14 @@
         {{ Form::text('date', $balanceTransfer->date, ['class' => 'form-control flatpicker' .
         ($errors->has('date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
         {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
+    </div>
+</div>
+<div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('note','নোট') }}</label>
+    <div>
+        {{ Form::text('note', $balanceTransfer->note, ['class' => 'form-control' .
+        ($errors->has('note') ? ' is-invalid' : ''), 'placeholder' => 'নোট']) }}
+        {!! $errors->first('note', '<div class="invalid-feedback">:message</div>') !!}
     </div>
 </div>
 <div class="form-footer">

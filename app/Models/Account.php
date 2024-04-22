@@ -32,7 +32,7 @@ class Account extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','details','starting_balance'];
+    protected $fillable = ['name','details','starting_balance','date'];
 
     public function transactions()
     {

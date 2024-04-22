@@ -92,7 +92,7 @@ class SalaryController extends Controller
                 'type' => 'debit',
                 'reference_id' => $expense->id,
                 'date' => $expense->date,
-                'transaction_type' => 'expense',
+                'transaction_type' => 'salary',
                 'user_id' => Auth::id(),
                 'trx_id' => $expense->trx_id,
             ]);
@@ -166,8 +166,9 @@ class SalaryController extends Controller
                 'amount' => $salary->amount,
             ]);
 
-            $salaryTransaction = Transaction::where('reference_id', $expense->id)
+            $salaryTransaction = Transaction::where('trx_id', $expense->trx_id)
                 ->where('transaction_type', 'salary')
+                ->where('type', 'credit')
                 ->first();
 
             $salaryTransaction->update([
@@ -175,8 +176,9 @@ class SalaryController extends Controller
                 'date' => $expense->date,
             ]);
 
-            $expenseTransaction = Transaction::where('reference_id', $expense->id)
-                ->where('transaction_type', 'expense')
+            $expenseTransaction = Transaction::where('trx_id', $expense->trx_id)
+                ->where('transaction_type', 'salary')
+                ->where('type', 'debit')
                 ->first();
 
             $expenseTransaction->update([

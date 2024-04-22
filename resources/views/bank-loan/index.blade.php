@@ -51,13 +51,14 @@
                                 <thead>
                                 <tr>
                                     <th class="fs-3 fw-bolder">নাম</th>
-                                    <th class="fs-3 fw-bolder">বিবরণ</th>
                                     <th class="fs-3 fw-bolder">ঋণের পরিমাণ</th>
                                     <th class="fs-3 fw-bolder">লভ্যাংশ</th>
                                     <th class="fs-3 fw-bolder">মেয়াদ <small>(বছর)</small></th>
                                     <th class="fs-3 fw-bolder">সর্বমোট ঋণ</th>
                                     <th class="fs-3 fw-bolder">ছাড়</th>
+                                    <th class="fs-3 fw-bolder">ব্যালেন্স</th>
                                     <th class="fs-3 fw-bolder">তারিখ</th>
+                                    <th class="fs-3 fw-bolder">মেয়াদ তারিখ</th>
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
@@ -66,13 +67,14 @@
                                 @forelse ($bankLoans as $bankLoan)
                                     <tr>
                                         <td>{{ $bankLoan->name }}</td>
-                                        <td>{{ $bankLoan->description }}</td>
                                         <td>{{ $bankLoan->loan_amount }}</td>
                                         <td>{{ $bankLoan->interest }}</td>
                                         <td>{{ $bankLoan->duration }}</td>
                                         <td>{{ $bankLoan->total_loan }}</td>
                                         <td>{{ $bankLoan->grace }}</td>
-                                        <td>{{ $bankLoan->date }}</td>
+                                        <td>{{ $bankLoan->balance }}</td>
+                                        <td>{{ date('d/m/Y',strtotime($bankLoan->date)) }}</td>
+                                        <td>{{ date('d/m/Y',strtotime($bankLoan->expire)) }}</td>
                                         <td>
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">

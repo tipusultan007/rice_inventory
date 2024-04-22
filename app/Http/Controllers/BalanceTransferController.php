@@ -70,6 +70,7 @@ class BalanceTransferController extends Controller
                 'to_account_id' => $request->input('to_account_id'),
                 'amount' => $request->input('amount'),
                 'date' => $request->input('date'),
+                'note' => $request->input('note'),
                 'trx_id' => $trxId,
             ]);
 
@@ -84,6 +85,7 @@ class BalanceTransferController extends Controller
                 'date' => $balanceTransfer->date,
                 'transaction_type' => 'balance_transfer',
                 'user_id' => Auth::id(),
+                'note' => $balanceTransfer->note,
                 'trx_id' => $trxId
             ]);
 
@@ -95,6 +97,7 @@ class BalanceTransferController extends Controller
                 'amount' => $request->input('amount'),
                 'type' => 'debit',
                 'reference_id' => $balanceTransfer->id,
+                'note' => $balanceTransfer->note,
                 'date' => $balanceTransfer->date,
                 'transaction_type' => 'balance_transfer',
                 'user_id' => Auth::id(),
@@ -168,6 +171,7 @@ class BalanceTransferController extends Controller
                 'to_account_id' => $request->input('to_account_id'),
                 'amount' => $request->input('amount'),
                 'date' => $request->input('date'),
+                'note' => $request->input('note'),
             ]);
 
             // Update the transaction for the balance transfer from the source account
@@ -183,6 +187,7 @@ class BalanceTransferController extends Controller
                     'account_name' => $to->name,
                     'amount' => $request->input('amount'),
                     'date' => $request->input('date'),
+                    'note' => $request->input('note'),
                 ]);
             }
 
@@ -199,6 +204,7 @@ class BalanceTransferController extends Controller
                     'account_name' => $from->name,
                     'amount' => $request->input('amount'),
                     'date' => $request->input('date'),
+                    'note' => $request->input('note'),
                 ]);
             }
 

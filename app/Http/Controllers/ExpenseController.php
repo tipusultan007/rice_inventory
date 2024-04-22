@@ -176,8 +176,9 @@ class ExpenseController extends Controller
     {
         $expense = Expense::find($id);
 
-        $transaction = Transaction::where('reference_id', $expense->id)
-            ->where('transaction_type','expense')->first();
+        $transaction = Transaction::where('trx_id', $expense->trx_id)
+            ->where('type','credit')
+            ->first();
 
         return view('expense.edit', compact('expense','transaction'));
     }
