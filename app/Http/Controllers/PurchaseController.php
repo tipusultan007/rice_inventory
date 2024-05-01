@@ -372,6 +372,8 @@ class PurchaseController extends Controller
                     'user_id' => $purchase->user_id,
                     'trx_id' => $purchase->trx_id,
                 ]);
+                $creditTransaction1->balance = $purchase->supplier->remaining_due;
+                $creditTransaction1->save();
             }
 
             // Commit the transaction

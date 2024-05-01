@@ -108,7 +108,7 @@ class BalanceTransferController extends Controller
         } catch (\Exception $e) {
             // An error occurred, rollback the transaction
             DB::rollback();
-
+            \Log::error($e->getMessage());
             return redirect()->route('balance_transfers.create')
                 ->with('error', 'Balance transfer creation failed.');
         }

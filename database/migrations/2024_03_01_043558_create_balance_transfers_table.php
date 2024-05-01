@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('balance_transfers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('from_account_id')->constrained('accounts');
-            $table->foreignId('to_account_id')->constrained('accounts');
+            $table->integer('from_account_id');
+            $table->integer('to_account_id');
             $table->decimal('amount', 10, 2);
             $table->date('date');
             $table->string('trx_id');

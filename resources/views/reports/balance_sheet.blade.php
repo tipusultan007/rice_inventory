@@ -52,7 +52,7 @@
                         <div class="info text-center">
                             <h1 class="display-6 fw-bolder mb-1">মেসার্স এস.এ রাইচ এজেন্সী</h1>
                             <span class="badge badge-outline text-gray fs-3">ব্যালেন্স শীট রিপোর্ট</span>
-                            <h3 class="mt-2">তারিখঃ {{ date('d/m/Y') }}</h3>
+                            <h3 class="mt-2">তারিখঃ {{ request('date')!= ''?date('d/m/Y',strtotime(request('date'))): date('d/m/Y') }}</h3>
                         </div>
                 </div>
                 <div class="col-12 mb-3 d-print-none">
@@ -144,7 +144,7 @@
 
                         <tr>
                             <td>সম্পদ</td>
-                            <td class="text-end">{{ $assets }}</td>
+                            <td class="text-end">{{ $assetBalance }}</td>
                         </tr>
                         <tr>
                             <td>মোট পণ্য - {{ $totalStock }}</td>
@@ -152,7 +152,7 @@
                         </tr>
                         <tr>
                             <th class="text-end">মোট =</th>
-                            <th class="text-end">{{ $totalAssets + $assets + $totalValue }}</th>
+                            <th class="text-end">{{ $totalAssets + $assetBalance + $totalValue }}</th>
                         </tr>
                         </tbody>
                     </table>
@@ -171,7 +171,7 @@
                 allowInput: true,
                 altFormat: "d-m-Y",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ date('Y-m-d') }}"
+                defaultDate: "{{ request('date')??date('Y-m-d') }}"
             });
         });
     </script>

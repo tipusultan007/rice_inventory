@@ -125,12 +125,12 @@ class ReportController extends Controller
             ->get();
 
 
-        $expenses = Expense::join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+        $expenses = Expense::where('date',$date)->join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
             ->groupBy('expenses.expense_category_id','expense_categories.name')
             ->select('expense_categories.name as category', \DB::raw('SUM(expenses.amount) as total'))
             ->get();
 
-        $incomes = Income::join('income_categories', 'incomes.income_category_id', '=', 'income_categories.id')
+        $incomes = Income::where('date',$date)->join('income_categories', 'incomes.income_category_id', '=', 'income_categories.id')
             ->groupBy('incomes.income_category_id','income_categories.name')
             ->select('income_categories.name as category', \DB::raw('SUM(incomes.amount) as total'))
             ->get();
@@ -161,106 +161,6 @@ class ReportController extends Controller
         });
 
 
-
-
-        // Retrieve initial stock for each product
-        /*$initialStocks = Product::whereIn('id', $totalPurchaseQuantities->keys())
-            ->pluck('initial_stock', 'id');
-
-        // Calculate the net quantity for each product by considering initial stock
-        $productQuantities = $totalPurchaseQuantities->merge($totalSaleQuantities)->map(function ($total, $productId) use ($totalPurchaseQuantities,$totalSaleQuantities, $initialStocks) {
-            $totalPurchaseQuantity = $totalPurchaseQuantities->get($productId, 0);
-            $totalSaleQuantity = $totalSaleQuantities->get($productId, 0);
-            $initialStock = $initialStocks->get($productId, 0);
-            return $initialStock + $totalPurchaseQuantity - $totalSaleQuantity;
-        });
-
-
-
-        // Retrieve product information based on product IDs
-        $products25 = Product::where('type', '25')->whereIn('id', $productQuantities->keys())->get();
-        $products50 = Product::where('type', '50')->whereIn('id', $productQuantities->keys())->get();
-
-        // Combine product information with quantities
-        $productData25 = $products25->map(function ($product) use ($productQuantities) {
-            $quantity = $productQuantities->get($product->id, 0);
-            return [
-                'product_name' => $product->name,
-                'quantity' => $quantity,
-                'price_rate' => $product->price_rate,
-            ];
-        });
-        $productData50 = $products50->map(function ($product) use ($productQuantities) {
-            $quantity = $productQuantities->get($product->id, 0);
-            return [
-                'product_name' => $product->name,
-                'quantity' => $quantity,
-                'price_rate' => $product->price_rate,
-            ];
-        });*/
-        // Retrieve initial stock for each product
-        // Retrieve initial stock for each product
-        /*$purchaseReturnDetails = PurchaseReturnDetail::whereHas('purchaseReturn', function ($query) use ($date) {
-            $query->where('date', '<=', $date);
-        })->get();
-        $saleReturnDetails = SaleReturnDetail::whereHas('saleReturn', function ($query) use ($date) {
-            $query->where('date', '<=', $date);
-        })->get();
-        $totalPurchaseReturnQuantities = $purchaseReturnDetails->groupBy('product_id')->map(function ($items) {
-            return $items->sum('quantity');
-        });
-        $totalSaleReturnQuantities = $saleReturnDetails->groupBy('product_id')->map(function ($items) {
-            return $items->sum('quantity');
-        });
-        $initialStocks = Product::whereIn('id', $totalPurchaseQuantities->keys())
-            ->pluck('initial_stock', 'id');
-
-// Initialize product quantities array
-        $productQuantities = [];
-
-// Merge total purchase quantities
-        foreach ($totalPurchaseQuantities as $productId => $totalPurchaseQuantity) {
-            $totalSaleQuantity = $totalSaleQuantities->get($productId, 0);
-            $totalPurchaseReturnQuantity = $totalPurchaseReturnQuantities->get($productId, 0);
-            $totalSaleReturnQuantity = $totalSaleReturnQuantities->get($productId, 0);
-
-            $initialStock = $initialStocks->get($productId, 0);
-
-            // Calculate net quantity for each product
-            $productQuantities[$productId] = $initialStock + $totalPurchaseQuantity - $totalSaleQuantity - $totalPurchaseReturnQuantity + $totalSaleReturnQuantity;
-        }
-
-// Merge total sale quantities for products not found in purchase details
-        foreach ($totalSaleQuantities as $productId => $totalSaleQuantity) {
-            if (!isset($productQuantities[$productId])) {
-                $initialStock = $initialStocks->get($productId, 0);
-                $productQuantities[$productId] = $initialStock - $totalSaleQuantity;
-            }
-        }
-
-// Retrieve product information based on product IDs
-        $products25 = Product::where('type', '25')->whereIn('id', array_keys($productQuantities))->get();
-        $products50 = Product::where('type', '50')->whereIn('id', array_keys($productQuantities))->get();
-
-// Combine product information with quantities
-        $productData25 = $products25->map(function ($product) use ($productQuantities) {
-            $quantity = $productQuantities[$product->id];
-            return [
-                'product_name' => $product->name,
-                'quantity' => $quantity,
-                'price_rate' => $product->price_rate,
-            ];
-        });
-
-        $productData50 = $products50->map(function ($product) use ($productQuantities) {
-            $quantity = $productQuantities[$product->id];
-            return [
-                'product_name' => $product->name,
-                'quantity' => $quantity,
-                'price_rate' => $product->price_rate,
-            ];
-        });*/
-
         $productData25 = Product::where('type','25')->get();
         $productData50 = Product::where('type','50')->get();
 
@@ -283,19 +183,11 @@ class ReportController extends Controller
 
     public function balanceSheet(Request $request)
     {
-        $date = $request->input('date', date('Y-m-d'));
 
-// Use less than or equal to $date for all statements
+        $date = $request->input('date', date('Y-m-d'));
         $accounts = Account::with(['transactions' => function ($query) use ($date) {
             $query->where('date', '<=', $date);
         }])->get();
-
-
-        /*$customer_due = Transaction::whereNotNull('customer_id')->where('date', '<=', $date)
-            ->select(
-                DB::raw('SUM(CASE WHEN transaction_type = "sale" AND type = "credit" THEN amount ELSE 0 END) as credit'),
-                DB::raw('SUM(CASE WHEN transaction_type = "customer_payment" AND type = "debit" THEN amount ELSE 0 END) as debit')
-            )->first();*/
 
         $customer_due = DB::table('transactions')
             ->select(DB::raw('SUM(
@@ -324,7 +216,7 @@ class ReportController extends Controller
         ) AS total_due'))->value('total_due');
 
         $loans = Loan::where('date', '<=', $date)->sum('loan_amount');
-        $bankloans = BankLoan::where('date', '<=', $date)->sum('loan_amount');
+        $bankloans = BankLoan::where('date', '<=', $date)->sum('total_loan');
         $investments = Investment::where('date', '<=', $date)->sum('loan_amount');
         $loanPaid = LoanRepayment::where('date', '<=', $date)->sum('amount');
         $investmentPaid = InvestmentRepayment::where('date', '<=', $date)->sum('amount');
@@ -332,18 +224,19 @@ class ReportController extends Controller
         $capitals = Capital::where('date', '<=', $date)->sum('amount');
         $capitalWithdraw = CapitalWithdraw::where('date', '<=', $date)->sum('amount');
 
-        $loanBalance = $loans - $loanPaid;
-        $investmentBalance = $investments - $investmentPaid;
-        $bankloanBalance = $bankloanPaid->paid + $bankloanPaid->grace;
-        $capitalBalance = $capitals - $capitalWithdraw;
+        $loanBalance = $this->loanBalance($date);
+        $investmentBalance = $this->invesmentBalance($date);
+        //$bankloanBalance = $bankloanPaid->paid + $bankloanPaid->grace;
+        $bankloanBalance = $this->bankLoanBalance($date);
+        //$capitalBalance = $capitals - $capitalWithdraw;
+        $capitalBalance = $this->capitalBalance($date);
         $netProfit = $this->getNetProfit($date);
+        $assetBalance = $this->assetBalance($date);
 
         $product = new Product();
 
-// Call the getTotalStockAndValue method with the provided date
         $result = $product->getTotalStockAndValue($date);
 
-// Output the total products count and total value
         $totalProducts = $result['total_products'];
         $totalValue = $result['total_value'];
         $totalStock = $result['total_stock'];
@@ -355,6 +248,7 @@ class ReportController extends Controller
                 'totalStock',
                 'customer_due',
                 'assets',
+                'assetBalance',
                 'supplier_due',
                 'loans',
                 'capitals',
@@ -366,6 +260,62 @@ class ReportController extends Controller
             ));
     }
 
+    public function assetBalance($date)
+    {
+        $assets = Asset::with('assetSells')->where('date', '<=', $date)->get();
+        $balance = [];
+        foreach ($assets as $asset) {
+            $amount = $asset->initial_balance > 0? $asset->initial_balance: $asset->value;
+            $balance[] = $amount - $asset->assetSells()->where('date','<=',$date)->sum('purchase_price');
+        }
+
+        return array_sum($balance);
+    }
+    public function invesmentBalance($date)
+    {
+        $investments = Investment::with('investmentRepayments')->where('date', '<=', $date)->get();
+        $balance = [];
+        foreach ($investments as $investment) {
+            $amount = $investment->initial_balance > 0? $investment->initial_balance: $investment->loan_amount;
+            $balance[] = $amount - $investment->investmentRepayments()->where('date','<=',$date)->sum('amount');
+        }
+
+        return array_sum($balance);
+    }
+    public function loanBalance($date)
+    {
+        $loans = Loan::where('date', '<=', $date)->get();
+        $balance = [];
+        foreach ($loans as $loan) {
+            $amount = $loan->initial_balance > 0? $loan->initial_balance: $loan->loan_amount;
+            $balance[] = $amount - $loan->loanRepayments()->where('date', '<=', $date)->sum('amount');
+        }
+
+        return array_sum($balance);
+    }
+    public function capitalBalance($date)
+    {
+        $capitals = Capital::with('capitalWithdraws')->where('date', '<=', $date)->get();
+        $balance = [];
+        foreach ($capitals as $capital) {
+            $amount = $capital->initial_balance > 0? $capital->initial_balance: $capital->amount;
+            $balance[] = $amount - $capital->capitalWithdraws()->where('date','<=',$date)->sum('amount');
+        }
+
+        return array_sum($balance);
+    }
+    public function bankLoanBalance($date)
+    {
+        $loans = BankLoan::with('loanRepayments')->where('date', '<=', $date)->get();
+        $balance = [];
+        foreach ($loans as $loan) {
+            $total_loan = $loan->initial_balance>0?$loan->initial_balance:$loan->total_loan;
+            $paid = $loan->loanRepayments()->where('date', '<=', $date)->sum('amount');
+            $grace = $loan->loanRepayments()->where('date', '<=', $date)->sum('grace');
+            $balance[] = $total_loan-$paid - $grace;
+        }
+        return array_sum($balance);
+    }
     public function paymentReport(Request $request)
     {
         $methods = Account::all();

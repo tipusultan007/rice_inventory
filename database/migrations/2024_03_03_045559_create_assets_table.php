@@ -16,8 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('value', 10, 2);
-            $table->date('date');
+            $table->integer('initial_balance')->nullable();
             $table->string('trx_id');
+            $table->date('date');
+            $table->date('balance_date')->nullable();
             $table->timestamps();
         });
     }

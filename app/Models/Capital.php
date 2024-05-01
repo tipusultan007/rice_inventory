@@ -35,7 +35,7 @@ class Capital extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','amount','profit_rate','date','trx_id','description'];
+    protected $fillable = ['name','amount','profit_rate','date','trx_id','description','initial_balance','balance_date'];
 
 
     public function capitalWithdraws()
@@ -50,7 +50,11 @@ class Capital extends Model
 
     public function getBalanceAttribute()
     {
-        return $this->amount - $this->capitalWithdraws()->sum('amount');
+        $amount = $this->initial_balance > 0? $this->initial_balance: $this->amount;
+        return $amount - $this->capitalWithdraws()->sum('amount');
     }
-
+    public function initialBalance()
+    {
+        return $this->hasOne(InitialBalance::class, 'reference_id')->where('type', 'capital');
+    }
 }

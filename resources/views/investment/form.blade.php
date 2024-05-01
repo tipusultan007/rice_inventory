@@ -31,7 +31,22 @@
             {!! $errors->first('grace', '<div class="invalid-feedback">:message</div>') !!}
         </div>
     </div>
-
+    <div class="form-group col-3 mb-3">
+        <label class="form-label">   {{ Form::label('initial_balance','শুরুর ব্যালেন্স') }}</label>
+        <div>
+            {{ Form::text('initial_balance', $investment->initial_balance, ['class' => 'form-control' .
+            ($errors->has('initial_balance') ? ' is-invalid' : ''), 'placeholder' => '']) }}
+            {!! $errors->first('initial_balance', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
+    </div>
+    <div class="form-group col-3 mb-3">
+        <label class="form-label">শুরুর ব্যালেন্স তারিখ</label>
+        <div>
+            {{ Form::text('balance_date', $investment->balance_date, ['class' => 'form-control flatpicker' .
+            ($errors->has('balance_date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
+            {!! $errors->first('balance_date', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
+    </div>
 
     <div class="form-group mb-3 col-4">
         <label class="form-label">   {{ Form::label('date','তারিখ') }}</label>

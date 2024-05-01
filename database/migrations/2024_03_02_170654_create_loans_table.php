@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->bigInteger('loan_amount');
+            $table->integer('initial_balance')->nullable();
             $table->decimal('interest_rate', 10, 2);
-            $table->date('date');
             $table->string('trx_id');
             $table->text('description')->nullable();
+            $table->date('date');
+            $table->date('balance_date')->nullable();
             $table->timestamps();
         });
     }

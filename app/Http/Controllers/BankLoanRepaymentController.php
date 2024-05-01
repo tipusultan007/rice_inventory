@@ -58,7 +58,6 @@ class BankLoanRepaymentController extends Controller
             $data['trx_id'] = Str::uuid();
             $data['user_id'] = Auth::id();
             $loanRepayment = BankLoanRepayment::create($data);
-
             // Create debit transaction
             $debitTransaction = Transaction::create([
                 'amount' => $request->input('amount') + $request->input('grace'),
@@ -120,6 +119,7 @@ class BankLoanRepaymentController extends Controller
                 ->with('success', 'BankLoanRepayment created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error($e->getMessage());
             return redirect()->back()->with('error', 'An error occurred. Transaction rolled back.');
         }
     }

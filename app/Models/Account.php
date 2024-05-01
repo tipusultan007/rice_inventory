@@ -76,4 +76,8 @@ class Account extends Model
         return $total;
         //return $this->creditSum() - $this->debitSum();
     }
+    public function initialBalance()
+    {
+        return $this->hasOne(InitialBalance::class, 'reference_id')->where('type', 'account');
+    }
 }

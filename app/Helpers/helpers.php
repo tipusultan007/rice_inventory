@@ -90,6 +90,21 @@ function transactionType($type)
         case 'account_opening_balance':
             return __('অ্যাকাউন্ট এর শুরুর ব্যালেন্স');
             break;
+        case 'asset_opening_balance':
+            return __('সম্পদ শুরুর ব্যালেন্স');
+            break;
+        case 'investment_opening_balance':
+            return __('বিনিয়োগ শুরুর ব্যালেন্স');
+            break;
+        case 'loan_opening_balance':
+            return __('ঋন শুরুর ব্যালেন্স');
+            break;
+        case 'bankloan_opening_balance':
+            return __('ব্যাংক ঋন শুরুর ব্যালেন্স');
+            break;
+            case 'capital_opening_balance':
+            return __('মূলধন শুরুর ব্যালেন্স');
+            break;
         case 'customer_due':
             return __('ক্রেতার বকেয়া');
             break;

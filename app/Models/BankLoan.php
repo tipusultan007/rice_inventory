@@ -41,7 +41,7 @@ class BankLoan extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','loan_amount','interest','duration','total_loan','grace','date','expire','trx_id','description'];
+    protected $fillable = ['name','loan_amount','interest','duration','total_loan','grace','date','expire','trx_id','description','initial_balance','balance_date'];
 
     public function loanRepayments()
     {
@@ -57,8 +57,16 @@ class BankLoan extends Model
     }
     public function getBalanceAttribute()
     {
+        $balance = $this->initial_balance>0?$this->initial_balance:$this->total_loan;
         $paid = $this->loanRepayments()->sum('amount');
         $grace = $this->loanRepayments()->sum('grace');
-        return $this->total_loan - $paid - $grace;
+        //return $this->total_loan -$this->initial_balance - $paid - $grace;
+        return $balance - $paid - $grace;
+    }
+
+
+    public function initialBalance()
+    {
+        return $this->hasOne(InitialBalance::class, 'reference_id')->where('type', 'bank_loan');
     }
 }

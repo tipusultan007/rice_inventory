@@ -1,55 +1,75 @@
-<div class="form-group mb-3">
-    <label class="form-label">  নাম</label>
-    <div>
-        {{ Form::text('name', $loan->name, ['class' => 'form-control' .
-        ($errors->has('name') ? ' is-invalid' : ''), 'placeholder' => 'Loan Name']) }}
-        {!! $errors->first('name', '<div class="invalid-feedback">:message</div>') !!}
+<div class="row">
+    <div class="form-group col-md-3 mb-3">
+        <label class="form-label">  নাম</label>
+        <div>
+            {{ Form::text('name', $loan->name, ['class' => 'form-control' .
+            ($errors->has('name') ? ' is-invalid' : ''), 'placeholder' => 'Loan Name']) }}
+            {!! $errors->first('name', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
     </div>
-</div>
 
-<div class="form-group mb-3">
-    <label class="form-label">   {{ Form::label('loan_amount','ঋণের পরিমাণ') }}</label>
-    <div>
-        {{ Form::text('loan_amount', $loan->loan_amount, ['class' => 'form-control' .
-        ($errors->has('loan_amount') ? ' is-invalid' : ''), 'placeholder' => 'Loan Amount']) }}
-        {!! $errors->first('loan_amount', '<div class="invalid-feedback">:message</div>') !!}
+    <div class="form-group col-md-3 mb-3">
+        <label class="form-label">   {{ Form::label('loan_amount','ঋণের পরিমাণ') }}</label>
+        <div>
+            {{ Form::text('loan_amount', $loan->loan_amount, ['class' => 'form-control' .
+            ($errors->has('loan_amount') ? ' is-invalid' : ''), 'placeholder' => 'Loan Amount']) }}
+            {!! $errors->first('loan_amount', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
     </div>
-</div>
-<div class="form-group mb-3">
-    <label class="form-label">   {{ Form::label('interest_rate','কমিশন রেট') }}</label>
-    <div>
-        {{ Form::text('interest_rate', $loan->interest_rate, ['class' => 'form-control' .
-        ($errors->has('interest_rate') ? ' is-invalid' : ''), 'placeholder' => 'Interest Rate']) }}
-        {!! $errors->first('interest_rate', '<div class="invalid-feedback">:message</div>') !!}
+    <div class="form-group col-md-3 mb-3">
+        <label class="form-label">   {{ Form::label('interest_rate','কমিশন রেট') }}</label>
+        <div>
+            {{ Form::text('interest_rate', $loan->interest_rate, ['class' => 'form-control' .
+            ($errors->has('interest_rate') ? ' is-invalid' : ''), 'placeholder' => 'Interest Rate']) }}
+            {!! $errors->first('interest_rate', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
     </div>
-</div>
-@php
-    use App\Models\Account;
-    $accounts = Account::pluck('name','id');
-@endphp
-<div class="form-group mb-3">
-    <label>একাউন্ট</label>
-    <select name="account_id" id="account_id" class="form-control select2" data-placeholder="সিলেক্ট একাউন্ট">
-        <option value=""></option>
-        @foreach($accounts as $key => $account)
-            <option value="{{ $key }}" {{ isset($creditTransaction)?$creditTransaction->account_id == $key?'selected':'':'' }}>{{ $account }}</option>
-        @endforeach
-    </select>
-</div>
-<div class="form-group mb-3">
-    <label class="form-label">   {{ Form::label('date','তারিখ') }}</label>
-    <div>
-        {{ Form::text('date', $loan->date, ['class' => 'form-control flatpicker' .
-        ($errors->has('date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
-        {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
+
+    <div class="form-group col-md-3 mb-3">
+        <label class="form-label">শুরুর ব্যালেন্স</label>
+        <div>
+            {{ Form::text('initial_balance', $loan->initial_balance, ['class' => 'form-control' .
+            ($errors->has('initial_balance') ? ' is-invalid' : ''), 'placeholder' => 'Value']) }}
+            {!! $errors->first('initial_balance', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
     </div>
-</div>
-<div class="form-group mb-3">
-    <label class="form-label">   {{ Form::label('description','বিবরণ') }}</label>
-    <div>
-        {{ Form::text('description', $loan->description, ['class' => 'form-control' .
-        ($errors->has('description') ? ' is-invalid' : ''), 'placeholder' => 'Description']) }}
-        {!! $errors->first('description', '<div class="invalid-feedback">:message</div>') !!}
+
+    @php
+        use App\Models\Account;
+        $accounts = Account::pluck('name','id');
+    @endphp
+    <div class="form-group col-md-3 mb-3">
+        <label class="form-label">একাউন্ট</label>
+        <select name="account_id" id="account_id" class="form-control select2" data-placeholder="সিলেক্ট একাউন্ট">
+            <option value=""></option>
+            @foreach($accounts as $key => $account)
+                <option value="{{ $key }}" {{ isset($creditTransaction)?$creditTransaction->account_id == $key?'selected':'':'' }}>{{ $account }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="form-group col-md-3 mb-3">
+        <label class="form-label">   {{ Form::label('date','তারিখ') }}</label>
+        <div>
+            {{ Form::text('date', $loan->date, ['class' => 'form-control flatpicker' .
+            ($errors->has('date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
+            {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
+    </div>
+    <div class="form-group col-md-3 mb-3">
+        <label class="form-label">শুরুর ব্যালেন্স তারিখ</label>
+        <div>
+            {{ Form::text('balance_date', $loan->balance_date, ['class' => 'form-control flatpicker' .
+            ($errors->has('balance_date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
+            {!! $errors->first('balance_date', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
+    </div>
+    <div class="form-group col-md-3 mb-3">
+        <label class="form-label">   {{ Form::label('description','বিবরণ') }}</label>
+        <div>
+            {{ Form::text('description', $loan->description, ['class' => 'form-control' .
+            ($errors->has('description') ? ' is-invalid' : ''), 'placeholder' => 'Description']) }}
+            {!! $errors->first('description', '<div class="invalid-feedback">:message</div>') !!}
+        </div>
     </div>
 </div>
 

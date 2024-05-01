@@ -38,7 +38,7 @@ class Investment extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','loan_amount','interest_rate','grace','date','trx_id','description'];
+    protected $fillable = ['name','loan_amount','interest_rate','grace','date','trx_id','description','initial_balance','balance_date'];
 
     public function investmentRepayments()
     {
@@ -57,7 +57,11 @@ class Investment extends Model
 
     public function getBalanceAttribute()
     {
-        return $this->loan_amount - $this->investmentRepayments()->sum('amount');
+        $amount = $this->initial_balance > 0? $this->initial_balance: $this->loan_amount;
+        return $amount - $this->investmentRepayments()->sum('amount');
     }
-
+    public function initialBalance()
+    {
+        return $this->hasOne(InitialBalance::class, 'reference_id')->where('type', 'investment');
+    }
 }

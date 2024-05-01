@@ -78,14 +78,27 @@
                             <tr>
                                 <th>তারিখ</th>
                                 <th>বিবরণ</th>
+                                <th>নোট</th>
                                 <th>ডেবিট</th>
                                 <th>ক্রেডিট</th>
                                 <th class="w-1"></th>
                             </tr>
                             @forelse($transactions as $transaction)
+                                @php
+                                $transferInfo = '';
+                                if ($transaction->transaction_type === 'balance_transfer'){
+                                    $balanceTransfer = \App\Models\BalanceTransfer::find($transaction->reference_id);
+                                    if ($transaction->type === 'credit'){
+                                        $transferInfo = '<br> গ্রহণকারী - '.$balanceTransfer->toAccount->name;
+                                    }else{
+                                        $transferInfo = '<br> প্রদানকারী - '.$balanceTransfer->fromAccount->name;
+                                    }
+                                }
+                                @endphp
                                 <tr>
                                     <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
                                     <td>{{ transactionType($transaction->transaction_type) }}</td>
+                                    <td>{{ $transaction->note??'-' }} {!! $transferInfo !!}</td>
                                     <td>{{ $transaction->type === 'debit'? $transaction->amount:'-' }}</td>
                                     <td>{{ $transaction->type === 'credit'? $transaction->amount:'-' }}</td>
                                     <td>

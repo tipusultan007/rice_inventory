@@ -17,9 +17,11 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->decimal('profit_rate', 10, 2);
             $table->decimal('balance', 10, 2)->default(0);
-            $table->date('date');
+            $table->decimal('initial_balance', 10, 2)->nullable()->default(0);
             $table->string('trx_id');
             $table->text('description')->nullable();
+            $table->date('date');
+            $table->date('balance_date')->nullable();
             $table->timestamps();
         });
     }

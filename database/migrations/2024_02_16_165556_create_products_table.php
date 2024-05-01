@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('quantity')->nullable()->default(0);
             $table->integer('quantity_alt')->nullable()->default(0);
             $table->integer('price_rate')->nullable()->default(0);
+            $table->integer('initial_stock')->nullable()->default(0);
             $table->timestamps();
         });
     }

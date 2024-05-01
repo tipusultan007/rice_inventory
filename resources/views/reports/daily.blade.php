@@ -61,7 +61,7 @@
                     <form action="{{ route('report.daily') }}" method="get">
                         <div class="row">
                             <div class="col-md-2">
-                                <input type="text" class="form-control flatpicker" name="date">
+                                <input type="text" class="form-control flatpicker" name="date" value="{{ request('date')??date('Y-m-d') }}">
                             </div>
                             <div class="col-md-2">
                                 <button class="btn btn-secondary" type="submit">সার্চ করুন</button>
@@ -668,7 +668,6 @@
                 allowInput: true,
                 altFormat: "d-m-Y",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ date('Y-m-d') }}"
             });
         });
     </script>

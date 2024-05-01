@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Class AccountController
@@ -22,6 +23,25 @@ class AccountController extends Controller
     public function index()
     {
         $accounts = Account::paginate(20);
+
+       /* $allAccounts = Account::all();
+        foreach ($allAccounts as $account){
+            if ($account->starting_balance > 0){
+
+                $type = $account->id != 13 ? 'debit' : 'credit';
+
+                Transaction::create([
+                    'account_name' => $account->name,
+                    'amount' => $account->starting_balance,
+                    'transaction_type' => 'account_opening_balance',
+                    'type' => $type,
+                    'account_id' => $account->id,
+                    'user_id' => Auth::id(),
+                    'date' => $account->date,
+                    'trx_id' => Str::uuid(),
+                ]);
+            }
+        }*/
 
         return view('account.index', compact('accounts'))
             ->with('i', (request()->input('page', 1) - 1) * $accounts->perPage());
@@ -51,14 +71,16 @@ class AccountController extends Controller
         $account = Account::create($request->all());
 
         if ($account->starting_balance > 0){
+            $type = $account->id != 13 ? 'debit' : 'credit';
             Transaction::create([
                 'account_name' => $account->name,
                 'amount' => $account->starting_balance,
                 'transaction_type' => 'account_opening_balance',
-                'type' => 'debit',
+                'type' => $type,
                 'account_id' => $account->id,
                 'user_id' => Auth::id(),
                 'date' => $request->date,
+                'trx_id' => Str::uuid(),
             ]);
         }
 

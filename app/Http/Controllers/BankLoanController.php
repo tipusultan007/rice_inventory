@@ -28,6 +28,24 @@ class BankLoanController extends Controller
     {
         $bankLoans = BankLoan::orderBy('date','asc')->paginate(50);
 
+       /* $allBankLoans = BankLoan::all();
+        foreach ($allBankLoans as $bankLoan) {
+            $bankLoan->trx_id = Str::uuid();
+            $bankLoan->save();
+            if ($bankLoan->initial_balance > 0){
+                Transaction::create([
+                    'account_name' => $bankLoan->name,
+                    'amount' => $bankLoan->initial_balance,
+                    'transaction_type' => 'bankloan_opening_balance',
+                    'type' => 'credit',
+                    'reference_id' => $bankLoan->id,
+                    'user_id' => Auth::id(),
+                    'date' => $bankLoan->balance_date,
+                    'trx_id' => $bankLoan->trx_id
+                ]);
+            }
+        }*/
+
         return view('bank-loan.index', compact('bankLoans'))
             ->with('i', (request()->input('page', 1) - 1) * $bankLoans->perPage());
     }
@@ -65,52 +83,63 @@ class BankLoanController extends Controller
             $bankLoan->total_loan = $bankLoan->interest + $bankLoan->loan_amount;
             $bankLoan->save();
 
-            $account = Account::find($request->input('account_id'));
+            if ($bankLoan->initial_balance > 0){
+                Transaction::create([
+                    'account_name' => $bankLoan->name,
+                    'amount' => $bankLoan->initial_balance,
+                    'transaction_type' => 'bankloan_opening_balance',
+                    'type' => 'credit',
+                    'reference_id' => $bankLoan->id,
+                    'user_id' => Auth::id(),
+                    'date' => $bankLoan->balance_date,
+                    'trx_id' => $bankLoan->trx_id
+                ]);
+            }else {
+                $account = Account::find($request->input('account_id'));
+                // Create debit transaction
+                $debitTransaction = Transaction::create([
+                    'account_id' => $request->input('account_id'),
+                    'account_name' => $account->name,
+                    'amount' => $bankLoan->loan_amount,
+                    'type' => 'debit',
+                    'reference_id' => $bankLoan->id,
+                    'date' => $bankLoan->date,
+                    'transaction_type' => 'bank_loan',
+                    'user_id' => Auth::id(),
+                    'trx_id' => $bankLoan->trx_id
+                ]);
 
-            // Create debit transaction
-            $debitTransaction = Transaction::create([
-                'account_id' => $request->input('account_id'),
-                'account_name' => $account->name,
-                'amount' => $bankLoan->loan_amount,
-                'type' => 'debit',
-                'reference_id' => $bankLoan->id,
-                'date' => $bankLoan->date,
-                'transaction_type' => 'bank_loan',
-                'user_id' => Auth::id(),
-                'trx_id' => $bankLoan->trx_id
-            ]);
+                $expense = Expense::create([
+                    'expense_category_id' => 18,
+                    'date' => $bankLoan->date,
+                    'description' => $bankLoan->name . ' - সুদ',
+                    'amount' => $bankLoan->interest,
+                    'user_id' => Auth::id(),
+                    'trx_id' => $bankLoan->trx_id
+                ]);
 
-            $expense = Expense::create([
-                'expense_category_id' => 18,
-                'date' => $bankLoan->date,
-                'description' => $bankLoan->name.' - সুদ',
-                'amount' => $bankLoan->interest,
-                'user_id' => Auth::id(),
-                'trx_id' => $bankLoan->trx_id
-            ]);
+                $debitTransaction1 = Transaction::create([
+                    'account_name' => $expense->description,
+                    'amount' => $expense->amount,
+                    'type' => 'debit',
+                    'reference_id' => $expense->id,
+                    'date' => $expense->date,
+                    'transaction_type' => 'expense',
+                    'user_id' => Auth::id(),
+                    'trx_id' => $expense->trx_id,
+                ]);
 
-            $debitTransaction1 = Transaction::create([
-                'account_name' => $expense->description,
-                'amount' => $expense->amount,
-                'type' => 'debit',
-                'reference_id' => $expense->id,
-                'date' => $expense->date,
-                'transaction_type' => 'expense',
-                'user_id' => Auth::id(),
-                'trx_id' => $expense->trx_id,
-            ]);
-
-            $creditTransaction = Transaction::create([
-                'account_name' => $bankLoan->name,
-                'amount' => $bankLoan->total_loan,
-                'type' => 'credit',
-                'reference_id' => $bankLoan->id,
-                'date' => $bankLoan->date,
-                'transaction_type' => 'bank_loan',
-                'user_id' => Auth::id(),
-                'trx_id' => $bankLoan->trx_id
-            ]);
-
+                $creditTransaction = Transaction::create([
+                    'account_name' => $bankLoan->name,
+                    'amount' => $bankLoan->total_loan,
+                    'type' => 'credit',
+                    'reference_id' => $bankLoan->id,
+                    'date' => $bankLoan->date,
+                    'transaction_type' => 'bank_loan',
+                    'user_id' => Auth::id(),
+                    'trx_id' => $bankLoan->trx_id
+                ]);
+            }
 
             // Commit the transaction
             DB::commit();
@@ -173,47 +202,74 @@ class BankLoanController extends Controller
 
             $bankLoan->update($data);
 
-            // Update debit transaction
-            $debitTransaction = Transaction::where('reference_id', $bankLoan->id)
-                ->where('transaction_type', 'bank_loan')
-                ->where('type', 'debit')
-                ->first();
+            if ($bankLoan->initial_balance > 0){
+                $initial_balance = Transaction::where('transaction_type','bankloan_opening_balance')
+                    ->where('reference_id',$bankLoan->id)
+                    ->where('trx_id',$bankLoan->trx_id)->first();
+                if ($initial_balance){
+                    $initial_balance->amount = $bankLoan->initial_balance;
+                    $initial_balance->date = $bankLoan->balance_date;
+                    $initial_balance->save();
+                }else{
+                    Transaction::create([
+                        'account_name' => $bankLoan->name,
+                        'amount' => $bankLoan->initial_balance,
+                        'transaction_type' => 'bankloan_opening_balance',
+                        'type' => 'credit',
+                        'reference_id' => $bankLoan->id,
+                        'user_id' => Auth::id(),
+                        'date' => $bankLoan->balance_date,
+                        'trx_id' => $bankLoan->trx_id
+                    ]);
+                }
+            }else{
+                Transaction::where('transaction_type','bankloan_opening_balance')
+                    ->where('reference_id',$bankLoan->id)
+                    ->where('trx_id',$bankLoan->trx_id)
+                    ->delete();
 
-            $debitTransaction->update([
-                'amount' => $bankLoan->loan_amount,
-                'date' => $bankLoan->date,
-            ]);
+                // Update debit transaction
+                $debitTransaction = Transaction::where('reference_id', $bankLoan->id)
+                    ->where('transaction_type', 'bank_loan')
+                    ->where('type', 'debit')
+                    ->first();
+
+                $debitTransaction->update([
+                    'amount' => $bankLoan->loan_amount,
+                    'date' => $bankLoan->date,
+                ]);
 
 
-            // Update expense
-            $expense = Expense::where('trx_id', $bankLoan->trx_id)->first();
+                // Update expense
+                $expense = Expense::where('trx_id', $bankLoan->trx_id)->first();
 
-            $expense->update([
-                'date' => $bankLoan->date,
-                'amount' => $bankLoan->interest,
-            ]);
+                $expense->update([
+                    'date' => $bankLoan->date,
+                    'amount' => $bankLoan->interest,
+                ]);
 
-            // Update debit transaction for expense
-            $debitTransaction1 = Transaction::where('reference_id', $expense->id)
-                ->where('transaction_type', 'expense')
-                ->where('type', 'debit')
-                ->first();
+                // Update debit transaction for expense
+                $debitTransaction1 = Transaction::where('reference_id', $expense->id)
+                    ->where('transaction_type', 'expense')
+                    ->where('type', 'debit')
+                    ->first();
 
-            $debitTransaction1->update([
-                'amount' => $expense->amount,
-                'date' => $expense->date,
-            ]);
-            // Update credit transaction
-            $creditTransaction = Transaction::where('reference_id', $bankLoan->id)
-                ->where('transaction_type', 'bank_loan')
-                ->where('type', 'credit')
-                ->first();
+                $debitTransaction1->update([
+                    'amount' => $expense->amount,
+                    'date' => $expense->date,
+                ]);
+                // Update credit transaction
+                $creditTransaction = Transaction::where('reference_id', $bankLoan->id)
+                    ->where('transaction_type', 'bank_loan')
+                    ->where('type', 'credit')
+                    ->first();
 
-            $creditTransaction->update([
-                'account_no' => $bankLoan->name,
-                'amount' => $bankLoan->total_loan,
-                'date' => $bankLoan->date,
-            ]);
+                $creditTransaction->update([
+                    'account_no' => $bankLoan->name,
+                    'amount' => $bankLoan->total_loan,
+                    'date' => $bankLoan->date,
+                ]);
+            }
             // Commit the transaction
             DB::commit();
 

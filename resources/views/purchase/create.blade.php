@@ -111,19 +111,19 @@
                             <h3 class="card-title">ক্রয়ের বিবরণ</h3>
                         </div>
                         @php
-                        $lastPurchase = \App\Models\Purchase::where('user_id',auth()->id())->latest()->first();
+                            $lastPurchase = \App\Models\Purchase::where('user_id',auth()->id())->latest()->first();
                         @endphp
                         <div class="card-body">
                             <form id="form" action="{{ route('purchases.store') }}" method="post">
                                 @csrf
                                 <div class="row">
                                     <div class="col-md-2 mb-3">
-                                            <label for="date" class="form-label">ক্রয়ের তারিখ:</label>
+                                        <label for="date" class="form-label">ক্রয়ের তারিখ:</label>
                                         <input type="text" name="date" id="date" class="form-control flatpicker">
-                                         {{--   <x-flat-picker name="date" :options="['altFormat']" id="date" required value="{{ $lastPurchase?$lastPurchase->date:date('Y-m-d') }}"></x-flat-picker>--}}
-                                            @error('date')
-                                            <div class="text-danger">{{ $message }}</div>
-                                            @enderror
+                                        {{--   <x-flat-picker name="date" :options="['altFormat']" id="date" required value="{{ $lastPurchase?$lastPurchase->date:date('Y-m-d') }}"></x-flat-picker>--}}
+                                        @error('date')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="col-md-2 mb-3">
                                         <label for="invoice_no" class="form-label">চালান নং:</label>
@@ -133,7 +133,7 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-2 mb-3">
+                                    <div class="col-md-3 mb-3">
                                         <label for="truck_no" class="form-label">ট্রাক নম্বর:</label>
                                         <input type="text" name="truck_no" class="form-control"
                                                value="{{ old('truck_no') }}">
@@ -141,7 +141,7 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-5 mb-3">
                                         <label for="attachment" class="form-label">ফাইল:</label>
                                         <input type="file" name="attachment" class="form-control"
                                                value="{{ old('attachment') }}">
@@ -149,20 +149,26 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label for="supplier_id" class="form-label">সরবরাহকারী:</label>
-                                        <select name="supplier_id" id="supplier_id" class="form-control select2" required data-placeholder="সরবরাহকারী বাছাই করুন">
-                                            <option value=""></option>
-                                            @foreach($suppliers as $supplier)
-                                                <option
-                                                    value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
-                                                    {{ $supplier->name }} - {{ $supplier->address }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                            <select name="supplier_id" id="supplier_id" class="form-control select2"
+                                                    required data-placeholder="সরবরাহকারী বাছাই করুন">
+                                            </select>
                                         @error('supplier_id')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end mb-3">
+                                        <button type="button" id="openModalBtn" class="btn btn-secondary"
+                                                data-bs-toggle="modal" data-bs-target="#createSupplierModal">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                 class="icon icon-tabler icons-tabler-outline icon-tabler-plus"><path
+                                                    stroke="none" d="M0 0h24v24H0z" fill="none"/><path
+                                                    d="M12 5l0 14"/><path d="M5 12l14 0"/></svg>
+
+                                        </button>
                                     </div>
 
                                 </div>
@@ -188,24 +194,30 @@
                                                            value="{{ old("products.0.weight") }}"></td>
                                                 <td>
                                                     <select name="products[0][product_id]"
-                                                            class="form-select products-select2" required data-placeholder="সিলেক্ট প্রোডাক্ট">
+                                                            class="form-select products-select2" required
+                                                            data-placeholder="সিলেক্ট প্রোডাক্ট">
                                                         <option value=""></option>
                                                         @foreach($products as $product)
-                                                            <option data-price-rate="{{ $product->price_rate }}" value="{{ $product->id }}" {{ old("products.0.product_id") == $product->id ? 'selected' : '' }}>
+                                                            <option data-price-rate="{{ $product->price_rate }}"
+                                                                    value="{{ $product->id }}" {{ old("products.0.product_id") == $product->id ? 'selected' : '' }}>
                                                                 {{ $product->name }}
                                                             </option>
                                                         @endforeach
                                                     </select>
                                                 </td>
 
-                                                <td><input type="number" name="products[0][price_rate]" class="form-control"
+                                                <td><input type="number" name="products[0][price_rate]"
+                                                           class="form-control"
                                                            value="{{ old("products.0.price_rate") }}" required></td>
-                                                <td><input type="number" name="products[0][quantity]" class="form-control"
+                                                <td><input type="number" name="products[0][quantity]"
+                                                           class="form-control"
                                                            value="{{ old("products.0.quantity") }}" required></td>
                                                 <td><input type="number" name="products[0][amount]" class="form-control"
                                                            value="{{ old("products.0.amount") }}" required></td>
                                                 <td>
-                                                    <button class="btn btn-primary btn-icon" type="button" onclick="addProductEntry()"><i class="ti ti-plus"></i></button>
+                                                    <button class="btn btn-primary btn-icon" type="button"
+                                                            onclick="addProductEntry()"><i class="ti ti-plus"></i>
+                                                    </button>
                                                 </td>
                                             </tr>
                                             </tbody>
@@ -214,11 +226,13 @@
                                             <tr>
                                                 <th colspan="2" class="text-end border-0 py-0">গাড়ি ভাড়া</th>
                                                 <th class="carrying_cost border-0 py-2">
-                                                    <input type="number" name="carrying_cost" class="form-control" value="{{ old('carrying_cost') }}" min="0">
+                                                    <input type="number" name="carrying_cost" class="form-control"
+                                                           value="{{ old('carrying_cost') }}" min="0">
                                                 </th>
                                                 <th class="text-end border-0 py-0">মোট</th>
                                                 <th class="subtotal border-0 py-2">
-                                                    <input type="number" name="subtotal" class="form-control" value="{{ old('subtotal') }}" readonly>
+                                                    <input type="number" name="subtotal" class="form-control"
+                                                           value="{{ old('subtotal') }}" readonly>
                                                 </th>
                                                 <th class="border-0 py-0 border-0 py-0"></th>
                                             </tr>
@@ -226,32 +240,36 @@
                                             <tr>
                                                 <th colspan="2" class="text-end border-0 py-0">ডিস্কাউন্ট</th>
                                                 <th class="discount border-0 py-2">
-                                                    <input type="number" name="discount" class="form-control" value="{{ old('discount') }}" min="0">
+                                                    <input type="number" name="discount" class="form-control"
+                                                           value="{{ old('discount') }}" min="0">
                                                 </th>
                                                 <th class="text-end border-0 py-0">তহরি</th>
                                                 <th class="tohori border-0 py-2">
-                                                    <input type="number" name="tohori" class="form-control" value="{{ old('tohori') }}" min="0">
+                                                    <input type="number" name="tohori" class="form-control"
+                                                           value="{{ old('tohori') }}" min="0">
                                                 </th>
                                                 <th class="border-0 py-0"></th>
                                             </tr>
-                                           {{-- <tr>
-                                                <th colspan="4" class="text-end border-0 py-0">ডিস্কাউন্ট</th>
-                                                <th class="discount border-0 py-2">
-                                                    <input type="number" name="discount" class="form-control" value="0" min="0">
-                                                </th>
-                                                <th class="border-0 py-0"></th>
-                                            </tr>--}}
+                                            {{-- <tr>
+                                                 <th colspan="4" class="text-end border-0 py-0">ডিস্কাউন্ট</th>
+                                                 <th class="discount border-0 py-2">
+                                                     <input type="number" name="discount" class="form-control" value="0" min="0">
+                                                 </th>
+                                                 <th class="border-0 py-0"></th>
+                                             </tr>--}}
                                             <tr>
                                                 <th colspan="2" class="text-end border-0 py-0">নোট</th>
                                                 <th class="total border-0 py-2">
-                                                    <input type="text" name="note" class="form-control" value="{{ old('note') }}">
+                                                    <input type="text" name="note" class="form-control"
+                                                           value="{{ old('note') }}">
                                                     @error('note')
                                                     <div class="text-danger">{{ $message }}</div>
                                                     @enderror
                                                 </th>
                                                 <th class="text-end border-0 py-0">সর্বমোট</th>
                                                 <th class="total border-0 py-2">
-                                                    <input type="number" name="total" class="form-control" value="0" readonly>
+                                                    <input type="number" name="total" class="form-control" value="0"
+                                                           readonly>
                                                 </th>
                                                 <th class="border-0 py-0"></th>
                                             </tr>
@@ -267,16 +285,19 @@
                                                     <label for="account_id">একাউন্ট</label>
                                                 </th>
                                                 <td class="total border-0 py-2">
-                                                    <select name="account_id" id="account_id" class="form-control select2">
+                                                    <select name="account_id" id="account_id"
+                                                            class="form-control select2">
                                                         @forelse($accounts as $account)
-                                                            <option value="{{ $account->id }}">{{ $account->name }}</option>
+                                                            <option
+                                                                value="{{ $account->id }}">{{ $account->name }}</option>
                                                         @empty
                                                         @endforelse
                                                     </select>
                                                 </td>
                                                 <th class="text-end border-0 py-0">পরিশোধ</th>
                                                 <th class="total border-0 py-2">
-                                                    <input type="number" name="paid" class="form-control" value="0" min="0">
+                                                    <input type="number" name="paid" class="form-control" value="0"
+                                                           min="0">
                                                     @error('paid')
                                                     <div class="text-danger">{{ $message }}</div>
                                                     @enderror
@@ -308,32 +329,36 @@
                                                     </select>
                                                 </td>
                                             </tr>--}}
-                                           {{-- <tr>
-                                                <th colspan="4" class="text-end border-0 py-0">
-                                                    চেক নং
-                                                </th>
-                                                <td>
-                                                    <input type="text" name="cheque_no" id="cheque_no" class="form-control">
-                                                </td>
-                                            </tr>--}}
+                                            {{-- <tr>
+                                                 <th colspan="4" class="text-end border-0 py-0">
+                                                     চেক নং
+                                                 </th>
+                                                 <td>
+                                                     <input type="text" name="cheque_no" id="cheque_no" class="form-control">
+                                                 </td>
+                                             </tr>--}}
                                             <tr>
                                                 <th colspan="2" class="text-end border-0 py-0">
                                                     চেক নং
                                                 </th>
                                                 <td>
-                                                    <input type="text" name="cheque_no" id="cheque_no" class="form-control">
+                                                    <input type="text" name="cheque_no" id="cheque_no"
+                                                           class="form-control">
                                                 </td>
                                                 <th class="text-end border-0 py-0">
                                                     চেক বিবরণ
                                                 </th>
                                                 <td>
-                                                    <input type="text" name="cheque_details" id="cheque_details" class="form-control">
+                                                    <input type="text" name="cheque_details" id="cheque_details"
+                                                           class="form-control">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th colspan="4"></th>
                                                 <td>
-                                                    <button type="submit" id="submitButton" class="btn btn-primary w-100">সাবমিট</button>
+                                                    <button type="submit" id="submitButton"
+                                                            class="btn btn-primary w-100">সাবমিট
+                                                    </button>
                                                 </td>
                                                 <td></td>
                                             </tr>
@@ -348,14 +373,92 @@
             </div>
         </div>
     </div>
+
+    <div class="modal" id="createSupplierModal" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">সরবরাহকারী ফরম</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="createSupplierForm">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group mb-3">
+                            <label class="form-label" for="name">নাম:</label>
+                            <input type="text" class="form-control" name="name" placeholder="Supplier Name" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label" for="address">ঠিকানা:</label>
+                            <input type="text" class="form-control" name="address" placeholder="Address" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label" for="phone">মোবাইল নং:</label>
+                            <input type="text" class="form-control" name="phone" placeholder="Phone" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
-@section('scripts')
+@section('js')
     <script>
-        document.getElementById('submitButton').addEventListener('click', function(e) {
+        document.getElementById('submitButton').addEventListener('click', function (e) {
             e.preventDefault();
             document.getElementById('form').submit();
             this.disabled = true;
+        });
+    </script>
+    <script type="module">
+        $(document).ready(function () {
+            // Function to populate select2 dropdown
+            function populateSelect2(suppliers) {
+                // Assuming you have a select element with id 'supplierSelect'
+                $('#supplier_id').empty();
+                $('#supplier_id').append('<option value=""></option>');
+                $.each(suppliers, function (index, supplier) {
+                    $('#supplier_id').append('<option value="' + supplier.id + '">' + supplier.name + '</option>');
+                });
+                // Initialize or refresh select2 dropdown
+                $('#supplier_id').select2({
+                    width: '90%',
+                    theme: 'bootstrap-5',
+                });
+            }
+
+            // Open modal when button is clicked
+            /*$('#openModalBtn').click(function() {
+                $('#createSupplierModal').modal('show');
+            });*/
+
+            $('#createSupplierForm').submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                $.post("/store-supplier", formData, function (data) {
+                    $.get("/supplier-list", function (data) {
+                        populateSelect2(data);
+                    });
+                    toastr.success('সরবরাহকারী যোগ হয়েছে!');
+                });
+            });
+
+            // Fetch initial supplier list and populate select2 dropdown
+            $.get("/supplier-list", function (data) {
+                populateSelect2(data);
+            });
+
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right"
+            };
         });
     </script>
     <script type="module">
@@ -389,7 +492,7 @@
             // Add delete button only for rows beyond the initial one
             if (newIndex > 0) {
                 productsContainer.find('td:last').html('' +
-                    '<button class="btn btn-primary btn-icon me-2" type="button" onclick="addProductEntry()"><i class="ti ti-plus"></i></button>'+
+                    '<button class="btn btn-primary btn-icon me-2" type="button" onclick="addProductEntry()"><i class="ti ti-plus"></i></button>' +
                     '<button type="button" class="btn btn-danger btn-icon" onclick="removeProductEntry(this)"><i class="ti ti-x"></i></button>');
             } else {
                 productsContainer.find('td:last').empty(); // Remove any existing delete button in the first row
@@ -397,6 +500,7 @@
             $('.table.products tbody').append(productsContainer);
             initializeEventListeners();
         }
+
         function initializeEventListeners() {
             // Update amounts and total when quantity or price rate changes
             $('.product-entry input[name^="products["]').on('input', function () {
@@ -409,6 +513,7 @@
             });
 
         }
+
         function updateAmountAndTotal() {
             // Loop through each product entry row
             $('.product-entry').each(function (index) {
@@ -423,6 +528,7 @@
                 updateTotal();
             });
         }
+
         // Function to update the total based on all amounts
         function updateTotal() {
             var total = 0;
@@ -436,8 +542,8 @@
             });
             $('input[name="subtotal"]').val(total.toFixed(2));
             // Include carrying cost
-          /*  var carryingCost = parseFloat($('input[name="carrying_cost"]').val()) || 0;
-            total += carryingCost;*/
+            /*  var carryingCost = parseFloat($('input[name="carrying_cost"]').val()) || 0;
+              total += carryingCost;*/
 
             // Include discount
             var discount = parseFloat($('input[name="discount"]').val()) || 0;
@@ -456,22 +562,22 @@
             updateAmountAndTotal();
         }
 
-        $(document).ready(function($){
+        $(document).ready(function ($) {
 
-            $("#supplier_id,.select2").select2({
+            /*$("#supplier_id,.select2").select2({
                 theme: "bootstrap-5",
                 placeholder: "",
                 allowClear:true,
                 width:"100%",
-            });
-            $(".products-select2").select2({
+            });*/
+            $(".products-select2,#account_id").select2({
                 theme: "bootstrap-5",
                 placeholder: "",
-                allowClear:true,
-                width:"100%",
+                allowClear: true,
+                width: "100%",
             });
 
-            $(document).on('change', '.products-select2', function() {
+            $(document).on('change', '.products-select2', function () {
                 // Get the selected option
                 var selectedOption = $(this).find(':selected');
 

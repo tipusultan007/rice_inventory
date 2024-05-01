@@ -130,3 +130,6 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+Route::resource('/initial-balances', App\Http\Controllers\InitialBalanceController::class);
+Route::get('supplier-list',[SupplierController::class,'supplierList']);
+Route::post('store-supplier',[SupplierController::class,'storeSupplier']);

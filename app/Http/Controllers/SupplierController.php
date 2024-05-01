@@ -195,6 +195,9 @@ class SupplierController extends Controller
                 })->orWhere(function($query) {
                     $query->where('transaction_type', 'purchase_return')
                         ->where('type', 'credit');
+                })->orWhere(function($query) {
+                    $query->where('transaction_type', 'tohori')
+                        ->where('type', 'credit');
                 });
             })
             ->orderBy('id', 'asc')
@@ -286,5 +289,24 @@ class SupplierController extends Controller
         return response()->json([
             'status' => 'success'
         ]);
+    }
+
+    public function supplierList()
+    {
+        $suppliers = Supplier::all();
+        return response()->json($suppliers);
+    }
+
+    public function storeSupplier(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string',
+            'address' => 'required|string',
+            'phone' => 'required|string',
+        ]);
+
+        $supplier = Supplier::create($data);
+
+        return response()->json($supplier);
     }
 }

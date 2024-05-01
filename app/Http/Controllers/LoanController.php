@@ -142,29 +142,42 @@ class LoanController extends Controller
             $data['trx_id'] = Str::uuid();
             $loan = Loan::create($data);
 
-            $account = Account::find($request->input('account_id'));
-            Transaction::create([
-                'account_id' => $request->input('account_id'),
-                'account_name' => $account->name,
-                'amount' => $loan->loan_amount,
-                'type' => 'debit',
-                'reference_id' => $loan->id,
-                'date' => $loan->date,
-                'transaction_type' => 'loan_taken',
-                'user_id' => Auth::id(),
-                'trx_id' => $loan->trx_id
-            ]);
+            if ($loan->initial_balance > 0){
+                Transaction::create([
+                    'account_name' => $loan->name,
+                    'amount' => $loan->initial_balance,
+                    'transaction_type' => 'loan_opening_balance',
+                    'type' => 'credit',
+                    'reference_id' => $loan->id,
+                    'user_id' => Auth::id(),
+                    'date' => $loan->balance_date,
+                    'trx_id' => $loan->trx_id
+                ]);
+            }else {
+                $account = Account::find($request->input('account_id'));
+                Transaction::create([
+                    'account_id' => $request->input('account_id'),
+                    'account_name' => $account->name,
+                    'amount' => $loan->loan_amount,
+                    'type' => 'debit',
+                    'reference_id' => $loan->id,
+                    'date' => $loan->date,
+                    'transaction_type' => 'loan_taken',
+                    'user_id' => Auth::id(),
+                    'trx_id' => $loan->trx_id
+                ]);
 
-            Transaction::create([
-                'account_name' => $loan->name,
-                'amount' => $loan->loan_amount,
-                'type' => 'credit',
-                'reference_id' => $loan->id,
-                'date' => $loan->date,
-                'transaction_type' => 'loan_taken',
-                'user_id' => Auth::id(),
-                'trx_id' => $loan->trx_id
-            ]);
+                Transaction::create([
+                    'account_name' => $loan->name,
+                    'amount' => $loan->loan_amount,
+                    'type' => 'credit',
+                    'reference_id' => $loan->id,
+                    'date' => $loan->date,
+                    'transaction_type' => 'loan_taken',
+                    'user_id' => Auth::id(),
+                    'trx_id' => $loan->trx_id
+                ]);
+            }
 
             DB::commit();
 
@@ -224,30 +237,56 @@ class LoanController extends Controller
         try {
             $loan->update($validatedData);
 
-            $loan->update(['balance' => $loan->loan_amount]);
+            //$loan->update(['balance' => $loan->loan_amount]);
 
-            $transactions = Transaction::where('trx_id', $loan->trx_id)
-                ->where('transaction_type', 'loan_taken')
-                ->whereIn('type', ['credit', 'debit'])
-                ->get();
-
-            foreach ($transactions as $transaction) {
-                if ($transaction->type === 'credit') {
-                    $transaction->update([
-                        'amount' => $loan->loan_amount,
-                        'account_id' => $request->input('account_id'),
-                        'date' => $loan->date
-                    ]);
-                } elseif ($transaction->type === 'debit') {
-                    $account = Account::find($request->input('account_id'));
-                    $transaction->update([
+            if ($loan->initial_balance > 0){
+                $initial_balance = Transaction::where('transaction_type','loan_opening_balance')
+                    ->where('reference_id',$loan->id)
+                    ->where('trx_id',$loan->trx_id)->first();
+                if ($initial_balance){
+                    $initial_balance->amount = $loan->initial_balance;
+                    $initial_balance->date = $loan->balance_date;
+                    $initial_balance->save();
+                }else{
+                    Transaction::create([
                         'account_name' => $loan->name,
-                        'amount' => $loan->loan_amount,
-                        'date' => $loan->date
+                        'amount' => $loan->initial_balance,
+                        'transaction_type' => 'loan_opening_balance',
+                        'type' => 'credit',
+                        'reference_id' => $loan->id,
+                        'user_id' => Auth::id(),
+                        'date' => $loan->balance_date,
+                        'trx_id' => $loan->trx_id
                     ]);
                 }
-            }
+            }else {
+                Transaction::where('transaction_type', 'loan_opening_balance')
+                    ->where('reference_id', $loan->id)
+                    ->where('trx_id', $loan->trx_id)
+                    ->delete();
 
+                $transactions = Transaction::where('trx_id', $loan->trx_id)
+                    ->where('transaction_type', 'loan_taken')
+                    ->whereIn('type', ['credit', 'debit'])
+                    ->get();
+
+                foreach ($transactions as $transaction) {
+                    if ($transaction->type === 'credit') {
+                        $transaction->update([
+                            'amount' => $loan->loan_amount,
+                            'account_id' => $request->input('account_id'),
+                            'date' => $loan->date
+                        ]);
+                    } elseif ($transaction->type === 'debit') {
+                        $account = Account::find($request->input('account_id'));
+                        $transaction->update([
+                            'account_name' => $loan->name,
+                            'amount' => $loan->loan_amount,
+                            'date' => $loan->date
+                        ]);
+                    }
+                }
+            }
             DB::commit();
 
             return redirect()->route('loans.index')->with('success', 'Loan updated successfully');

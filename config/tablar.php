@@ -343,6 +343,11 @@ return [
                     'text' => 'ব্যয় ক্যাটেগরি',
                     'route' => 'expense_categories.index',
                     'icon' => 'ti ti-category',
+                ],
+                [
+                    'text' => 'তহরি',
+                    'url' => 'tohoris',
+                    'icon' => 'ti ti-category',
                 ]
             ]
         ],

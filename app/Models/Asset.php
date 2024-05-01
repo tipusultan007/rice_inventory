@@ -34,7 +34,7 @@ class Asset extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','description','value','date','trx_id'];
+    protected $fillable = ['name','description','value','date','trx_id','initial_balance','balance_date'];
 
     public function assetSells()
     {
@@ -43,7 +43,11 @@ class Asset extends Model
 
     public function getBalanceAttribute()
     {
-        return $this->value - $this->assetSells()->sum('purchase_price');
+        $amount = $this->initial_balance > 0? $this->initial_balance: $this->value;
+        return $amount - $this->assetSells()->sum('purchase_price');
     }
-
+    public function initialBalance()
+    {
+        return $this->hasOne(InitialBalance::class, 'reference_id')->where('type', 'asset');
+    }
 }

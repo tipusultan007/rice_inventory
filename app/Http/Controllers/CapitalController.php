@@ -145,29 +145,42 @@ class CapitalController extends Controller
             $capital = Capital::create($data);
             $capital->update(['balance' => $capital->amount]);
 
-            $account = Account::find($request->input('account_id'));
-            Transaction::create([
-                'account_id' => $request->input('account_id'),
-                'account_name' => $account->name,
-                'amount' => $capital->amount,
-                'type' => 'debit',
-                'reference_id' => $capital->id,
-                'date' => $capital->date,
-                'transaction_type' => 'capital',
-                'user_id' => Auth::id(),
-                'trx_id' => $capital->trx_id
-            ]);
+            if ($capital->initial_balance > 0){
+                Transaction::create([
+                    'account_name' => $capital->name,
+                    'amount' => $capital->initial_balance,
+                    'transaction_type' => 'capital_opening_balance',
+                    'type' => 'credit',
+                    'reference_id' => $capital->id,
+                    'user_id' => Auth::id(),
+                    'date' => $capital->balance_date,
+                    'trx_id' => $capital->trx_id
+                ]);
+            }else {
+                $account = Account::find($request->input('account_id'));
+                Transaction::create([
+                    'account_id' => $request->input('account_id'),
+                    'account_name' => $account->name,
+                    'amount' => $capital->amount,
+                    'type' => 'debit',
+                    'reference_id' => $capital->id,
+                    'date' => $capital->date,
+                    'transaction_type' => 'capital',
+                    'user_id' => Auth::id(),
+                    'trx_id' => $capital->trx_id
+                ]);
 
-            Transaction::create([
-                'account_name' => $capital->name,
-                'amount' => $capital->amount,
-                'type' => 'credit',
-                'reference_id' => $capital->id,
-                'date' => $capital->date,
-                'transaction_type' => 'capital',
-                'user_id' => Auth::id(),
-                'trx_id' => $capital->trx_id
-            ]);
+                Transaction::create([
+                    'account_name' => $capital->name,
+                    'amount' => $capital->amount,
+                    'type' => 'credit',
+                    'reference_id' => $capital->id,
+                    'date' => $capital->date,
+                    'transaction_type' => 'capital',
+                    'user_id' => Auth::id(),
+                    'trx_id' => $capital->trx_id
+                ]);
+            }
 
             // Commit the transaction
             DB::commit();
@@ -234,27 +247,54 @@ class CapitalController extends Controller
 
             $capital->update(['balance' => $capital->amount]);
 
-            $transactions = Transaction::where('trx_id', $capital->trx_id)
-                ->where('transaction_type', 'capital')
-                ->whereIn('type', ['credit', 'debit'])
-                ->get();
-
-            foreach ($transactions as $transaction) {
-                if ($transaction->type === 'debit') {
-                    $account = Account::find($request->input('account_id'));
-                    $transaction->update([
-                        'amount' => $capital->amount,
-                        'account_id' => $request->input('account_id'),
-                        'name' => $account->name,
-                        'date' => $capital->date
-                    ]);
-                } elseif ($transaction->type === 'credit') {
-
-                    $transaction->update([
-                        'amount' => $capital->amount,
+            if ($capital->initial_balance > 0){
+                $initial_balance = Transaction::where('transaction_type','capital_opening_balance')
+                    ->where('reference_id',$capital->id)
+                    ->where('trx_id',$capital->trx_id)->first();
+                if ($initial_balance){
+                    $initial_balance->amount = $capital->initial_balance;
+                    $initial_balance->date = $capital->balance_date;
+                    $initial_balance->save();
+                }else{
+                    Transaction::create([
                         'account_name' => $capital->name,
-                        'date' => $capital->date
+                        'amount' => $capital->initial_balance,
+                        'transaction_type' => 'capital_opening_balance',
+                        'type' => 'credit',
+                        'reference_id' => $capital->id,
+                        'user_id' => Auth::id(),
+                        'date' => $capital->balance_date,
+                        'trx_id' => $capital->trx_id
                     ]);
+                }
+            }else {
+                Transaction::where('transaction_type','capital_opening_balance')
+                    ->where('reference_id',$capital->id)
+                    ->where('trx_id',$capital->trx_id)
+                    ->delete();
+
+                $transactions = Transaction::where('trx_id', $capital->trx_id)
+                    ->where('transaction_type', 'capital')
+                    ->whereIn('type', ['credit', 'debit'])
+                    ->get();
+
+                foreach ($transactions as $transaction) {
+                    if ($transaction->type === 'debit') {
+                        $account = Account::find($request->input('account_id'));
+                        $transaction->update([
+                            'amount' => $capital->amount,
+                            'account_id' => $request->input('account_id'),
+                            'name' => $account->name,
+                            'date' => $capital->date
+                        ]);
+                    } elseif ($transaction->type === 'credit') {
+
+                        $transaction->update([
+                            'amount' => $capital->amount,
+                            'account_name' => $capital->name,
+                            'date' => $capital->date
+                        ]);
+                    }
                 }
             }
 

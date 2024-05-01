@@ -92,6 +92,7 @@ class Supplier extends Model
                 WHEN transaction_type = "supplier_opening_balance" AND type = "credit" THEN amount
                 WHEN transaction_type = "purchase" AND type = "debit" THEN amount
                 WHEN transaction_type = "supplier_payment" AND type = "credit" THEN -amount
+                WHEN transaction_type = "tohori" AND type = "credit" THEN -amount
                 WHEN transaction_type = "discount" AND type = "credit" THEN -amount
                 WHEN transaction_type = "payment_from_supplier" AND type = "debit" THEN -amount
                 ELSE 0
@@ -112,5 +113,10 @@ class Supplier extends Model
             ->sum('amount') - $this->payments()->where('transaction_type','payment_from_supplier')
                 ->where('type', 'debit')
                 ->sum('amount');
+    }
+
+    public function initialBalance()
+    {
+        return $this->hasOne(InitialBalance::class, 'reference_id')->where('type', 'supplier');
     }
 }

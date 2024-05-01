@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('image')->nullable();
-            $table->decimal('starting_balance')->default(0);
+            $table->decimal('starting_balance')->nullable();
+            $table->date('balance_date')->nullable();
             $table->timestamps();
         });
     }

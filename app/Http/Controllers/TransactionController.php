@@ -24,12 +24,20 @@ class TransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $transactions = Transaction::with('account', 'customer', 'supplier')
-            ->orderByDesc('id')
-            ->orderBy('trx_id')
-            ->paginate(30);
+        if ($request->has('date1') && $request->has('date2')) {
+            $transactions = Transaction::with('account', 'customer', 'supplier')
+                ->whereBetween('date',[$request->input('date1'), $request->input('date2')])
+                ->orderByDesc('date')
+                ->orderBy('trx_id')
+                ->paginate(50);
+        }else{
+            $transactions = Transaction::with('account', 'customer', 'supplier')
+                ->orderByDesc('date')
+                ->orderBy('trx_id')
+                ->paginate(50);
+        }
 
         return view('transaction.index', compact('transactions'))
             ->with('i', (request()->input('page', 1) - 1) * $transactions->perPage());

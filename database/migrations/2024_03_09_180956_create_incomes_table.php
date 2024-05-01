@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('income_category_id');
             $table->string('description')->nullable();
+            $table->string('trx_id')->nullable();
             $table->date('date');
             $table->decimal('amount', 10, 2);
             $table->unsignedBigInteger('user_id');

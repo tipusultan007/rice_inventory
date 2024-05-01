@@ -23,6 +23,23 @@
         {!! $errors->first('value', '<div class="invalid-feedback">:message</div>') !!}
     </div>
 </div>
+
+<div class="form-group mb-3">
+    <label class="form-label">শুরুর ব্যালেন্স</label>
+    <div>
+        {{ Form::text('initial_balance', $asset->initial_balance, ['class' => 'form-control' .
+        ($errors->has('initial_balance') ? ' is-invalid' : ''), 'placeholder' => 'Value']) }}
+        {!! $errors->first('initial_balance', '<div class="invalid-feedback">:message</div>') !!}
+    </div>
+</div>
+<div class="form-group mb-3">
+    <label class="form-label">শুরুর ব্যালেন্স তারিখ</label>
+    <div>
+        {{ Form::text('balance_date', $asset->balance_date, ['class' => 'form-control flatpicker' .
+        ($errors->has('balance_date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
+        {!! $errors->first('balance_date', '<div class="invalid-feedback">:message</div>') !!}
+    </div>
+</div>
 <div class="form-group mb-3">
     <label class="form-label">তারিখ</label>
     <div>
@@ -31,6 +48,7 @@
         {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
     </div>
 </div>
+
 <div class="form-group mb-3">
     <label class="form-label"> অ্যাকাউন্ট</label>
     <select name="account_id" class="form-control select2" id="account_id" data-placeholder="সিলেক্ট অ্যাকাউন্ট">

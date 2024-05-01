@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('amount')->nullable();
             $table->integer('interest')->nullable();
             $table->integer('grace')->nullable();
-            $table->integer('balance');
+            $table->integer('balance')->nullable();
             $table->date('date');
             $table->string('trx_id');
             $table->timestamps();

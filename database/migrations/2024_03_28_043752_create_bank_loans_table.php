@@ -19,9 +19,12 @@ return new class extends Migration
             $table->decimal('duration', 10, 2);
             $table->integer('total_loan')->nullable();
             $table->integer('grace')->nullable();
-            $table->date('date');
             $table->string('trx_id');
             $table->text('description')->nullable();
+            $table->integer('initial_balance')->nullable();
+            $table->date('date');
+            $table->date('expire')->nullable();
+            $table->date('balance_date')->nullable();
             $table->timestamps();
         });
     }

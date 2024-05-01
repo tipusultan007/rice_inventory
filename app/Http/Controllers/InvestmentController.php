@@ -62,32 +62,45 @@ class InvestmentController extends Controller
 
             $bankLoan = Investment::create($data);
 
-            $account = Account::find($request->input('account_id'));
+            if ($bankLoan->initial_balance > 0){
+                Transaction::create([
+                    'account_name' => $bankLoan->name,
+                    'amount' => $bankLoan->initial_balance,
+                    'transaction_type' => 'investment_opening_balance',
+                    'type' => 'debit',
+                    'reference_id' => $bankLoan->id,
+                    'user_id' => Auth::id(),
+                    'date' => $bankLoan->balance_date,
+                    'trx_id' => $bankLoan->trx_id
+                ]);
+            }else {
 
-            // Create debit transaction
-            $creditTransaction = Transaction::create([
-                'account_id' => $request->input('account_id'),
-                'account_name' => $account->name,
-                'amount' => $bankLoan->loan_amount,
-                'type' => 'credit',
-                'reference_id' => $bankLoan->id,
-                'date' => $bankLoan->date,
-                'transaction_type' => 'investment',
-                'user_id' => Auth::id(),
-                'trx_id' => $bankLoan->trx_id
-            ]);
+                $account = Account::find($request->input('account_id'));
 
-            // Create credit transaction
-            $debitTransaction = Transaction::create([
-                'account_name' => $bankLoan->name,
-                'amount' => $bankLoan->loan_amount,
-                'type' => 'debit',
-                'reference_id' => $bankLoan->id,
-                'date' => $bankLoan->date,
-                'transaction_type' => 'investment',
-                'user_id' => Auth::id(),
-                'trx_id' => $bankLoan->trx_id
-            ]);
+                $creditTransaction = Transaction::create([
+                    'account_id' => $request->input('account_id'),
+                    'account_name' => $account->name,
+                    'amount' => $bankLoan->loan_amount,
+                    'type' => 'credit',
+                    'reference_id' => $bankLoan->id,
+                    'date' => $bankLoan->date,
+                    'transaction_type' => 'investment',
+                    'user_id' => Auth::id(),
+                    'trx_id' => $bankLoan->trx_id
+                ]);
+
+                // Create credit transaction
+                $debitTransaction = Transaction::create([
+                    'account_name' => $bankLoan->name,
+                    'amount' => $bankLoan->loan_amount,
+                    'type' => 'debit',
+                    'reference_id' => $bankLoan->id,
+                    'date' => $bankLoan->date,
+                    'transaction_type' => 'investment',
+                    'user_id' => Auth::id(),
+                    'trx_id' => $bankLoan->trx_id
+                ]);
+            }
 
             // Commit the transaction
             DB::commit();
@@ -142,28 +155,53 @@ class InvestmentController extends Controller
         request()->validate(Investment::$rules);
 
         $investment->update($request->all());
+        if ($investment->initial_balance > 0){
+            $initial_balance = Transaction::where('transaction_type','investment_opening_balance')
+                ->where('reference_id',$investment->id)
+                ->where('trx_id',$investment->trx_id)->first();
+            if ($initial_balance){
+                $initial_balance->amount = $investment->initial_balance;
+                $initial_balance->date = $investment->balance_date;
+                $initial_balance->save();
+            }else{
+                Transaction::create([
+                    'account_name' => $investment->name,
+                    'amount' => $investment->initial_balance,
+                    'transaction_type' => 'investment_opening_balance',
+                    'type' => 'debit',
+                    'reference_id' => $investment->id,
+                    'user_id' => Auth::id(),
+                    'date' => $investment->balance_date,
+                    'trx_id' => $investment->trx_id
+                ]);
+            }
+        }else {
+            Transaction::where('transaction_type', 'investment_opening_balance')
+                ->where('reference_id', $investment->id)
+                ->where('trx_id', $investment->trx_id)
+                ->delete();
 
-        $creditTransaction = Transaction::where('reference_id', $investment->id)
-            ->where('transaction_type', 'investment')
-            ->where('type', 'credit')
-            ->first();
+            $creditTransaction = Transaction::where('reference_id', $investment->id)
+                ->where('transaction_type', 'investment')
+                ->where('type', 'credit')
+                ->first();
 
-        $creditTransaction->update([
-            'amount' => $investment->loan_amount,
-            'date' => $investment->date,
-        ]);
+            $creditTransaction->update([
+                'amount' => $investment->loan_amount,
+                'date' => $investment->date,
+            ]);
 
-        // Update credit transaction
-        $debitTransaction = Transaction::where('reference_id', $investment->id)
-            ->where('transaction_type', 'investment')
-            ->where('type', 'debit')
-            ->first();
+            // Update credit transaction
+            $debitTransaction = Transaction::where('reference_id', $investment->id)
+                ->where('transaction_type', 'investment')
+                ->where('type', 'debit')
+                ->first();
 
-        $debitTransaction->update([
-            'amount' => $investment->loan_amount,
-            'date' => $investment->date,
-        ]);
-
+            $debitTransaction->update([
+                'amount' => $investment->loan_amount,
+                'date' => $investment->date,
+            ]);
+        }
         return redirect()->route('investments.index')
             ->with('success', 'Investment updated successfully');
     }
@@ -181,7 +219,7 @@ class InvestmentController extends Controller
         try {
             $investment = Investment::find($id);
 
-            $repayments = InvestmentRepayment::where('investment__id', $investment->id)->get();
+            $repayments = InvestmentRepayment::where('investment_id', $investment->id)->get();
 
             if ($repayments->isNotEmpty()) {
                 foreach ($repayments as $repayment) {

@@ -40,7 +40,7 @@ class AssetController extends Controller
     public function create()
     {
         $asset = new Asset();
-
+        $accounts = Account::all();
         return view('asset.create', compact('asset','accounts'));
     }
 
@@ -58,29 +58,43 @@ class AssetController extends Controller
         $data['trx_id'] = Str::uuid();
         $asset = Asset::create($data);
 
-        $account = Account::find($request->input('account_id'));
-        $creditTransaction = Transaction::create([
-            'account_id' => $request->input('account_id'),
-            'account_name' => $account->name,
-            'amount' => $asset->value,
-            'type' => 'credit',
-            'reference_id' => $asset->id,
-            'date' => $asset->date,
-            'transaction_type' => 'asset',
-            'user_id' => Auth::id(),
-            'trx_id' => $asset->trx_id
-        ]);
+        if ($asset->initial_balance > 0){
+            Transaction::create([
+                'account_name' => $asset->name,
+                'amount' => $asset->initial_balance,
+                'transaction_type' => 'asset_opening_balance',
+                'type' => 'debit',
+                'reference_id' => $asset->id,
+                'user_id' => Auth::id(),
+                'date' => $asset->balance_date,
+                'trx_id' => $asset->trx_id
+            ]);
+        }else{
+            $account = Account::find($request->input('account_id'));
+            $creditTransaction = Transaction::create([
+                'account_id' => $request->input('account_id'),
+                'account_name' => $account->name,
+                'amount' => $asset->value,
+                'type' => 'credit',
+                'reference_id' => $asset->id,
+                'date' => $asset->date,
+                'transaction_type' => 'asset',
+                'user_id' => Auth::id(),
+                'trx_id' => $asset->trx_id
+            ]);
 
-        $debitTransaction = Transaction::create([
-            'account_name' => $asset->name,
-            'amount' => $asset->value,
-            'type' => 'debit',
-            'reference_id' => $asset->id,
-            'date' => $asset->date,
-            'transaction_type' => 'asset',
-            'user_id' => Auth::id(),
-            'trx_id' => $asset->trx_id
-        ]);
+            $debitTransaction = Transaction::create([
+                'account_name' => $asset->name,
+                'amount' => $asset->value,
+                'type' => 'debit',
+                'reference_id' => $asset->id,
+                'date' => $asset->date,
+                'transaction_type' => 'asset',
+                'user_id' => Auth::id(),
+                'trx_id' => $asset->trx_id
+            ]);
+        }
+
 
         return redirect()->route('asset.index')
             ->with('success', 'Asset created successfully.');
@@ -131,30 +145,56 @@ class AssetController extends Controller
 
         $asset->update($request->all());
 
-        $creditTransaction = Transaction::where('transaction_type','asset')
-            ->where('type','credit')
-            ->where('reference_id', $asset->id)->first();
+        if ($asset->initial_balance > 0){
+            $initial_balance = Transaction::where('transaction_type','asset_opening_balance')
+                ->where('reference_id',$asset->id)
+                ->where('trx_id',$asset->trx_id)->first();
+            if ($initial_balance){
+                $initial_balance->amount = $asset->initial_balance;
+                $initial_balance->date = $asset->balance_date;
+                $initial_balance->save();
+            }else{
+                Transaction::create([
+                    'account_name' => $asset->name,
+                    'amount' => $asset->initial_balance,
+                    'transaction_type' => 'asset_opening_balance',
+                    'type' => 'debit',
+                    'reference_id' => $asset->id,
+                    'user_id' => Auth::id(),
+                    'date' => $asset->balance_date,
+                    'trx_id' => $asset->trx_id
+                ]);
+            }
+        }else{
+            Transaction::where('transaction_type','asset_opening_balance')
+                ->where('reference_id',$asset->id)
+                ->where('trx_id',$asset->trx_id)
+                ->delete();
 
-        $debitTransaction = Transaction::where('transaction_type','asset')
-            ->where('type','debit')
-            ->where('reference_id', $asset->id)->first();
+            $creditTransaction = Transaction::where('transaction_type','asset')
+                ->where('type','credit')
+                ->where('reference_id', $asset->id)->first();
 
-        $account = Account::find($request->input('account_id'));
+            $debitTransaction = Transaction::where('transaction_type','asset')
+                ->where('type','debit')
+                ->where('reference_id', $asset->id)->first();
 
-        if ($debitTransaction){
-            $debitTransaction->amount = $asset->value;
-            $debitTransaction->date = $asset->date;
-            $debitTransaction->save();
+            $account = Account::find($request->input('account_id'));
+
+            if ($debitTransaction){
+                $debitTransaction->amount = $asset->value;
+                $debitTransaction->date = $asset->date;
+                $debitTransaction->save();
+            }
+
+            if ($creditTransaction){
+                $creditTransaction->account_id = $request->input('account_id');
+                $creditTransaction->account_name = $account->name;
+                $creditTransaction->amount = $asset->value;
+                $creditTransaction->date = $asset->date;
+                $creditTransaction->save();
+            }
         }
-
-        if ($creditTransaction){
-            $creditTransaction->account_id = $request->input('account_id');
-            $creditTransaction->account_name = $account->name;
-            $creditTransaction->amount = $asset->value;
-            $creditTransaction->date = $asset->date;
-            $creditTransaction->save();
-        }
-
         return redirect()->route('asset.index')
             ->with('success', 'Asset updated successfully');
     }

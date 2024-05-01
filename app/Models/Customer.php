@@ -105,4 +105,9 @@ class Customer extends Model
                 ->where('type', 'credit')
                 ->sum('amount');
     }
+
+    public function initialBalance()
+    {
+        return $this->hasOne(InitialBalance::class, 'reference_id')->where('type', 'customer');
+    }
 }
