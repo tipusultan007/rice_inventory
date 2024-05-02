@@ -261,7 +261,11 @@ function calculateBalance($transactions)
     $balance = 0;
 
     foreach ($transactions as $transaction) {
-        $amount = $transaction->amount * ($transaction->type === 'debit' ? 1 : -1);
+        if ($transaction->account_id != 13) {
+            $amount = $transaction->amount * ($transaction->type === 'debit' ? 1 : -1);
+        }else{
+            $amount = $transaction->amount * ($transaction->type === 'debit' ? -1 : 1);
+        }
         $balance += $amount;
     }
 

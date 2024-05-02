@@ -43,17 +43,18 @@
             @if(config('tablar','display_alert'))
                 @include('tablar::common.alert')
             @endif
-                @php
-                    $totalAssets = 0;
-                    $totalLiabilities = 0;
-                @endphp
+            @php
+                $totalAssets = 0;
+                $totalLiabilities = 0;
+            @endphp
             <div class="row">
                 <div class="col-12 justify-content-center">
-                        <div class="info text-center">
-                            <h1 class="display-6 fw-bolder mb-1">মেসার্স এস.এ রাইচ এজেন্সী</h1>
-                            <span class="badge badge-outline text-gray fs-3">ব্যালেন্স শীট রিপোর্ট</span>
-                            <h3 class="mt-2">তারিখঃ {{ request('date')!= ''?date('d/m/Y',strtotime(request('date'))): date('d/m/Y') }}</h3>
-                        </div>
+                    <div class="info text-center">
+                        <h1 class="display-6 fw-bolder mb-1">মেসার্স এস.এ রাইচ এজেন্সী</h1>
+                        <span class="badge badge-outline text-gray fs-3">ব্যালেন্স শীট রিপোর্ট</span>
+                        <h3 class="mt-2">
+                            তারিখঃ {{ request('date')!= ''?date('d/m/Y',strtotime(request('date'))): date('d/m/Y') }}</h3>
+                    </div>
                 </div>
                 <div class="col-12 mb-3 d-print-none">
                     <form action="{{ route('report.balance.sheet') }}" method="get">
@@ -73,36 +74,111 @@
                         <tr>
                             <th class="fw-bolder fs-4">বিবরণ</th>
                             <th class="fw-bolder fs-4 text-end">টাকা</th>
+                            <th class="fw-bolder fs-4 text-end">টাকা</th>
                         </tr>
                         </thead>
                         <tbody>
                         @php
-
-                            //$supplierDue = $supplier_due->debit - $supplier_due->credit;
-                            $totalLiabilities = $supplier_due + $loanBalance + $bankloanBalance + $capitalBalance + $netProfit;
+                            $totalBankLoan = 0;
+                            $totalLoan = 0;
+                            $totalAsset = 0;
+                            $totalCapital = 0;
+                            $totalInvestment = 0;
+                            $totalAccountsBalance = 0;
+                            $totalCustomerDue = $customer_due;
+                            $totalSupplierDue = $supplier_due;
+                            $tohoriAccountBalance = calculateBalance($tohoriBalance->transactions);
                         @endphp
                         <tr>
                             <td>সরবরাহকারী'র বকেয়া</td>
-                            <td class="text-end">{{ $supplier_due }}</td>
+                            <td class="text-end"></td>
+                            <td class="text-end">{{ $totalSupplierDue }}</td>
                         </tr>
                         <tr>
-                            <td>ঋণ </td>
-                            <td class="text-end">{{ $loanBalance }}</td>
+                            <th colspan="3" class="py-3"></th>
                         </tr>
                         <tr>
-                            <td>ব্যাংক ঋণ </td>
-                            <td class="text-end">{{ $bankloanBalance }}</td>
+                            <th colspan="3">ঋণ</th>
+                        </tr>
+                        @forelse($loans as $loan)
+                            @php
+                                $amount = $loan->initial_balance > 0? $loan->initial_balance: $loan->loan_amount;
+                                $balance = $amount - $loan->loanRepayments()->where('date', '<=', $date)->sum('amount');
+                                $totalLoan += $balance;
+                            @endphp
+                            <tr>
+                                <td>{{ $loan->name }}</td>
+                                <td class="text-end">{{ $balance }}</td>
+                                <td class="text-end">{{ $loop->last?$totalLoan:'' }}</td>
+                            </tr>
+                        @empty
+                        @endforelse
+                        <tr>
+                            <th colspan="3" class="py-3"></th>
                         </tr>
                         <tr>
-                            <td>মূলধন </td>
-                            <td class="text-end">{{ $capitalBalance }}</td>
+                            <td>তহরি তহবিল</td>
+                            <td class="text-end"></td>
+                            <td class="text-end">{{ $tohoriAccountBalance }}</td>
                         </tr>
                         <tr>
-                            <td>নিট মুনাফা </td>
+                            <th colspan="3" class="py-3"></th>
+                        </tr>
+                        <tr>
+                            <th colspan="3">ব্যাংক ঋন</th>
+                        </tr>
+
+                        @forelse($bankloans as $bankloan)
+                            @php
+                                $total_loan = $bankloan->initial_balance>0?$bankloan->initial_balance:$bankloan->total_loan;
+                                $paid = $bankloan->loanRepayments()->where('date', '<=', request('date')??date('Y-m-d'))->sum('amount');
+                                $grace = $bankloan->loanRepayments()->where('date', '<=', request('date')??date('Y-m-d'))->sum('grace');
+                                $balanceBankLoan = $total_loan-$paid - $grace;
+                                $totalBankLoan += $balanceBankLoan;
+                            @endphp
+                            <tr>
+                                <td>{{ $bankloan->name }}</td>
+                                <td class="text-end">{{ $balanceBankLoan }}</td>
+                                <td class="text-end">
+                                    @if ($loop->last)
+                                        {{ $totalBankLoan }}
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                        @endforelse
+                        <tr>
+                            <th colspan="3" class="py-3"></th>
+                        </tr>
+                        <tr>
+                            <th colspan="3">মূলধন</th>
+                        </tr>
+                        @forelse($capitals as $capital)
+                            @php
+                                $amount = $capital->initial_balance > 0? $capital->initial_balance: $capital->amount;
+                                $balance = $amount - $capital->capitalWithdraws()->where('date','<=',$date)->sum('amount');
+                                $totalCapital += $balance;
+                            @endphp
+                            <tr>
+                                <td>{{ $capital->name }}</td>
+                                <td class="text-end">{{ $balance }}</td>
+                                <td class=" text-end">{{ $loop->last?$totalCapital:'' }}</td>
+                            </tr>
+                        @empty
+                        @endforelse
+                        <tr>
+                            <th colspan="3" class="py-3"></th>
+                        </tr>
+                        <tr>
+                            <td>নিট মুনাফা</td>
+                            <td class="text-end"></td>
                             <td class="text-end">{{ number_format($netProfit) }}</td>
                         </tr>
                         <tr>
-                            <th>মোট =</th>
+                            @php
+                                $totalLiabilities = $totalSupplierDue + $totalLoan + $totalBankLoan + $totalCapital + $netProfit + $tohoriAccountBalance;
+                            @endphp
+                            <th colspan="2">মোট =</th>
                             <th class="text-end">{{ number_format($totalLiabilities) }}</th>
                         </tr>
                         </tbody>
@@ -114,45 +190,79 @@
                         <tr>
                             <th class="fw-bolder fs-4">বিবরণ</th>
                             <th class="fw-bolder fs-4 text-end">টাকা</th>
+                            <th class="fw-bolder fs-4 text-end">টাকা</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach ($accounts as $account)
                             @php
                                 $totalAccountBalance = calculateBalance($account->transactions);
-                                $totalAssets += $totalAccountBalance;
+                                $totalAccountsBalance += $totalAccountBalance;
                             @endphp
                             <tr>
                                 <td>{{ $account->name }}</td>
                                 <td class="text-end">{{ $totalAccountBalance }}</td>
+                                <td class="text-end">{{ $loop->last?$totalAccountsBalance:'' }}</td>
                             </tr>
                         @endforeach
 
-                        @php
-                            //$customerDue = $customer_due->credit - $customer_due->debit;
-                            $totalAssets += $customer_due;
-                            $totalAssets += $investmentBalance;
-                        @endphp
+                        <tr>
+                            <th colspan="3" class="py-3"></th>
+                        </tr>
                         <tr>
                             <td>ক্রেতা'র বকেয়া</td>
-                            <td class="text-end">{{ $customer_due }}</td>
+                            <td class="text-end"></td>
+                            <td class="text-end">{{ $totalCustomerDue }}</td>
                         </tr>
                         <tr>
-                            <td>বিনিয়োগ</td>
-                            <td class="text-end">{{ $investmentBalance }}</td>
+                            <th colspan="3" class="py-3"></th>
                         </tr>
-
                         <tr>
-                            <td>সম্পদ</td>
-                            <td class="text-end">{{ $assetBalance }}</td>
+                            <th colspan="3">বিনিয়োগ</th>
+                        </tr>
+                        @forelse($investments as $investment)
+                            @php
+                                $amount = $investment->initial_balance > 0? $investment->initial_balance: $investment->loan_amount;
+                                $balance = $amount - $investment->investmentRepayments()->where('date','<=',$date)->sum('amount');
+                                $totalInvestment += $balance;
+                            @endphp
+                            <tr>
+                                <td>{{ $investment->name }}</td>
+                                <td class="text-end">{{ $balance }}</td>
+                                <td class=" text-end">{{ $loop->last?$totalInvestment:'' }}</td>
+                            </tr>
+                        @empty
+                        @endforelse
+                        <tr>
+                            <th colspan="3" class="py-3"></th>
+                        </tr>
+                        <tr>
+                            <th colspan="3">সম্পদ</th>
+                        </tr>
+                        @forelse($assets as $asset)
+                            @php
+                                $amount = $asset->initial_balance > 0? $asset->initial_balance: $asset->value;
+                                $balance = $amount - $asset->assetSells()->where('date','<=',$date)->sum('purchase_price');
+                                $totalAsset += $balance;
+                            @endphp
+                            <tr>
+                                <td>{{ $asset->name }}</td>
+                                <td class="text-end">{{ $balance }}</td>
+                                <td class=" text-end">{{ $loop->last?$totalAsset:'' }}</td>
+                            </tr>
+                        @empty
+                        @endforelse
+                        <tr>
+                            <th colspan="3" class="py-3"></th>
                         </tr>
                         <tr>
                             <td>মোট পণ্য - {{ $totalStock }}</td>
+                            <td class="text-end"></td>
                             <td class="text-end">{{ $totalValue }}</td>
                         </tr>
                         <tr>
-                            <th class="text-end">মোট =</th>
-                            <th class="text-end">{{ $totalAssets + $assetBalance + $totalValue }}</th>
+                            <th class="text-end" colspan="2">মোট =</th>
+                            <th class="text-end">{{ $totalAsset + $totalAccountsBalance + $totalInvestment + $totalValue }}</th>
                         </tr>
                         </tbody>
                     </table>

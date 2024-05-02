@@ -350,6 +350,7 @@ class PurchaseController extends Controller
 
                 $debitTransaction1 = Transaction::create([
                     'account_name' => $purchase->supplier->name,
+                    'note' => 'তহরি তহবিল',
                     'amount' => $purchase->tohori,
                     'type' => 'debit',
                     'transaction_type' => 'supplier',
@@ -361,7 +362,7 @@ class PurchaseController extends Controller
                 ]);
 
                 $creditTransaction1 = Transaction::create([
-                    'account_name' => $purchase->supplier->name,
+                    'account_name' => 'তহরি তহবিল',
                     'supplier_id' => $purchase->supplier_id,
                     'account_id' => 13,
                     'amount' => $purchase->tohori,

@@ -185,11 +185,17 @@ class ReportController extends Controller
     {
 
         $date = $request->input('date', date('Y-m-d'));
+
         $accounts = Account::with(['transactions' => function ($query) use ($date) {
             $query->where('date', '<=', $date);
-        }])->get();
+        }])->whereNotIn('id',[13])->get();
+
+        $tohoriBalance = Account::with(['transactions' => function ($query) use ($date) {
+            $query->where('date', '<=', $date);
+        }])->where('id',13)->first();
 
         $customer_due = DB::table('transactions')
+            ->where('date', '<=', $date)
             ->select(DB::raw('SUM(
             CASE
                 WHEN transaction_type = "customer_opening_balance" AND type = "debit" THEN amount
@@ -201,9 +207,10 @@ class ReportController extends Controller
             END
         ) AS total_due'))->value('total_due');
 
-        $assets = Asset::whereDate('date', '<=', $date)->sum('value');
+        $assets = Asset::with('assetSells')->where('date', '<=', $date)->get();
 
         $supplier_due =DB::table('transactions')
+            ->where('date', '<=', $date)
             ->select(DB::raw('SUM(
             CASE
                 WHEN transaction_type = "supplier_opening_balance" AND type = "credit" THEN amount
@@ -215,24 +222,11 @@ class ReportController extends Controller
             END
         ) AS total_due'))->value('total_due');
 
-        $loans = Loan::where('date', '<=', $date)->sum('loan_amount');
-        $bankloans = BankLoan::where('date', '<=', $date)->sum('total_loan');
-        $investments = Investment::where('date', '<=', $date)->sum('loan_amount');
-        $loanPaid = LoanRepayment::where('date', '<=', $date)->sum('amount');
-        $investmentPaid = InvestmentRepayment::where('date', '<=', $date)->sum('amount');
-        $bankloanPaid = BankLoanRepayment::where('date', '<=', $date)->select(DB::raw('SUM(amount) as paid, SUM(grace) as grace'))->first();
-        $capitals = Capital::where('date', '<=', $date)->sum('amount');
-        $capitalWithdraw = CapitalWithdraw::where('date', '<=', $date)->sum('amount');
-
-        $loanBalance = $this->loanBalance($date);
-        $investmentBalance = $this->invesmentBalance($date);
-        //$bankloanBalance = $bankloanPaid->paid + $bankloanPaid->grace;
-        $bankloanBalance = $this->bankLoanBalance($date);
-        //$capitalBalance = $capitals - $capitalWithdraw;
-        $capitalBalance = $this->capitalBalance($date);
+        $loans = Loan::where('date', '<=', $date)->get();
+        $investments = Investment::with('investmentRepayments')->where('date', '<=', $date)->get();
+        $capitals = Capital::with('capitalWithdraws')->where('date', '<=', $date)->get();
+        $bankloans = BankLoan::with('loanRepayments')->where('date', '<=', $date)->get();
         $netProfit = $this->getNetProfit($date);
-        $assetBalance = $this->assetBalance($date);
-
         $product = new Product();
 
         $result = $product->getTotalStockAndValue($date);
@@ -245,18 +239,17 @@ class ReportController extends Controller
             compact('accounts',
                 'totalProducts',
                 'totalValue',
+                'investments',
                 'totalStock',
                 'customer_due',
                 'assets',
-                'assetBalance',
                 'supplier_due',
                 'loans',
                 'capitals',
                 'netProfit',
-                'loanBalance',
-                'investmentBalance',
-                'bankloanBalance',
-                'capitalBalance',
+                'tohoriBalance',
+                'bankloans',
+                'date'
             ));
     }
 

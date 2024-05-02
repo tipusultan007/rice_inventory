@@ -62,16 +62,29 @@ class Account extends Model
 
     public function getBalanceAttribute()
     {
-        $total = DB::table('transactions')
-            ->select(DB::raw('SUM(
+        if ($this->id != 13) {
+            $total = DB::table('transactions')
+                ->select(DB::raw('SUM(
             CASE
                 WHEN type = "debit" THEN amount
                 WHEN type = "credit" THEN -amount
                 ELSE 0
             END
         ) AS total_due'))
-            ->where('account_id', $this->id)
-            ->value('total_due');
+                ->where('account_id', $this->id)
+                ->value('total_due');
+        }else{
+            $total = DB::table('transactions')
+                ->select(DB::raw('SUM(
+            CASE
+                WHEN type = "debit" THEN -amount
+                WHEN type = "credit" THEN amount
+                ELSE 0
+            END
+        ) AS total_due'))
+                ->where('account_id', $this->id)
+                ->value('total_due');
+        }
 
         return $total;
         //return $this->creditSum() - $this->debitSum();
