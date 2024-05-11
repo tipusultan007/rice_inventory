@@ -79,10 +79,10 @@
                         </thead>
                         <tbody>
                         @php
-                            $totalBankLoan = 0;
+                            $totalBankLoan = $bankLoanBalance;
                             $totalLoan = 0;
-                            $totalAsset = 0;
-                            $totalCapital = 0;
+                            $totalAsset = $assetBalance;
+                            $totalCapital = $capitalBalance;
                             $totalInvestment = 0;
                             $totalAccountsBalance = 0;
                             $totalCustomerDue = $customer_due;
@@ -125,10 +125,12 @@
                             <th colspan="3" class="py-3"></th>
                         </tr>
                         <tr>
-                            <th colspan="3">ব্যাংক ঋন</th>
+                            <td>ব্যাংক ঋন</td>
+                            <td></td>
+                            <td class="text-end">{{ $totalBankLoan }}</td>
                         </tr>
 
-                        @forelse($bankloans as $bankloan)
+                        {{--@forelse($bankloans as $bankloan)
                             @php
                                 $total_loan = $bankloan->initial_balance>0?$bankloan->initial_balance:$bankloan->total_loan;
                                 $paid = $bankloan->loanRepayments()->where('date', '<=', request('date')??date('Y-m-d'))->sum('amount');
@@ -146,14 +148,16 @@
                                 </td>
                             </tr>
                         @empty
-                        @endforelse
+                        @endforelse--}}
                         <tr>
                             <th colspan="3" class="py-3"></th>
                         </tr>
                         <tr>
-                            <th colspan="3">মূলধন</th>
+                            <td>মূলধন</td>
+                            <td></td>
+                            <td class="text-end">{{ $totalCapital }}</td>
                         </tr>
-                        @forelse($capitals as $capital)
+                        {{--@forelse($capitals as $capital)
                             @php
                                 $amount = $capital->initial_balance > 0? $capital->initial_balance: $capital->amount;
                                 $balance = $amount - $capital->capitalWithdraws()->where('date','<=',$date)->sum('amount');
@@ -165,7 +169,7 @@
                                 <td class=" text-end">{{ $loop->last?$totalCapital:'' }}</td>
                             </tr>
                         @empty
-                        @endforelse
+                        @endforelse--}}
                         <tr>
                             <th colspan="3" class="py-3"></th>
                         </tr>
@@ -237,9 +241,11 @@
                             <th colspan="3" class="py-3"></th>
                         </tr>
                         <tr>
-                            <th colspan="3">সম্পদ</th>
+                            <td>সম্পদ</td>
+                            <td></td>
+                            <td class="text-end">{{ $totalAsset }}</td>
                         </tr>
-                        @forelse($assets as $asset)
+                        {{--@forelse($assets as $asset)
                             @php
                                 $amount = $asset->initial_balance > 0? $asset->initial_balance: $asset->value;
                                 $balance = $amount - $asset->assetSells()->where('date','<=',$date)->sum('purchase_price');
@@ -251,7 +257,7 @@
                                 <td class=" text-end">{{ $loop->last?$totalAsset:'' }}</td>
                             </tr>
                         @empty
-                        @endforelse
+                        @endforelse--}}
                         <tr>
                             <th colspan="3" class="py-3"></th>
                         </tr>
@@ -262,7 +268,7 @@
                         </tr>
                         <tr>
                             <th class="text-end" colspan="2">মোট =</th>
-                            <th class="text-end">{{ $totalAsset + $totalAccountsBalance + $totalInvestment + $totalValue }}</th>
+                            <th class="text-end">{{ $totalAsset + $totalAccountsBalance + $totalInvestment + $totalValue + $totalCustomerDue}}</th>
                         </tr>
                         </tbody>
                     </table>

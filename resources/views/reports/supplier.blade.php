@@ -49,7 +49,10 @@
                     <div class="info text-center">
                         <h1 class="display-6 fw-bolder mb-1">মেসার্স এস.এ রাইচ এজেন্সী</h1>
                         <span class="badge badge-outline text-gray fs-3">সরবরাহকারী'র ব্যালেন্স রিপোর্ট</span>
-                        <h3 class="mt-2">তারিখঃ {{ date('d/m/Y') }}</h3>
+                        <h3 class="mt-2">
+                            তারিখঃ {{ request('date')!= ''?date('d/m/Y',strtotime(request('date'))): date('d/m/Y') }}</h3>
+
+                        </h3>
                     </div>
                 </div>
             </div>
@@ -57,6 +60,18 @@
                 $totalSaleDue = 0;
             @endphp
             <div class="row">
+                <div class="col-12 mb-3 d-print-none">
+                    <form action="{{ url('supplier-balance-report') }}" method="get">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="text" class="form-control flatpicker" name="date">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-secondary" type="submit">সার্চ করুন</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
                 <div class="col-12">
                     <table class="table table-sm table-vcenter table-bordered">
                         <thead>
@@ -69,14 +84,14 @@
                         </thead>
                         <tbody>
                         @forelse ($suppliers as $supplier)
-                            @if($supplier->remaining_due <= 0)
-                                @continue
-                            @endif
+                            @php
+                                $totalSaleDue += $supplier->total_due;
+                            @endphp
                             <tr>
                                 <td>{{ $supplier->name }}</td>
                                 <td>{{ $supplier->phone }}</td>
                                 <td>{{ $supplier->address }}</td>
-                                <td class="text-danger fw-bolder text-end">{{ $supplier->remaining_due }}</td>
+                                <td class="text-danger fw-bolder text-end">{{ $supplier->total_due }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -84,6 +99,12 @@
                             </tr>
                         @endforelse
                         </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">মোট =</th>
+                            <th class="text-end">{{ $totalSaleDue }}</th>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -99,7 +120,7 @@
                 allowInput: true,
                 altFormat: "d-m-Y",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ date('Y-m-d') }}"
+                defaultDate: "{{ request('date')??date('Y-m-d') }}"
             });
         });
     </script>

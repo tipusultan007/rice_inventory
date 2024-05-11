@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Sale;
+use App\Models\SaleDetail;
+use App\Models\SaleReturn;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -190,8 +192,8 @@ class CustomerController extends Controller
                     $query->where('transaction_type', 'customer_opening_balance')
                         ->where('type', 'debit');
                 })->orWhere(function($query) {
-                    $query->where('transaction_type', 'sale_return')
-                        ->where('type', 'debit');
+                    $query->where('transaction_type', 'due_to_customer')
+                        ->where('type', 'credit');
                 });
             })
             ->orderBy('id', 'asc')
@@ -279,10 +281,54 @@ class CustomerController extends Controller
      * @throws \Exception
      */
     public function destroy($id)
-    {
-        $customer = Customer::find($id)->delete();
-        return response()->json([
-           'status' => 'success'
-        ]);
+{
+    $customer = Customer::find($id);
+    $sales = Sale::where('customer_id',$id)->get();
+    foreach ($sales as $sale){
+        //$saleDetails = SaleDetail::where('sale_id', $sale->id)->get();
+        foreach ($sale->saleDetails as $saleDetail) {
+            // Adjust product quantity
+            $product = $saleDetail->product;
+            $product->quantity += $saleDetail->quantity;
+            $product->save();
+
+            // Delete sale detail
+            $saleDetail->delete();
+        }
+
+        $saleReturn = SaleReturn::where('sale_id', $sale->id)->first();
+        if ($saleReturn) {
+            foreach ($saleReturn->saleReturnDetail as $item) {
+                // Adjust product quantity
+                $product = $item->product;
+                $product->quantity -= $item->quantity;
+                $product->save();
+
+                // Delete sale detail
+                $item->delete();
+            }
+
+            if ($saleReturn->attachment) {
+                Storage::delete('public/sale_return_attachments/' . $saleReturn->attachment);
+            }
+
+            Transaction::where('trx_id', $saleReturn->trx_id)->delete();
+            $saleReturn->delete();
+        }
+        // If there was a debit transaction, delete it
+        Transaction::where('trx_id', $sale->trx_id)->delete();
+
+        // Delete the attachment
+        if ($sale->attachment) {
+            Storage::delete('public/sale_attachments/' . $sale->attachment);
+        }
+        // Delete the sale record
+        $sale->delete();
     }
+    Transaction::where('customer_id', $id)->delete();
+    $customer->delete();
+    return response()->json([
+        'status' => 'success'
+    ]);
+}
 }

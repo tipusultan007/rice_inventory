@@ -27,7 +27,6 @@ class InvestmentRepayment extends Model
 
     static $rules = [
 		'investment_id' => 'required',
-		'user_id' => 'required',
 		'date' => 'required',
     ];
 
@@ -38,7 +37,7 @@ class InvestmentRepayment extends Model
      *
      * @var array
      */
-    protected $fillable = ['investment_id','user_id','amount','interest','grace','balance','date','trx_id'];
+    protected $fillable = ['investment_id','user_id','amount','interest','grace','balance','date','trx_id','note'];
 
 
     public function investment()

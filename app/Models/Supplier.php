@@ -94,7 +94,7 @@ class Supplier extends Model
                 WHEN transaction_type = "supplier_payment" AND type = "credit" THEN -amount
                 WHEN transaction_type = "tohori" AND type = "credit" THEN -amount
                 WHEN transaction_type = "discount" AND type = "credit" THEN -amount
-                WHEN transaction_type = "payment_from_supplier" AND type = "debit" THEN -amount
+                WHEN transaction_type = "due_from_supplier" AND type = "debit" THEN -amount
                 ELSE 0
             END
         ) AS total_due'))

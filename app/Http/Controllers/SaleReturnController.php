@@ -132,6 +132,10 @@ class SaleReturnController extends Controller
                     'date' => $sale->date,
                     'trx_id' => $sale->trx_id,
                 ]);
+
+                $credit->balance = $sale->customer->remaining_due;
+                $credit->save();
+
             }
 
             DB::commit();

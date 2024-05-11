@@ -69,98 +69,16 @@
                         </div>
                     </form>
                 </div>
-                {{-- <div class="col-6">
-                     <table class="table table-vcenter table-bordered table-sm">
-                         <caption style="caption-side: top; font-weight: bold;text-align: center">বিক্রয় তালিকা</caption>
-                         <thead>
-                         <tr>
-                             <th class="fw-bolder fs-5">চালান নং</th>
-                             <th class="fw-bolder fs-5">ক্রেতা</th>
-                             <th class="fw-bolder fs-5 text-end">সর্বমোট</th>
-                             <th class="fw-bolder text-end fs-5">পরিশোধ</th>
-                             <th class="fw-bolder text-end fs-5">বকেয়া</th>
-                         </tr>
-                         </thead>
-
-                         <tbody>
-                         @php
- $totalSaleDue = 0;
- $totalPurchaseDue = 0;
-  @endphp
-                         @forelse ($sales as $sale)
-                             @php
-                                 $due = $sale->total - $sale->paid;
-                                 $totalSaleDue += $due;
-                             @endphp
-                             <tr>
-                                 <td>{{ $sale->invoice_no }}</td>
-                                 <td>{{ $sale->customer->name }} - {{ $sale->customer->address }}</td>
-                                 <td class="text-end">{{ $sale->total }}</td>
-                                 <td class="text-end">{{ $sale->paid??'-' }}</td>
-                                 <td class="text-end">{{ $due }}</td>
-                             </tr>
-                         @empty
-                             <td colspan="5" class="text-center">No Data Found</td>
-                         @endforelse
-                         </tbody>
-                         <tfoot>
-                         <tr>
-                             <th colspan="2" class="text-end">মোট =</th>
-                             <th class="text-end">{{ $sales->sum('total') }}</th>
-                             <th class="text-end">{{ $sales->sum('paid') }}</th>
-                             <th class="text-end">{{ $totalSaleDue }}</th>
-                         </tr>
-                         </tfoot>
-                     </table>
-                 </div>
-                 <div class="col-6">
-                     <table class="table table-sm table-vcenter table-bordered">
-                         <caption style="caption-side: top; font-weight: bold;text-align: center">ক্রয় তালিকা</caption>
-                         <thead>
-                         <tr>
-                             <th class="fw-bolder fs-5">চালান নং</th>
-                             <th class="fw-bolder fs-5">সরবরাহকারী</th>
-                             <th class="fw-bolder fs-5 text-end">সর্বমোট</th>
-                             <th class="fw-bolder fs-5 text-end">পরিশোধ</th>
-                             <th class="fw-bolder text-end fs-5">বকেয়া</th>
-                         </tr>
-                         </thead>
-
-                         <tbody>
-                         @forelse ($purchases as $purchase)
-                             @php
-                                 $due = $purchase->total - $purchase->paid;
-                                 $totalPurchaseDue += $due;
-                             @endphp
-                             <tr>
-                                 <td>{{ $purchase->invoice_no }}</td>
-                                 <td>{{ $purchase->supplier->name }} - {{ $purchase->supplier->address }}</td>
-                                 <td class="text-end">{{ $purchase->total }}</td>
-                                 <td class="text-end">{{ $purchase->paid??'-' }}</td>
-                                 <td class="text-end">{{ $due }}</td>
-                             </tr>
-                         @empty
-                             <td colspan="5" class="text-center">No Data Found</td>
-                         @endforelse
-                         </tbody>
-
-                         <tfoot>
-                         <tr>
-                             <th colspan="2" class="text-end">মোট =</th>
-                             <th class="text-end">{{ $purchases->sum('total') }}</th>
-                             <th class="text-end">{{ $purchases->sum('paid') }}</th>
-                             <th class="text-end">{{ $totalPurchaseDue }}</th>
-                         </tr>
-                         </tfoot>
-
-                     </table>
-                 </div>--}}
             </div>
             @php
                 $total_debit = 0;
                 $total_credit = 0;
             @endphp
             <div class="row">
+                <hr>
+                <div class="col-md-12">
+                    <h4>নগদ ব্যালেন্সঃ {{ calculateBalance($cashBalance->transactions) }}</h4>
+                </div>
                 <div class="col-12">
                     <hr>
                     <h3 class="text-center">দৈনিক লেনদেন</h3>

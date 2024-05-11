@@ -126,8 +126,11 @@ class InvestmentController extends Controller
     public function show($id)
     {
         $investment = Investment::find($id);
+        $transactions = InvestmentRepayment::where('investment_id', $investment->id)
+            ->orderBy('date','asc')
+            ->get();
 
-        return view('investment.show', compact('investment'));
+        return view('investment.show', compact('investment','transactions'));
     }
 
     /**

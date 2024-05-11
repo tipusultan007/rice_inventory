@@ -37,62 +37,9 @@ class ReportController extends Controller
     public function dailyReport(Request $request)
     {
         $date = $request->input('date', date('Y-m-d'));
-        /*$sales = Sale::with('saleDetails', 'customer')
-            ->where('date', $date)
-            ->orderByDesc('id')
-            ->get();
-        $purchases = Purchase::with('purchaseDetails', 'supplier')
-            ->where('date', $date)
-            ->orderByDesc('id')
-            ->get();
-
-        // Retrieve all purchase details for the given date
-        $purchaseDetails = PurchaseDetail::whereHas('purchase', function ($query) use ($date) {
+        $cashBalance = Account::with(['transactions' => function ($query) use ($date) {
             $query->where('date', '<=', $date);
-        })->get();
-
-        // Retrieve all sale details for the given date
-        $saleDetails = SaleDetail::whereHas('sale', function ($query) use ($date) {
-            $query->where('date', '<=', $date);
-        })->get();
-
-        // Group purchase details by product ID and sum the quantities
-        $totalPurchaseQuantities = $purchaseDetails->groupBy('product_id')->map(function ($items) {
-            return $items->sum('quantity');
-        });
-
-        // Group sale details by product ID and sum the quantities
-        $totalSaleQuantities = $saleDetails->groupBy('product_id')->map(function ($items) {
-            return $items->sum('quantity');
-        });
-
-        // Calculate the net quantity for each product
-        $productQuantities = $totalPurchaseQuantities->merge($totalSaleQuantities)->map(function ($total, $productId) use ($totalSaleQuantities) {
-            $totalSaleQuantity = $totalSaleQuantities->get($productId, 0);
-            return $total - $totalSaleQuantity;
-        });
-
-        // Retrieve product information based on product IDs
-        $products25 = Product::where('type', '25')->whereIn('id', $productQuantities->keys())->get();
-        $products50 = Product::where('type', '50')->whereIn('id', $productQuantities->keys())->get();
-
-        // Combine product information with quantities
-        $productData25 = $products25->map(function ($product) use ($productQuantities) {
-            $quantity = $productQuantities->get($product->id, 0);
-            return [
-                'product_name' => $product->name,
-                'quantity' => $quantity,
-            ];
-        });
-        $productData50 = $products50->map(function ($product) use ($productQuantities) {
-            $quantity = $productQuantities->get($product->id, 0);
-            return [
-                'product_name' => $product->name,
-                'quantity' => $quantity,
-            ];
-        });*/
-
-
+        }])->where('id',1)->first();
         $debitTransactions = Transaction::where('type', 'debit')
             ->whereNotNull('account_id')
             ->whereDate('date', $date)
@@ -146,16 +93,10 @@ class ReportController extends Controller
             $query->where('date', '<=', $date);
         })->get();
 
-
-
-
-        // Group purchase details by product ID and sum the quantities
         $totalPurchaseQuantities = $purchaseDetails->groupBy('product_id')->map(function ($items) {
             return $items->sum('quantity');
         });
 
-
-        // Group sale details by product ID and sum the quantities
         $totalSaleQuantities = $saleDetails->groupBy('product_id')->map(function ($items) {
             return $items->sum('quantity');
         });
@@ -164,9 +105,9 @@ class ReportController extends Controller
         $productData25 = Product::where('type','25')->get();
         $productData50 = Product::where('type','50')->get();
 
-        //return view('reports.daily', compact('sales', 'purchases', 'supplierPayments', 'customerPayments', 'productData25', 'productData50'));
         return view('reports.daily',compact(
             'date',
+            'cashBalance',
             'debitTransactions',
             'creditTransactions',
             'sales',
@@ -216,6 +157,7 @@ class ReportController extends Controller
                 WHEN transaction_type = "supplier_opening_balance" AND type = "credit" THEN amount
                 WHEN transaction_type = "purchase" AND type = "debit" THEN amount
                 WHEN transaction_type = "supplier_payment" AND type = "credit" THEN -amount
+                WHEN transaction_type = "tohori" AND type = "credit" THEN -amount
                 WHEN transaction_type = "discount" AND type = "credit" THEN -amount
                 WHEN transaction_type = "payment_from_supplier" AND type = "debit" THEN -amount
                 ELSE 0
@@ -234,9 +176,15 @@ class ReportController extends Controller
         $totalProducts = $result['total_products'];
         $totalValue = $result['total_value'];
         $totalStock = $result['total_stock'];
+        $capitalBalance = $this->capitalBalance($date);
+        $bankLoanBalance = $this->bankLoanBalance($date);
+        $assetBalance = $this->assetBalance($date);
 
         return view('reports.balance_sheet',
-            compact('accounts',
+            compact('capitalBalance',
+           'bankLoanBalance',
+           'assetBalance',
+                'accounts',
                 'totalProducts',
                 'totalValue',
                 'investments',
@@ -493,15 +441,48 @@ class ReportController extends Controller
         return view('reports.sales', compact('sales', 'date1', 'date2'));
     }
 
-    public function customerReport()
+    public function customerReport(Request $request)
     {
-        $customers = Customer::all();
+        $date = $request->input('date', date('Y-m-d'));
+        //$customers = Customer::all();
+        $customers = DB::table('transactions')
+            ->join('customers', 'transactions.customer_id', '=', 'customers.id')
+            ->select('customers.name', 'customers.address', 'customers.phone', 'transactions.customer_id', DB::raw('SUM(
+        CASE
+            WHEN transactions.transaction_type = "customer_opening_balance" AND transactions.type = "debit" THEN transactions.amount
+            WHEN transactions.transaction_type = "sale" AND transactions.type = "credit" THEN transactions.amount
+            WHEN transactions.transaction_type = "customer_payment" AND transactions.type = "debit" THEN -transactions.amount
+            WHEN transactions.transaction_type = "discount" AND transactions.type = "debit" THEN -transactions.amount
+            WHEN transactions.transaction_type = "payment_to_customer" AND transactions.type = "credit" THEN -transactions.amount
+            ELSE 0
+        END
+    ) AS total_due'))
+            ->where('transactions.date', '<=', $date)
+            ->groupBy('transactions.customer_id')
+            ->get();
+
         return view('reports.customer', compact('customers'));
     }
 
-    public function supplierReport()
+    public function supplierReport(Request $request)
     {
-        $suppliers = Supplier::all();
+        $date = request()->input('date', date('Y-m-d'));
+        $suppliers = DB::table('transactions')
+            ->join('suppliers', 'transactions.supplier_id', '=', 'suppliers.id')
+            ->select('suppliers.name', 'suppliers.address', 'suppliers.phone', 'transactions.supplier_id', DB::raw('SUM(
+        CASE
+             WHEN transactions.transaction_type = "supplier_opening_balance" AND transactions.type = "credit" THEN transactions.amount
+                WHEN transactions.transaction_type = "purchase" AND transactions.type = "debit" THEN transactions.amount
+                WHEN transactions.transaction_type = "supplier_payment" AND transactions.type = "credit" THEN -transactions.amount
+                WHEN transactions.transaction_type = "tohori" AND transactions.type = "credit" THEN -transactions.amount
+                WHEN transactions.transaction_type = "discount" AND transactions.type = "credit" THEN -transactions.amount
+                WHEN transactions.transaction_type = "payment_from_supplier" AND transactions.type = "debit" THEN -transactions.amount
+            ELSE 0
+        END
+    ) AS total_due'))
+            ->where('transactions.date', '<=', $date)
+            ->groupBy('suppliers.name', 'suppliers.address', 'suppliers.phone', 'transactions.supplier_id')
+            ->get();
         return view('reports.supplier', compact('suppliers'));
     }
 

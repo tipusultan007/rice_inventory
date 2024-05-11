@@ -92,7 +92,7 @@ class SupplierController extends Controller
                 $nestedData['name'] = $post->name;
                 $nestedData['phone'] = $post->phone??'-';
                 $nestedData['address'] = $post->address??'-';
-                $nestedData['due'] = $post->remainingDue;
+                $nestedData['due'] = $post->remainingDue??'0';
 
                 $nestedData['options'] = '<div class="dropdown">
                                               <a href="#" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown">Action</a>
@@ -193,13 +193,14 @@ class SupplierController extends Controller
                     $query->where('transaction_type', 'supplier_opening_balance')
                         ->where('type', 'credit');
                 })->orWhere(function($query) {
-                    $query->where('transaction_type', 'purchase_return')
-                        ->where('type', 'credit');
-                })->orWhere(function($query) {
                     $query->where('transaction_type', 'tohori')
                         ->where('type', 'credit');
+                })->orWhere(function($query) {
+                    $query->where('transaction_type', 'due_from_supplier')
+                        ->where('type', 'debit');
                 });
             })
+            ->orderBy('date', 'asc')
             ->orderBy('id', 'asc')
             ->get();
 

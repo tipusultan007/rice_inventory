@@ -15,25 +15,11 @@
                         List
                     </div>
                     <h2 class="page-title">
-                        {{ __('Investment Repayment ') }}
+                        বিনিয়োগ পেমেন্ট
                     </h2>
                 </div>
                 <!-- Page title actions -->
-                <div class="col-12 col-md-auto ms-auto d-print-none">
-                    <div class="btn-list">
-                        <a href="{{ route('investment_repayments.create') }}" class="btn btn-primary d-none d-sm-inline-block">
-                            <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                 stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Create Investment Repayment
-                        </a>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -44,75 +30,125 @@
                 @include('tablar::common.alert')
             @endif
             <div class="row row-deck row-cards">
-                <div class="col-12">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            @php
+                                $investments = \App\Models\Investment::all();
+                            @endphp
+                            <form method="POST" action="{{ route('investment_repayments.store') }}" id="ajaxForm"
+                                  role="form"
+                                  enctype="multipart/form-data">
+                                @csrf
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label">বিনিয়োগ তালিকা</label>
+                                    <select name="investment_id" id="investment_id" class="select2">
+                                        @foreach($investments as $investment)
+                                            <option value="{{ $investment->id }}">{{ $investment->name }}
+                                                - {{ $investment->loan_amount }}</option>
+                                        @endforeach
+                                    </select>
+                                    {!! $errors->first('investment_id', '<div class="invalid-feedback">:message</div>') !!}
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">   {{ Form::label('date','তারিখ') }}</label>
+                                    <div>
+                                        {{ Form::text('date','', ['class' => 'form-control flatpicker' .
+                                        ($errors->has('date') ? ' is-invalid' : ''), 'placeholder' => 'Date']) }}
+                                        {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label">   {{ Form::label('amount','টাকা') }}</label>
+                                    <div>
+                                        {{ Form::text('amount', '', ['class' => 'form-control' .
+                                        ($errors->has('amount') ? ' is-invalid' : ''), 'placeholder' => 'Amount']) }}
+                                        {!! $errors->first('amount', '<div class="invalid-feedback">:message</div>') !!}
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">   {{ Form::label('interest','সুদ') }}</label>
+                                    <div>
+                                        {{ Form::text('interest', '', ['class' => 'form-control' .
+                                        ($errors->has('interest') ? ' is-invalid' : ''), 'placeholder' => 'Interest']) }}
+                                        {!! $errors->first('interest', '<div class="invalid-feedback">:message</div>') !!}
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">   {{ Form::label('grace','ছাড়') }}</label>
+                                    <div>
+                                        {{ Form::text('grace', '', ['class' => 'form-control' .
+                                        ($errors->has('grace') ? ' is-invalid' : ''), 'placeholder' => 'Grace']) }}
+                                        {!! $errors->first('grace', '<div class="invalid-feedback">:message</div>') !!}
+                                    </div>
+                                </div>
+
+
+                                @php
+                                    use App\Models\Account;
+                                    $accounts = Account::pluck('name','id');
+                                @endphp
+                                <div class="form-group mb-3">
+                                    <label for="" class="form-label">একাউন্ট তালিকা</label>
+                                    <select name="account_id" id="account_id" class="form-control select2"
+                                            data-placeholder="সিলেক্ট একাউন্ট">
+                                        @foreach($accounts as $key => $account)
+                                            <option value="{{ $key }}">{{ $account }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('account_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">   {{ Form::label('note','নোট') }}</label>
+                                    <div>
+                                        {{ Form::text('note', '', ['class' => 'form-control' .
+                                        ($errors->has('note') ? ' is-invalid' : ''), 'placeholder' => 'note']) }}
+                                        {!! $errors->first('note', '<div class="invalid-feedback">:message</div>') !!}
+                                    </div>
+                                </div>
+                                <div class="form-footer">
+                                    <div class="text-end">
+                                        <div class="d-flex">
+                                            <button type="submit" class="btn btn-primary ms-auto ajax-submit">Submit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Investment Repayment</h3>
                         </div>
-                        <div class="card-body border-bottom py-3">
-                            <div class="d-flex">
-                                <div class="text-muted">
-                                    Show
-                                    <div class="mx-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm" value="10" size="3"
-                                               aria-label="Invoices count">
-                                    </div>
-                                    entries
-                                </div>
-                                <div class="ms-auto text-muted">
-                                    Search:
-                                    <div class="ms-2 d-inline-block">
-                                        <input type="text" class="form-control form-control-sm"
-                                               aria-label="Search invoice">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="table-responsive min-vh-100">
-                            <table class="table card-table table-vcenter text-nowrap datatable">
-                                <thead>
+                            <table class="table card-table table-bordered table-sm table-vcenter text-nowrap datatable">
                                 <tr>
-                                    <th class="w-1"><input class="form-check-input m-0 align-middle" type="checkbox"
-                                                           aria-label="Select all invoices"></th>
-                                    <th class="w-1">No.
-                                        <!-- Download SVG icon from http://tabler-icons.io/i/chevron-up -->
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             class="icon icon-sm text-dark icon-thick" width="24" height="24"
-                                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                             stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                            <polyline points="6 15 12 9 18 15"/>
-                                        </svg>
-                                    </th>
-                                    
-										<th>Investment Repayment Id</th>
-										<th>User Id</th>
-										<th>Amount</th>
-										<th>Interest</th>
-										<th>Grace</th>
-										<th>Balance</th>
-										<th>Date</th>
-										<th>Trx Id</th>
-
+                                    <th>বিবরন</th>
+                                    <th>টাকা</th>
+                                    <th>সুদ</th>
+                                    <th>ছাড়</th>
+                                    <th>ব্যালেন্স</th>
+                                    <th>তারিখ</th>
+                                    <th>নোট</th>
                                     <th class="w-1"></th>
                                 </tr>
-                                </thead>
-
                                 <tbody>
                                 @forelse ($investmentRepayments as $investmentRepayment)
                                     <tr>
-                                        <td><input class="form-check-input m-0 align-middle" type="checkbox"
-                                                   aria-label="Select investmentRepayment"></td>
-                                        <td>{{ ++$i }}</td>
-                                        
-											<td>{{ $investmentRepayment->investment_repayment_id }}</td>
-											<td>{{ $investmentRepayment->user_id }}</td>
-											<td>{{ $investmentRepayment->amount }}</td>
-											<td>{{ $investmentRepayment->interest }}</td>
-											<td>{{ $investmentRepayment->grace }}</td>
-											<td>{{ $investmentRepayment->balance }}</td>
-											<td>{{ $investmentRepayment->date }}</td>
-											<td>{{ $investmentRepayment->trx_id }}</td>
+                                        <td>{{ $investmentRepayment->investment->name }}</td>
+                                        <td>{{ $investmentRepayment->amount }}</td>
+                                        <td>{{ $investmentRepayment->interest }}</td>
+                                        <td>{{ $investmentRepayment->grace }}</td>
+                                        <td>{{ $investmentRepayment->balance }}</td>
+                                        <td>{{ date('d/m/Y',strtotime($investmentRepayment->date)) }}</td>
+                                        <td>{{ $investmentRepayment->note??'-' }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">
@@ -154,7 +190,7 @@
 
                             </table>
                         </div>
-                       <div class="card-footer d-flex align-items-center">
+                        <div class="card-footer d-flex align-items-center">
                             {!! $investmentRepayments->links('tablar::pagination') !!}
                         </div>
                     </div>
@@ -162,4 +198,24 @@
             </div>
         </div>
     </div>
+@endsection
+@section('js')
+    <script type="module">
+        $(".select2").select2({
+            theme: "bootstrap-5",
+            width: "100%",
+            placeholder: "একাউন্ট সিলেক্ট করুন"
+        });
+    </script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+                defaultDate: "{{ date('Y-m-d') }}"
+            });
+        });
+    </script>
 @endsection

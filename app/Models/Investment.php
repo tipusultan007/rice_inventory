@@ -38,7 +38,16 @@ class Investment extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','loan_amount','interest_rate','grace','date','trx_id','description','initial_balance','balance_date'];
+    protected $fillable = ['name',
+        'loan_amount',
+        'interest_rate',
+        'grace',
+        'date',
+        'trx_id',
+        'description',
+        'initial_balance',
+        'balance_date'
+    ];
 
     public function investmentRepayments()
     {

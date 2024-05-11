@@ -102,7 +102,7 @@ function transactionType($type)
         case 'bankloan_opening_balance':
             return __('ব্যাংক ঋন শুরুর ব্যালেন্স');
             break;
-            case 'capital_opening_balance':
+        case 'capital_opening_balance':
             return __('মূলধন শুরুর ব্যালেন্স');
             break;
         case 'customer_due':
@@ -116,6 +116,12 @@ function transactionType($type)
             break;
         case 'sale_return':
             return __('বিক্রয় ফেরত');
+            break;
+        case 'due_to_customer':
+            return __('বিক্রয় ফেরত');
+            break;
+        case 'due_from_supplier':
+            return __('ক্রয় ফেরত');
             break;
         case 'purchase_return':
             return __('ক্রয় ফেরত');
@@ -263,7 +269,7 @@ function calculateBalance($transactions)
     foreach ($transactions as $transaction) {
         if ($transaction->account_id != 13) {
             $amount = $transaction->amount * ($transaction->type === 'debit' ? 1 : -1);
-        }else{
+        } else {
             $amount = $transaction->amount * ($transaction->type === 'debit' ? -1 : 1);
         }
         $balance += $amount;

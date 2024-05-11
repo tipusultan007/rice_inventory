@@ -77,7 +77,8 @@ class InvestmentRepaymentController extends Controller
                     'date' => $request->input('date'),
                     'transaction_type' => 'investment_repayment',
                     'user_id' => Auth::id(),
-                    'trx_id' => $investmentRepayment->trx_id
+                    'trx_id' => $investmentRepayment->trx_id,
+                    'note' => $investmentRepayment->note,
                 ]);
 
                 // Create Credit Transaction
@@ -89,7 +90,8 @@ class InvestmentRepaymentController extends Controller
                     'transaction_type' => 'investment_repayment',
                     'reference_id' => $investmentRepayment->id,
                     'user_id' => Auth::id(),
-                    'trx_id' => $investmentRepayment->trx_id
+                    'trx_id' => $investmentRepayment->trx_id,
+                    'note' => $investmentRepayment->note
                 ]);
 
                 // Update investment balance
@@ -122,6 +124,7 @@ class InvestmentRepaymentController extends Controller
                     'transaction_type' => 'income',
                     'user_id' => Auth::id(),
                     'trx_id' => $income->trx_id,
+                    'note' => $investmentRepayment->note
                 ]);
 
                 // Create Credit Transaction for income
@@ -134,6 +137,7 @@ class InvestmentRepaymentController extends Controller
                     'transaction_type' => 'income',
                     'user_id' => Auth::id(),
                     'trx_id' => $income->trx_id,
+                    'note' => $investmentRepayment->note
                 ]);
 
                 // Update investmentRepayment balance and total_interest

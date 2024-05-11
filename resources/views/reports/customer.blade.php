@@ -57,6 +57,19 @@
                 $totalSaleDue = 0;
             @endphp
             <div class="row">
+                <div class="col-12 mb-3 d-print-none">
+                    <form action="{{ url('customer-balance-report') }}" method="get">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="text" class="form-control flatpicker" name="date">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-secondary" type="submit">সার্চ করুন</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="col-12">
                     <table class="table table-sm table-vcenter table-bordered">
                         <thead>
@@ -69,14 +82,14 @@
                         </thead>
                         <tbody>
                         @forelse ($customers as $customer)
-                            @if($customer->remaining_due <= 0)
-                                @continue
-                            @endif
+                            @php
+                                $totalSaleDue += $customer->total_due;
+                            @endphp
                             <tr>
                                 <td>{{ $customer->name }}</td>
                                 <td>{{ $customer->phone }}</td>
                                 <td>{{ $customer->address }}</td>
-                                <td class="text-danger fw-bolder text-end">{{ $customer->remaining_due }}</td>
+                                <td class="text-danger fw-bolder text-end">{{ $customer->total_due }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -84,6 +97,13 @@
                             </tr>
                         @endforelse
                         </tbody>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">মোট =</th>
+                            <th class="text-end">{{ $totalSaleDue }}</th>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -99,7 +119,7 @@
                 allowInput: true,
                 altFormat: "d-m-Y",
                 dateFormat: "Y-m-d",
-                defaultDate: "{{ date('Y-m-d') }}"
+                defaultDate: "{{ request('date')??date('Y-m-d') }}"
             });
         });
     </script>

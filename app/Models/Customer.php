@@ -64,7 +64,7 @@ class Customer extends Model
                 WHEN transaction_type = "sale" AND type = "credit" THEN amount
                 WHEN transaction_type = "customer_payment" AND type = "debit" THEN -amount
                 WHEN transaction_type = "discount" AND type = "debit" THEN -amount
-                WHEN transaction_type = "payment_to_customer" AND type = "credit" THEN -amount
+                WHEN transaction_type = "due_to_customer" AND type = "credit" THEN -amount
                 ELSE 0
             END
         ) AS total_due'))

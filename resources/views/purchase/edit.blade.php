@@ -334,8 +334,8 @@
             var discount = parseFloat($('input[name="discount"]').val()) || 0;
             total -= discount;
 
-            var tohori = parseFloat($('input[name="tohori"]').val()) || 0;
-            total -= tohori;
+            //var tohori = parseFloat($('input[name="tohori"]').val()) || 0;
+            //total -= tohori;
 
             // Update the total input field
             $('input[name="total"]').val(total.toFixed(2));
