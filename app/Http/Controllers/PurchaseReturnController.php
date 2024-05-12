@@ -66,7 +66,6 @@ class PurchaseReturnController extends Controller
             'account_id' => 'অ্যাকাউন্ট সিলেক্ট করুন'
         ]);
 
-
         try {
             DB::beginTransaction();
 
@@ -119,10 +118,7 @@ class PurchaseReturnController extends Controller
                $debitTransaction->save();
             }
 
-
-
             if ($remain > 0){
-
                 $debitTransaction1 = Transaction::create([
                     'account_name' => $purchaseReturn->supplier->name,
                     'amount' => $remain,
@@ -201,14 +197,128 @@ class PurchaseReturnController extends Controller
      * @param  PurchaseReturn $purchaseReturn
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PurchaseReturn $purchaseReturn)
+    public function update(Request $request, $id)
     {
         request()->validate(PurchaseReturn::$rules);
 
-        $purchaseReturn->update($request->all());
+        $request->validate([
+            'paid' => 'nullable',
+            'account_id' => ['required_with:paid'],
+        ], [
+            'account_id' => 'অ্যাকাউন্ট সিলেক্ট করুন'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $purchaseReturn = PurchaseReturn::findOrFail($id);
+
+            $data = $request->all();
+
+            $purchaseReturn->update($data);
+
+            $purchaseReturnDetails = PurchaseReturnDetail::where('purchase_return_id', $id)->get();
+            // Handle products outside the loop
+            $this->handlePurchaseReturnDetailsUpdate($request->input('products'), $purchaseReturn,$purchaseReturnDetails);
+
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+
+                $file->storeAs('public/purchase_return_attachments', $fileName);
+
+                $purchaseReturn->attachment = $fileName;
+                $purchaseReturn->save();
+            }
+
+            // Update or create the credit transaction
+            $creditTransaction = Transaction::updateOrCreate(
+                ['reference_id' => $purchaseReturn->id, 'transaction_type' => 'purchase_return'],
+                [
+                    'account_name' => 'ক্রয় ফেরত',
+                    'amount' => $purchaseReturn->total,
+                    'type' => 'credit',
+                    'supplier_id' => $purchaseReturn->supplier_id,
+                    'date' => $purchaseReturn->date,
+                    'trx_id' => $purchaseReturn->trx_id,
+                ]
+            );
+
+            $paid = $request->input('paid');
+            $remain = $request->input('total') - $paid;
+
+            // Update or create the debit transaction for payment from supplier
+            if ($paid > 0) {
+                $account = Account::find($request->input('account_id'));
+                $debitTransaction = Transaction::updateOrCreate(
+                    ['reference_id' => $purchaseReturn->id, 'transaction_type' => 'payment_from_supplier'],
+                    [
+                        'account_id' => $request->input('account_id'),
+                        'account_name' => $account->name,
+                        'amount' => $paid,
+                        'type' => 'debit',
+                        'supplier_id' => $purchaseReturn->supplier_id,
+                        'date' => $purchaseReturn->date,
+                        'trx_id' => $purchaseReturn->trx_id,
+                    ]
+                );
+                $debitTransaction->balance = $purchaseReturn->supplier->remaining_due;
+                $debitTransaction->save();
+            }
+
+            // Update or create the debit transaction for due from supplier
+            if ($remain > 0) {
+                $debitTransaction1 = Transaction::updateOrCreate(
+                    ['reference_id' => $purchaseReturn->id, 'transaction_type' => 'due_from_supplier'],
+                    [
+                        'account_name' => $purchaseReturn->supplier->name,
+                        'amount' => $remain,
+                        'type' => 'debit',
+                        'supplier_id' => $purchaseReturn->supplier_id,
+                        'date' => $purchaseReturn->date,
+                        'trx_id' => $purchaseReturn->trx_id,
+                    ]
+                );
+                $debitTransaction1->balance = $purchaseReturn->supplier->remaining_due;
+                $debitTransaction1->save();
+            }
+
+            DB::commit();
+        } catch (\PDOException | \Exception $e) {
+            DB::rollBack();
+
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return redirect()->back()->withErrors($e->validator)->withInput();
+            }
+
+            return redirect()->back()->with('error', 'Purchase return update failed. Please try again.');
+        }
 
         return redirect()->route('purchase_returns.index')
-            ->with('success', 'PurchaseReturn updated successfully');
+            ->with('success', 'Purchase Return updated successfully.');
+    }
+    function handlePurchaseReturnDetailsUpdate($products, $purchase, $purchaseReturnDetails)
+    {
+        foreach ($purchaseReturnDetails as $item){
+            $productItem = Product::find($item->product_id);
+            $productItem->quantity += $item->quantity;
+            $productItem->save();
+            $item->delete();
+        }
+
+        foreach ($products as $product) {
+            PurchaseReturnDetail::create([
+                'purchase_return_id' => $purchase->id,
+                'product_id' => $product['product_id'],
+                'quantity' => $product['quantity'],
+                'amount' => $product['amount'],
+                'price_rate' => $product['price_rate'],
+            ]);
+
+            $productModel = Product::find($product['product_id']);
+            $productModel->quantity -= $product['quantity'];
+            $productModel->save();
+        }
     }
 
     /**

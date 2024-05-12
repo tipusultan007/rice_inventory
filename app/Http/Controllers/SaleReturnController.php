@@ -77,7 +77,6 @@ class SaleReturnController extends Controller
 
             $sale = SaleReturn::create($data);
 
-            // Handle products outside the loop
             $this->handleSaleReturnDetails($request->input('products'), $sale);
 
             if ($request->hasFile('attachment')) {
@@ -167,6 +166,30 @@ class SaleReturnController extends Controller
         }
     }
 
+    function handleSaleReturnDetailsUpdate($products, $sale, $saleDetails)
+    {
+        foreach ($saleDetails as $item){
+            $productItem = Product::find($item->product_id);
+            $productItem->quantity -= $item->quantity;
+            $productItem->save();
+            $item->delete();
+        }
+        foreach ($products as $product) {
+            SaleReturnDetail::create([
+                'sale_return_id' => $sale->id,
+                'product_id' => $product['product_id'],
+                'quantity' => $product['quantity'],
+                'amount' => $product['amount'],
+                'price_rate' => $product['price_rate'],
+            ]);
+
+            $productModel = Product::find($product['product_id']);
+            $productModel->quantity += $product['quantity'];
+            $productModel->save();
+        }
+    }
+
+
     /**
      * Display the specified resource.
      *
@@ -189,8 +212,10 @@ class SaleReturnController extends Controller
     public function edit($id)
     {
         $saleReturn = SaleReturn::find($id);
+        $payment = Transaction::where('transaction_type', 'payment_to_customer')
+            ->where('trx_id', $saleReturn->trx_id)->first();
 
-        return view('sale-return.edit', compact('saleReturn'));
+        return view('sale-return.edit', compact('saleReturn','payment'));
     }
 
     /**
@@ -200,7 +225,7 @@ class SaleReturnController extends Controller
      * @param SaleReturn $saleReturn
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, SaleReturn $saleReturn)
+    /*public function update(Request $request, SaleReturn $saleReturn)
     {
         request()->validate(SaleReturn::$rules);
 
@@ -325,7 +350,105 @@ class SaleReturnController extends Controller
         }
 
         return redirect()->route('sale_returns.index')->with('success', 'SaleReturn updated successfully.');
+    }*/
+
+    public function update(Request $request, $id)
+    {
+        request()->validate(SaleReturn::$rules);
+
+        $request->validate([
+            'paid' => 'nullable',
+            'account_id' => ['required_with:paid'],
+        ], [
+            'account_id' => 'অ্যাকাউন্ট সিলেক্ট করুন'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $sale = SaleReturn::findOrFail($id);
+
+            $data = $request->all();
+            $data['user_id'] = Auth::id();
+
+            $sale->update($data);
+
+            $saleDetails = SaleReturnDetail::where('sale_return_id', $id)->get();
+
+            $this->handleSaleReturnDetailsUpdate($request->input('products'), $sale, $saleDetails);
+
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+
+                $file->storeAs('public/sale_return_attachments', $fileName);
+
+                $sale->attachment = $fileName;
+                $sale->save();
+            }
+
+            $debitTransaction = Transaction::updateOrCreate(
+                ['reference_id' => $sale->id, 'transaction_type' => 'sale_return'],
+                [
+                    'account_name' => 'বিক্রয় ফেরত',
+                    'amount' => $request->input('total'),
+                    'type' => 'debit',
+                    'customer_id' => $sale->customer_id,
+                    'date' => $sale->date,
+                    'user_id' => Auth::id(),
+                    'note' => $sale->note,
+                    'trx_id' => $sale->trx_id
+                ]
+            );
+
+            $paid = $request->input('paid');
+            $remain = $request->input('total') - $paid;
+
+            if ($paid > 0) {
+                $account = Account::find($request->input('account_id'));
+                $creditTransaction = Transaction::updateOrCreate(
+                    ['reference_id' => $sale->id, 'transaction_type' => 'payment_to_customer'],
+                    [
+                        'account_id' => $request->input('account_id'),
+                        'account_name' => $account->name,
+                        'amount' => $paid,
+                        'type' => 'credit',
+                        'customer_id' => $sale->customer_id,
+                        'date' => $sale->date,
+                        'trx_id' => $sale->trx_id,
+                    ]
+                );
+            }
+
+            if ($remain > 0) {
+                $credit = Transaction::updateOrCreate(
+                    ['reference_id' => $sale->id, 'transaction_type' => 'due_to_customer'],
+                    [
+                        'account_name' => $sale->customer->name,
+                        'amount' => $remain,
+                        'type' => 'credit',
+                        'customer_id' => $sale->customer_id,
+                        'date' => $sale->date,
+                        'trx_id' => $sale->trx_id,
+                    ]
+                );
+
+                $credit->balance = $sale->customer->remaining_due;
+                $credit->save();
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            \Log::error($e);
+            return redirect()->back()->with('error', 'Sale update failed. Please try again.');
+        }
+
+        return redirect()->route('sale_returns.index')
+            ->with('success', 'SaleReturn updated successfully.');
     }
+
 
 
     /**
@@ -341,7 +464,7 @@ class SaleReturnController extends Controller
             $saleReturn = SaleReturn::find($id);
 
             // Delete related transactions
-            Transaction::where('transaction_type', 'sale_return')->where('reference_id', $saleReturn->id)->delete();
+            Transaction::where('trx_id', $saleReturn->trx_id)->delete();
 
             // Adjust product quantities and delete sale return details
             foreach ($saleReturn->saleReturnDetail as $detail) {

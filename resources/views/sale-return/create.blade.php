@@ -53,17 +53,20 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="" class="form-label">মেমো নং</label>
-                                            <select name="sale_id" id="sale_id" class="form-control select2" data-placeholder="সিলেক্ট মেমো নং">
+                                            <select name="sale_id" id="sale_id" class="form-control select2"
+                                                    data-placeholder="সিলেক্ট মেমো নং">
                                                 <option value=""></option>
                                                 @forelse($sales as $key => $invoice)
-                                                    <option value="{{ $key }}" {{ request('sale_id') == $key?'selected':'' }}>{{ $invoice }}</option>
-                                                    @empty
+                                                    <option
+                                                        value="{{ $key }}" {{ request('sale_id') == $key?'selected':'' }}>{{ $invoice }}</option>
+                                                @empty
                                                 @endforelse
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary search-btn w-100">সার্চ করুন</button>
+                                        <button type="submit" class="btn btn-primary search-btn w-100">সার্চ করুন
+                                        </button>
                                     </div>
                                 </div>
                             </form>
@@ -71,177 +74,205 @@
                     </div>
                 </div>
             </div>
-                @isset($sale)
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <form id="form" action="{{ route('sale_returns.store') }}" method="post" enctype="multipart/form-data">
-                                @csrf
-                                <input type="hidden" name="sale_id" value="{{ $sale->id }}">
-                                <div class="row">
-                                    <div class="col-md-2 mb-3">
-                                        <label for="date" class="form-label fs-3">তারিখ</label>
-                                        <input type="text" name="date" id="date" class="form-control flatpicker">
-                                        @error('date')
-                                        <div class="text-danger">{{ $message }}</div>
-                                        @enderror
+            @isset($sale)
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form id="form" action="{{ route('sale_returns.store') }}" method="post"
+                                      enctype="multipart/form-data">
+                                    @csrf
+                                    <input type="hidden" name="sale_id" value="{{ $sale->id }}">
+                                    <div class="row">
+                                        <div class="col-md-2 mb-3">
+                                            <label for="date" class="form-label fs-3">তারিখ</label>
+                                            <input type="text" name="date" id="date" class="form-control flatpicker">
+                                            @error('date')
+                                            <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-md-2 mb-3">
+                                            <label for="invoice_no" class="form-label fs-3">মেমো নং</label>
+                                            <input type="number" name="invoice_no" class="form-control"
+                                                   value="{{ $sale->invoice_no }}" required>
+                                            @error('invoice_no')
+                                            <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label for="book_no" class="form-label fs-3">বই নং</label>
+                                            <input type="number" name="book_no" class="form-control"
+                                                   value="{{ $sale->book_no }}">
+                                            @error('book_no')
+                                            <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="attachment" class="form-label">ফাইল:</label>
+                                            <input type="file" name="attachment" class="form-control"
+                                                   value="{{ old('attachment') }}">
+                                            @error('attachment')
+                                            <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="customer_id" class="form-label fs-3">ক্রেতা</label>
+                                            <select name="customer_id" class="form-select select2" required>
+                                                <option
+                                                    value="{{ $sale->customer_id }}">{{ $sale->customer->name }}</option>
+                                            </select>
+                                            @error('customer_id')
+                                            <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
 
-                                    <div class="col-md-2 mb-3">
-                                        <label for="invoice_no" class="form-label fs-3">মেমো নং</label>
-                                        <input type="number" name="invoice_no" class="form-control" value="{{ $sale->invoice_no }}" required>
-                                        @error('invoice_no')
-                                        <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-2 mb-3">
-                                        <label for="book_no" class="form-label fs-3">বই নং</label>
-                                        <input type="number" name="book_no" class="form-control" value="{{ $sale->book_no }}" >
-                                        @error('book_no')
-                                        <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-3 mb-3">
-                                        <label for="attachment" class="form-label">ফাইল:</label>
-                                        <input type="file" name="attachment" class="form-control"
-                                               value="{{ old('attachment') }}">
-                                        @error('attachment')
-                                        <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-3 mb-3">
-                                        <label for="customer_id" class="form-label fs-3">ক্রেতা</label>
-                                        <select name="customer_id" class="form-select select2" required>
-                                            <option value="{{ $sale->customer_id }}">{{ $sale->customer->name }}</option>
-                                        </select>
-                                        @error('customer_id')
-                                        <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
+                                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                                    <div class="mb-3">
+                                        <label class="form-label fs-3">প্রোডাক্ট তালিকা:</label>
+                                        <table class="table table-sm products table-borderless">
+                                            <thead style="background-color: #eeeeee">
+                                            <tr>
+                                                <th class="fw-bolder fs-3 p-2">বিবরণ</th>
+                                                <th class="fw-bolder fs-3 p-2">দর</th>
+                                                <th class="fw-bolder fs-3 p-2">পরিমাণ</th>
+                                                <th class="fw-bolder fs-3 p-2">টাকা</th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="products-container">
+                                            @foreach($sale->saleDetails as $index => $detail)
+                                                <tr class="product-entry">
+                                                    <td>
+                                                        <select name="products[{{ $index }}][product_id]"
+                                                                class="form-select  products-select2" required
+                                                                data-placeholder="সিলেক্ট প্রোডাক্ট">
+                                                            @foreach($sale->saleDetails as $item)
+                                                                <option data-price-rate="{{ $item->price_rate }}"
+                                                                        value="{{ $item->product_id }}"
+                                                                {{ $item->product_id == $detail->product_id?'selected':'' }}>{{ $item->product->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="products[{{ $index }}][price_rate]"
+                                                               class="form-control price_rate" step="0.01"
+                                                               value="{{ old("products.$index.price_rate", $detail->price_rate) }}"
+                                                               required>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="products[{{ $index }}][quantity]"
+                                                               class="form-control quantity"
+                                                               value="{{ old("products.$index.quantity", $detail->quantity) }}"
+                                                               required>
+                                                    </td>
 
-                                <input type="hidden" name="user_id" value="{{ auth()->id() }}">
-                                <div class="mb-3">
-                                    <label class="form-label fs-3">প্রোডাক্ট তালিকা:</label>
-                                    <table class="table table-sm products table-borderless">
-                                        <thead style="background-color: #eeeeee">
-                                        <tr>
-                                            <th class="fw-bolder fs-3 p-2">বিবরণ</th>
-                                            <th class="fw-bolder fs-3 p-2">দর</th>
-                                            <th class="fw-bolder fs-3 p-2">পরিমাণ</th>
-                                            <th class="fw-bolder fs-3 p-2">টাকা</th>
-                                            <th></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="products-container">
-                                        @foreach($sale->saleDetails as $index => $detail)
-                                            <tr class="product-entry">
-                                                <td>
-                                                    <select name="products[{{ $index }}][product_id]" class="form-select  products-select2" required data-placeholder="সিলেক্ট প্রোডাক্ট">
-                                                        <option data-price-rate="{{ $detail->product->price_rate }}" value="{{ $detail->product->id }}">
-                                                            {{ $detail->product->name }}
-                                                        </option>
+                                                    <td>
+                                                        <input type="number" name="products[{{ $index }}][amount]"
+                                                               class="form-control amount" step="0.01"
+                                                               value="{{ old("products.$index.amount", $detail->amount) }}"
+                                                               required>
+                                                    </td>
+                                                    <td>
+                                                        @if($index>0)
+                                                            <button type="button" class="btn btn-danger btn-icon"
+                                                                    onclick="removeProductEntry(this)"><i
+                                                                    class="ti ti-x"></i></button>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th colspan="3" class="text-end border-0 py-0">মোট</th>
+                                                <th class="subtotal border-0 py-2">
+                                                    <input type="number" name="subtotal" class="form-control"
+                                                           value="{{ $sale->subtotal }}" readonly>
+                                                </th>
+                                                <th class="border-0 py-0 border-0 py-0"></th>
+                                            </tr>
+
+                                            <tr>
+                                                <th colspan="3" class="text-end border-0 py-0">সর্বমোট</th>
+                                                <th class="total border-0 py-2">
+                                                    <input type="number" name="total" class="form-control"
+                                                           value="{{ $sale->total }}" readonly>
+                                                </th>
+                                                <th class="border-0 py-0"></th>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="3" class="text-end border-0 py-0">পরিশোধ</th>
+                                                <th class="total border-0 py-2">
+                                                    <input type="number" name="paid" class="form-control" min="0">
+                                                </th>
+                                                <th class="border-0 py-0">
+                                                    <button class="btn btn-success" id="make-paid" type="button"><i
+                                                            class="ti ti-check"></i></button>
+                                                </th>
+                                            </tr>
+                                            @php
+                                                $methods = \App\Models\Account::all();
+                                            @endphp
+                                            <tr>
+                                                <th colspan="3" class="text-end border-0 py-0">
+                                                    <label for="account_id">পেমেন্ট মাধ্যম</label>
+                                                </th>
+                                                <td class="total border-0 py-2">
+                                                    <select name="account_id" id="account_id"
+                                                            class="form-control select2"
+                                                            data-placeholder="সিলেক্ট করুন">
+                                                        <option value=""></option>
+                                                        @forelse($methods as $method)
+                                                            <option
+                                                                value="{{ $method->id }}">{{ $method->name }}</option>
+                                                        @empty
+                                                        @endforelse
                                                     </select>
-                                                </td>
-                                                <td>
-                                                    <input type="number" name="products[{{ $index }}][price_rate]" class="form-control price_rate" step="0.01" value="{{ old("products.$index.price_rate", $detail->price_rate) }}" required>
-                                                </td>
-                                                <td>
-                                                    <input type="number" name="products[{{ $index }}][quantity]" class="form-control quantity" value="{{ old("products.$index.quantity", $detail->quantity) }}" required>
-                                                </td>
-
-                                                <td>
-                                                    <input type="number" name="products[{{ $index }}][amount]" class="form-control amount" step="0.01" value="{{ old("products.$index.amount", $detail->amount) }}" required>
-                                                </td>
-                                                <td>
-                                                    @if($index>0)
-                                                        <button type="button" class="btn btn-danger btn-icon" onclick="removeProductEntry(this)"><i class="ti ti-x"></i></button>
-                                                    @endif
+                                                    @error('account_id')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                    @enderror
                                                 </td>
                                             </tr>
-                                        @endforeach
-                                        </tbody>
-                                        <tfoot>
-                                        <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">মোট</th>
-                                            <th class="subtotal border-0 py-2">
-                                                <input type="number" name="subtotal" class="form-control" value="{{ $sale->subtotal }}" readonly>
-                                            </th>
-                                            <th class="border-0 py-0 border-0 py-0"></th>
-                                        </tr>
+                                            <tr>
+                                                <th colspan="3" class="text-end border-0 py-0">নোট</th>
+                                                <th class="total border-0 py-2">
+                                                    <input type="text" name="note" class="form-control"
+                                                           value="{{ $sale->note }}">
+                                                    @error('note')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                    @enderror
+                                                </th>
+                                                <th class="border-0 py-0"></th>
+                                            </tr>
 
-                                        <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">সর্বমোট</th>
-                                            <th class="total border-0 py-2">
-                                                <input type="number" name="total" class="form-control" value="{{ $sale->total }}" readonly>
-                                            </th>
-                                            <th class="border-0 py-0"></th>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">পরিশোধ</th>
-                                            <th class="total border-0 py-2">
-                                                <input type="number" name="paid" class="form-control" min="0">
-                                            </th>
-                                            <th class="border-0 py-0">
-                                                <button class="btn btn-success" id="make-paid" type="button"><i class="ti ti-check"></i></button>
-                                            </th>
-                                        </tr>
-                                        @php
-                                            $methods = \App\Models\Account::all();
-                                        @endphp
-                                        <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">
-                                                <label for="account_id">পেমেন্ট মাধ্যম</label>
-                                            </th>
-                                            <td class="total border-0 py-2">
-                                                <select name="account_id" id="account_id" class="form-control select2" data-placeholder="সিলেক্ট করুন">
-                                                    <option value=""></option>
-                                                    @forelse($methods as $method)
-                                                        <option value="{{ $method->id }}">{{ $method->name }}</option>
-                                                    @empty
-                                                    @endforelse
-                                                </select>
-                                                @error('account_id')
-                                                <div class="text-danger">{{ $message }}</div>
-                                                @enderror
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th colspan="3" class="text-end border-0 py-0">নোট</th>
-                                            <th class="total border-0 py-2">
-                                                <input type="text" name="note" class="form-control" value="{{ $sale->note }}">
-                                                @error('note')
-                                                <div class="text-danger">{{ $message }}</div>
-                                                @enderror
-                                            </th>
-                                            <th class="border-0 py-0"></th>
-                                        </tr>
+                                            <tr>
+                                                <th colspan="3"></th>
+                                                <td>
+                                                    <button type="submit" id="submitButton"
+                                                            class="btn btn-primary w-100">সাবমিট
+                                                    </button>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
 
-                                        <tr>
-                                            <th colspan="3"></th>
-                                            <td>
-                                                <button type="submit" id="submitButton" class="btn btn-primary w-100">সাবমিট</button>
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-                @endisset
+            @endisset
         </div>
     </div>
 @endsection
 
 @section('scripts')
     <script>
-        document.getElementById('submitButton').addEventListener('click', function(e) {
+        document.getElementById('submitButton').addEventListener('click', function (e) {
             e.preventDefault();
             document.getElementById('form').submit();
             this.disabled = true;
@@ -277,7 +308,7 @@
             // Add delete button only for rows beyond the initial one
             if (newIndex > 0) {
                 productsContainer.find('td:last').html('' +
-                    '<button class="btn btn-primary btn-icon me-2" type="button" onclick="addProductEntry()"><i class="ti ti-plus"></i></button>'+
+                    '<button class="btn btn-primary btn-icon me-2" type="button" onclick="addProductEntry()"><i class="ti ti-plus"></i></button>' +
                     '<button type="button" class="btn btn-danger btn-icon" onclick="removeProductEntry(this)"><i class="ti ti-x"></i></button>');
             } else {
                 productsContainer.find('td:last').empty(); // Remove any existing delete button in the first row
@@ -285,6 +316,7 @@
             $('.table.products tbody').append(productsContainer);
             initializeEventListeners();
         }
+
         function initializeEventListeners() {
             // Update amounts and total when quantity or price rate changes
             $('.product-entry input[name^="products["]').on('input', function () {
@@ -297,6 +329,7 @@
             });
 
         }
+
         function updateAmountAndTotal() {
             // Loop through each product entry row
             $('.product-entry').each(function (index) {
@@ -311,6 +344,7 @@
                 updateTotal();
             });
         }
+
         // Function to update the total based on all amounts
         function updateTotal() {
             var total = 0;
@@ -340,44 +374,47 @@
             updateAmountAndTotal();
         }
 
-        $(document).ready(function($){
+        $(document).ready(function ($) {
             $(".select2").select2({
                 theme: "bootstrap-5",
                 placeholder: "",
-                width:"100%",
+                width: "100%",
             });
             $(".products-select2").select2({
                 theme: "bootstrap-5",
                 placeholder: "",
-                width:"100%",
+                width: "100%",
             });
 
 
-            $("#customer_id").on("change.select2",function () {
+            $("#customer_id").on("change.select2", function () {
                 var value = $(this).val();
                 $("#name, #phone, #address").val("");
-                if (value === 'new'){
+                if (value === 'new') {
                     $("#new-customer").show();
-                }else {
+                } else {
                     $("#new-customer").hide();
                 }
             })
 
-            $(document).on('change', '.products-select2', function() {
+            $(document).on('change', '.products-select2', function () {
                 // Get the selected option
                 var selectedOption = $(this).find(':selected');
 
                 // Get the price rate from the selected option's data attribute
                 var priceRate = selectedOption.data('price-rate');
 
+                console.log(priceRate);
                 // Find the input field in the same row and set its value
                 $(this).closest('tr').find('[name$="[price_rate]"]').val(priceRate);
+
+                updateAmountAndTotal();
             });
 
             //$(".products-select2").select2();
             initializeEventListeners();
 
-            $("#make-paid").on("click",function () {
+            $("#make-paid").on("click", function () {
                 var total = $("input[name='total']").val();
                 $("input[name='paid']").val(total);
             })
