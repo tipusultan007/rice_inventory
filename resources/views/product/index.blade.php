@@ -104,6 +104,7 @@
                                 <thead>
                                 <tr>
                                     <th class="fw-bolder fs-4">বিবরণ</th>
+                                    <th class="fw-bolder fs-4"> শুরুর স্থিতি</th>
                                     <th class="fw-bolder fs-4">বর্তমান স্থিতি</th>
                                     <th class="fw-bolder fs-4">দর</th>
                                     <th class="fw-bolder fs-4">মোট মূল্য</th>
@@ -167,6 +168,8 @@
                                     <th class="fs-3"></th>
                                     <th class="fs-3"></th>
                                     <th></th>
+                                    <th class="fs-3"></th>
+                                    <th></th>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -205,6 +208,7 @@
                 },
                 "columns": [
                     { "data": "name" },
+                    { "data": "initial_stock" },
                     { "data": "quantity" },
                     { "data": "price_rate" },
                     { "data": "stock_value", sorting: false },
@@ -215,14 +219,14 @@
                         extend: 'excelHtml5',
                         text: '<i class="ti ti-file-spreadsheet me-2"></i>Excel',
                         exportOptions: {
-                            columns: [0, 1, 2, 3]
+                            columns: [0, 1, 2, 3,4]
                         },
                     },
                     {
                         extend: 'print',
                         text: '<i class="ti ti-printer me-2" ></i>Print',
                         exportOptions: {
-                            columns: [0, 1, 2, 3],
+                            columns: [0, 1, 2, 3,4]
                         },
                         messageTop:
                             '<h2 class="text-center my-3">পণ্য তালিকা</h2>',
@@ -243,19 +247,22 @@
                     var api = this.api();
 
                     // Sum the values in the 'quantity' column
-                    var quantity = api.column(1, { page: 'current' }).data().reduce(function (acc, val) {
+                    var initial = api.column(1, { page: 'current' }).data().reduce(function (acc, val) {
                         return acc + parseFloat(val);
                     }, 0);
-
+                    var quantity = api.column(2, { page: 'current' }).data().reduce(function (acc, val) {
+                        return acc + parseFloat(val);
+                    }, 0);
                     // Sum the values in the 'total' column
-                    var total = api.column(3, { page: 'current' }).data().reduce(function (acc, val) {
+                    var total = api.column(4, { page: 'current' }).data().reduce(function (acc, val) {
                         return acc + parseFloat(val);
                     }, 0);
 
 
                     // Update the footer
-                    jQuery(api.column(1).footer()).html(quantity.toFixed(0));
-                    jQuery(api.column(3).footer()).html(total.toFixed(0));
+                    jQuery(api.column(1).footer()).html(initial.toFixed(0));
+                    jQuery(api.column(2).footer()).html(quantity.toFixed(0));
+                    jQuery(api.column(4).footer()).html(total.toFixed(0));
 
                 },
             });

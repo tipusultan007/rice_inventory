@@ -82,8 +82,9 @@ class ProductController extends Controller
 
                 $nestedData['id'] = $post->id;
                 $nestedData['name'] = $post->name;
-                $nestedData['quantity'] = $post->quantity??'-';
-                $nestedData['price_rate'] = $post->price_rate??'-';
+                $nestedData['initial_stock'] = $post->initial_stock??'0';
+                $nestedData['quantity'] = $post->quantity??'0';
+                $nestedData['price_rate'] = $post->price_rate??'0';
                 $nestedData['stock_value'] = $post->quantity * $post->price_rate;
 
                 $nestedData['options'] = '<div class="dropdown">
