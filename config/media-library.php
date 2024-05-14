@@ -82,7 +82,7 @@ return [
      * Here you can specify which path generator should be used for the given class.
      */
     'custom_path_generators' => [
-        // Model::class => PathGenerator::class
+         \App\Models\Purchase::class => \App\CustomPath\Purchase::class
         // or
         // 'model_morph_alias' => PathGenerator::class
     ],

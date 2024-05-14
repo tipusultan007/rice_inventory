@@ -284,13 +284,15 @@ class PurchaseController extends Controller
                 $productModel->save();
             }
 
-            if ($request->has('files')) {
-                //$purchase->clearMediaCollection('purchase_invoices');
+            if ($request->has('files') && !empty($request->input('files'))) {
                 foreach ($request->input('files') as $filePath) {
-                    $filename = json_decode($filePath)[0];
-                    $purchase->addMedia(Storage::path($filename))->toMediaCollection('purchase_invoices');
-                    $folderName = explode('/', $filename)[1];
-                    Storage::deleteDirectory('temp/' . $folderName);
+                    $decodedPath = json_decode($filePath);
+                    if ($decodedPath && is_array($decodedPath) && count($decodedPath) > 0) {
+                        $filename = $decodedPath[0];
+                        $purchase->addMedia(Storage::path($filename))->toMediaCollection('purchase_invoices');
+                        $folderName = explode('/', $filename)[1];
+                        Storage::deleteDirectory('temp/' . $folderName);
+                    }
                 }
             }
             $debitTransaction = Transaction::create([
