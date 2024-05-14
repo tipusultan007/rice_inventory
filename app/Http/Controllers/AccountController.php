@@ -94,20 +94,44 @@ class AccountController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id,Request $request)
     {
         $account = Account::find($id);
 
-        $transactions = Transaction::where('account_id',$id)
+       /* $transactions = Transaction::where('account_id',$id)
             ->orderBy('date','desc')
-            ->paginate(30);
+            ->paginate(30);*/
 
-        $totalDebit = Transaction::where('account_id',$id)
-            ->where('type','debit')
-            ->sum('amount');
-        $totalCredit = Transaction::where('account_id',$id)
-            ->where('type','credit')
-            ->sum('amount');
+        if ($request->has('date1') && $request->has('date2')) {
+            $transactions = Transaction::with('account', 'customer', 'supplier')
+                ->whereBetween('date',[$request->input('date1'), $request->input('date2')])
+                ->where('account_id',$id)
+                ->orderBy('date','desc')
+                ->paginate(50);
+
+            $totalDebit = Transaction::where('account_id',$id)
+                ->whereBetween('date',[$request->input('date1'), $request->input('date2')])
+                ->where('type','debit')
+                ->sum('amount');
+            $totalCredit = Transaction::where('account_id',$id)
+                ->whereBetween('date',[$request->input('date1'), $request->input('date2')])
+                ->where('type','credit')
+                ->sum('amount');
+        }else{
+            $transactions = Transaction::with('account', 'customer', 'supplier')
+                ->where('account_id',$id)
+                ->orderByDesc('date')
+                ->paginate(50);
+
+            $totalDebit = Transaction::where('account_id',$id)
+                ->where('type','debit')
+                ->sum('amount');
+            $totalCredit = Transaction::where('account_id',$id)
+                ->where('type','credit')
+                ->sum('amount');
+        }
+
+
 
         return view('account.show', compact('account','transactions','totalDebit','totalCredit'));
     }

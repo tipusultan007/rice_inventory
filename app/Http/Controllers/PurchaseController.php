@@ -239,7 +239,6 @@ class PurchaseController extends Controller
             'note' => 'nullable|string',
             'due' => 'nullable|numeric',
             'paid' => 'nullable|numeric',
-            'attachment' => 'nullable|file|mimes:jpeg,png,pdf,docx,xlsx|max:2048', // Adjust the allowed file types and size
         ]);
 
         if ($validator->fails()) {
@@ -285,14 +284,14 @@ class PurchaseController extends Controller
                 $productModel->save();
             }
 
-            if ($request->hasFile('attachment')) {
-                $file = $request->file('attachment');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-
-                $file->storeAs('public/purchase_attachments', $fileName);
-
-                $purchase->attachment = $fileName;
-                $purchase->save();
+            if ($request->has('files')) {
+                //$purchase->clearMediaCollection('purchase_invoices');
+                foreach ($request->input('files') as $filePath) {
+                    $filename = json_decode($filePath)[0];
+                    $purchase->addMedia(Storage::path($filename))->toMediaCollection('purchase_invoices');
+                    $folderName = explode('/', $filename)[1];
+                    Storage::deleteDirectory('temp/' . $folderName);
+                }
             }
             $debitTransaction = Transaction::create([
                 'account_name' => 'ক্রয়',
@@ -450,7 +449,6 @@ class PurchaseController extends Controller
             'note' => 'nullable|string',
             'due' => 'nullable|numeric',
             'paid' => 'nullable|numeric',
-            'attachment' => 'nullable|file|mimes:jpeg,png,pdf,docx,xlsx|max:2048', // Adjust the allowed file types and size
         ], [
             'date.required' => 'তারিখ পূর্ণ করতে হবে।',
             'date.date' => 'তারিখ সঠিক নয়।',
@@ -504,21 +502,14 @@ class PurchaseController extends Controller
             }
 
             // Handle file attachment
-            if ($request->hasFile('attachment')) {
-                // Delete old attachment
-                $oldAttachment = $purchase->attachment;
-                if ($oldAttachment) {
-                    Storage::delete('public/purchase_attachments/' . $oldAttachment);
+            if ($request->has('files')) {
+                $purchase->clearMediaCollection('purchase_invoices');
+                foreach ($request->input('files') as $filePath) {
+                    $filename = json_decode($filePath)[0];
+                    $purchase->addMedia(Storage::path($filename))->toMediaCollection('purchase_invoices');
+                    $folderName = explode('/', $filename)[1];
+                    Storage::deleteDirectory('temp/' . $folderName);
                 }
-
-                // Upload new attachment
-                $file = $request->file('attachment');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->storeAs('public/purchase_attachments', $fileName);
-
-                // Update purchase with new attachment
-                $purchase->attachment = $fileName;
-                $purchase->save();
             }
 
             // Update the purchase transaction
@@ -613,6 +604,68 @@ class PurchaseController extends Controller
                     ]);
                 }
             }
+
+            if ($request->input('tohori') > 0) {
+                $debitTransaction1 = Transaction::where('reference_id', $purchase->id)
+                    ->where('transaction_type', 'supplier')
+                    ->where('trx_id', $purchase->trx_id)
+                    ->first();
+
+                $creditTransaction1 = Transaction::where('reference_id', $purchase->id)
+                    ->where('transaction_type', 'tohori')
+                    ->where('trx_id', $purchase->trx_id)
+                    ->first();
+
+                // If either transaction exists, update them; otherwise, create new ones
+                if ($debitTransaction1) {
+                    $debitTransaction1->update([
+                        'account_name' => $purchase->supplier->name,
+                        'amount' => $purchase->tohori,
+                        'date' => $purchase->date,
+                    ]);
+                } else {
+                    $debitTransaction1 = Transaction::create([
+                        'account_name' => $purchase->supplier->name,
+                        'note' => 'তহরি তহবিল',
+                        'amount' => $purchase->tohori,
+                        'type' => 'debit',
+                        'transaction_type' => 'supplier',
+                        'reference_id' => $purchase->id,
+                        'trx_id' => $purchase->trx_id,
+                        'supplier_id' => $purchase->supplier_id,
+                        'date' => $purchase->date,
+                        'user_id' => Auth::id(),
+                    ]);
+                }
+
+                if ($creditTransaction1) {
+                    $creditTransaction1->update([
+                        'amount' => $purchase->tohori,
+                        'date' => $purchase->date,
+                    ]);
+                } else {
+                    $creditTransaction1 = Transaction::create([
+                        'account_name' => 'তহরি তহবিল',
+                        'supplier_id' => $purchase->supplier_id,
+                        'account_id' => 13,
+                        'amount' => $purchase->tohori,
+                        'type' => 'credit',
+                        'reference_id' => $purchase->id,
+                        'transaction_type' => 'tohori',
+                        'date' => $purchase->date,
+                        'user_id' => $purchase->user_id,
+                        'trx_id' => $purchase->trx_id,
+                    ]);
+                }
+
+                if ($creditTransaction1) {
+                    $creditTransaction1->balance = $purchase->supplier->remaining_due;
+                    $creditTransaction1->save();
+                }
+            }
+
+
+
             // Commit the transaction
             DB::commit();
 
@@ -689,6 +742,79 @@ class PurchaseController extends Controller
 
             return response()->json(['error', 'ক্রয় এন্ট্রি মোছার সময় একটি ত্রুটি হয়েছে। আবার চেষ্টা করুন।'], 200);
         }
+    }
+
+    public function tohori(Request $request)
+    {
+        $data = $request->all();
+        $purchase = Purchase::find($data['purchase_id']);
+        if ($purchase){
+            if ($request->input('tohori') > 0) {
+
+                $purchase->tohori = $data['tohori'];
+                $purchase->save();
+
+                $debitTransaction1 = Transaction::where('reference_id', $purchase->id)
+                    ->where('transaction_type', 'supplier')
+                    ->where('trx_id', $purchase->trx_id)
+                    ->first();
+
+                $creditTransaction1 = Transaction::where('reference_id', $purchase->id)
+                    ->where('transaction_type', 'tohori')
+                    ->where('trx_id', $purchase->trx_id)
+                    ->first();
+
+                if ($debitTransaction1) {
+                    $debitTransaction1->update([
+                        'account_name' => $purchase->supplier->name,
+                        'amount' => $purchase->tohori,
+                        'date' => $purchase->date,
+                    ]);
+                } else {
+                    $debitTransaction1 = Transaction::create([
+                        'account_name' => $purchase->supplier->name,
+                        'note' => 'তহরি তহবিল',
+                        'amount' => $purchase->tohori,
+                        'type' => 'debit',
+                        'transaction_type' => 'supplier',
+                        'reference_id' => $purchase->id,
+                        'trx_id' => $purchase->trx_id,
+                        'supplier_id' => $purchase->supplier_id,
+                        'date' => $purchase->date,
+                        'user_id' => Auth::id(),
+                    ]);
+                }
+
+                if ($creditTransaction1) {
+                    $creditTransaction1->update([
+                        'amount' => $purchase->tohori,
+                        'date' => $purchase->date,
+                    ]);
+                } else {
+                    $creditTransaction1 = Transaction::create([
+                        'account_name' => 'তহরি তহবিল',
+                        'supplier_id' => $purchase->supplier_id,
+                        'account_id' => 13,
+                        'amount' => $purchase->tohori,
+                        'type' => 'credit',
+                        'reference_id' => $purchase->id,
+                        'transaction_type' => 'tohori',
+                        'date' => $purchase->date,
+                        'user_id' => $purchase->user_id,
+                        'trx_id' => $purchase->trx_id,
+                    ]);
+                }
+
+                if ($creditTransaction1) {
+                    $creditTransaction1->balance = $purchase->supplier->remaining_due;
+                    $creditTransaction1->save();
+                }
+
+            }
+        }
+
+        return redirect()->route('tohoris.index')
+            ->with('success', 'Tohori updated successfully.');
     }
 
 }

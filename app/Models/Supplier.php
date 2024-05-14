@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * Class Supplier
@@ -19,9 +21,10 @@ use Illuminate\Support\Facades\DB;
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class Supplier extends Model
+class Supplier extends Model implements HasMedia
 {
 
+    use InteractsWithMedia;
     static $rules = [
 		'name' => 'required',
         'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',

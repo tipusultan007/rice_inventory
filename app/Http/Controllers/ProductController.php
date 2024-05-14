@@ -110,6 +110,16 @@ class ProductController extends Controller
 
         echo json_encode($json_data);
     }
+    public function showProductDetails()
+    {
+        return view('product.details');
+    }
+
+    public function getProductDetails($productId = null, $startDate = null, $endDate = null)
+    {
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -231,4 +241,64 @@ class ProductController extends Controller
 
         return response()->json($product);
     }
+
+    public function dataSales(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $productId = $request->input('productId');
+
+        $totalData = SaleDetail::count();
+        $totalFiltered = $totalData;
+
+        $limit = $request->input('length');
+        $start = $request->input('start');
+
+        $query = SaleDetail::with(['sale', 'product']);
+
+        // Apply filters
+        if (!empty($productId)) {
+            $query->where('product_id', $productId);
+        }
+
+        if (!empty($startDate) && !empty($endDate)) {
+            $query->whereHas('sale', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('date', [$startDate, $endDate]);
+            });
+        }
+
+        // Count filtered data
+        $totalFiltered = $query->count();
+
+        // Fetch filtered data with pagination
+        $posts = $query->offset($start)
+            ->limit($limit)
+            ->get();
+
+        $data = [];
+
+        // Format data for DataTables
+        foreach ($posts as $post) {
+            $show = route('sales.show', $post->sale_id);
+
+            $nestedData['id'] = $post->id;
+            $nestedData['name'] = $post->product->name;
+            $nestedData['quantity'] = $post->quantity ?? '0';
+            $nestedData['amount'] = $post->amount ?? '0';
+            $nestedData['date'] = date('d/m/Y', strtotime($post->sale->date));
+            $nestedData['sale'] = '<a href="'.$show.'" class="btn btn-sm btn-primary">মেমো</a>';
+            $data[] = $nestedData;
+        }
+
+        // Prepare JSON response
+        $json_data = [
+            "draw"            => intval($request->input('draw')),
+            "recordsTotal"    => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data"            => $data
+        ];
+
+        return response()->json($json_data);
+    }
+
 }

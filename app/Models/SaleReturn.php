@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Cassandra\Custom;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * Class SaleReturn
@@ -22,9 +24,9 @@ use Illuminate\Database\Eloquent\Model;
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class SaleReturn extends Model
+class SaleReturn extends Model implements HasMedia
 {
-
+use InteractsWithMedia;
     static $rules = [
 		'date' => 'required',
 		'sale_id' => 'required',

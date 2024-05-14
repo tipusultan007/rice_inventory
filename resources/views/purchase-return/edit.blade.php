@@ -3,6 +3,11 @@
 @section('title', 'Update Purchase Return')
 
 @section('content')
+    <style>
+        .filepond--panel-root {
+            background-color: #EDF0F4!important;
+        }
+    </style>
     <!-- Page header -->
     <div class="page-header d-print-none">
         <div class="container-xl">
@@ -50,7 +55,7 @@
                                     @method('PUT')
                                     <input type="hidden" name="purchase_id" value="{{ $purchaseReturn->purchase_id }}">
                                     <div class="row">
-                                        <div class="col-md-2 mb-3">
+                                        <div class="col-md-4 mb-3">
                                             <label for="date" class="form-label fs-3">তারিখ</label>
                                             <input type="text" name="date" id="date" class="form-control flatpicker">
                                             @error('date')
@@ -58,29 +63,40 @@
                                             @enderror
                                         </div>
 
-                                        <div class="col-md-2 mb-3">
+                                        <div class="col-md-4 mb-3">
                                             <label for="invoice_no" class="form-label fs-3">চালান নং</label>
                                             <input type="number" name="invoice_no" class="form-control" value="{{ $purchaseReturn->purchase->invoice_no }}" required>
                                             @error('invoice_no')
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label for="attachment" class="form-label">ফাইল:</label>
-                                            <input type="file" name="attachment" class="form-control"
-                                                   value="{{ old('attachment') }}">
-                                            @error('attachment')
-                                            <div class="text-danger">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-3 mb-3">
+                                        <div class="col-md-4 mb-3">
                                             <label for="supplier_id" class="form-label fs-3">সরবরাহকারী</label>
                                             <select name="supplier_id" class="form-select select2" required>
                                                 <option value="{{ $purchaseReturn->supplier_id }}">{{ $purchaseReturn->supplier->name }}</option>
                                             </select>
-                                            @error('customer_id')
+                                            @error('supplier_id')
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <input type="file" name="files[]" id="files">
+                                            @error('files')
+                                            <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-8 mb-3">
+                                            <div class="d-flex">
+                                                @if($purchaseReturn->getMedia('purchase_return_invoices'))
+                                                    @forelse($purchaseReturn->getMedia('purchase_return_invoices') as $invoice)
+                                                        <a href="{{ $invoice->getUrl() }}" download>
+                                                            <img src="{{ $invoice->getUrl() }}" height="75" class="rounded mx-2">
+                                                        </a>
+                                                    @empty
+                                                    @endforelse
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
 
@@ -201,6 +217,30 @@
     </div>
 @endsection
 @section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filesInput = document.querySelector('#files');
+            FilePond.create(filesInput, createFilePondConfig());
+
+            function createFilePondConfig() {
+                return {
+                    allowMultiple: true,
+                    allowPaste: true,
+                    maxTotalFileSize: "10MB",
+                    allowImagePreview: false,
+                    maxFiles: 2,
+                    server: {
+                        process: '{{ route('files.upload') }}',
+                        revert: '{{ route('files.delete') }}',
+                        allowProcess: true,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        }
+                    }
+                };
+            }
+        });
+    </script>
     <script>
         document.getElementById('submitButton').addEventListener('click', function(e) {
             e.preventDefault();

@@ -72,12 +72,37 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-12 d-print-none">
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="{{ route('accounts.show',$account->id) }}" method="GET" id="saleFilter">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <input type="text" name="date1" id="date1"
+                                               value="{{ request('date1')??date('Y-m-d') }}"
+                                               class="form-control flatpicker">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" name="date2" id="date2" value="{{ request('date2')??date('Y-m-d') }}"
+                                               class="form-control flatpicker">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary me-2 btn-search">সার্চ করুন
+                                        </button>
+                                        <a href="{{ route('accounts.show',$account->id) }}" class="btn btn-danger me-2 btn-reset">রিসেট করুন</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-12 my-3">
                     <div class="card">
                         <table class="table table-sm table-bordered">
                             <tr>
                                 <th>তারিখ</th>
                                 <th>বিবরণ</th>
+                                <th>ক্রেতা/সরবরাহকারি</th>
                                 <th>নোট</th>
                                 <th>ডেবিট</th>
                                 <th>ক্রেডিট</th>
@@ -98,6 +123,7 @@
                                 <tr>
                                     <td>{{ date('d/m/Y',strtotime($transaction->date)) }}</td>
                                     <td>{{ transactionType($transaction->transaction_type) }}</td>
+                                    <td>{{ $transaction->customer->name??$transaction->supplier->name??'-' }}</td>
                                     <td>{{ $transaction->note??'-' }} {!! $transferInfo !!}</td>
                                     <td>{{ $transaction->type === 'debit'? $transaction->amount:'-' }}</td>
                                     <td>{{ $transaction->type === 'credit'? $transaction->amount:'-' }}</td>
@@ -115,6 +141,9 @@
                                 </tr>
                             @endforelse
                         </table>
+                        <div class="card-footer d-flex align-items-center d-print-none">
+                            {!! $transactions->appends(request()->query())->links('tablar::pagination') !!}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,4 +151,23 @@
     </div>
 @endsection
 
-
+@section('scripts')
+    <script type="module">
+        $(".select2").select2({
+            width: '100%',
+            theme: 'bootstrap-5',
+            placeholder: 'সিলেক্ট ক্যাটেগরি',
+            allowClear: true,
+        })
+    </script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function () {
+            window.flatpickr(".flatpicker", {
+                altInput: true,
+                allowInput: true,
+                altFormat: "d-m-Y",
+                dateFormat: "Y-m-d",
+            });
+        });
+    </script>
+@endsection

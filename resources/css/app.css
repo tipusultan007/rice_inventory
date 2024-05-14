@@ -52,3 +52,9 @@ li.nav-item.active {
     height: 3rem !important;
     width: auto;
 }
+.filepond--credits{
+    display: none !important;
+}
+.filepond--panel-root {
+    background-color: #EDF0F4!important;
+}

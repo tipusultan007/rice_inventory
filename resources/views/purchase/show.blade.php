@@ -79,14 +79,19 @@
                             <div class="mb-4 w-33">
                                 <table class="table table-sm table-borderless">
                                     <tr><th>চালান নং</th>  <td>:</td> <td>{{ $purchase->invoice_no }}</td></tr>
-                                    <tr><th>তারিখ</th>  <td>:</td> <td>{{ $purchase->created_at->format('d/m/Y h:i:s A') }}</td></tr>
+                                    <tr><th>তারিখ</th>  <td>:</td> <td>{{ date('d/m/Y',strtotime($purchase->date)) }}</td></tr>
                                     <tr><th>সাপ্লাইয়ার</th>  <td>:</td> <td>{{ $purchase->supplier->name }}</td></tr>
                                     <tr><th>মোবাইল নং</th> <td>:</td> <td> {{ $purchase->supplier->phone }}</td></tr>
                                     <tr><th>কোম্পানির</th>  <td>:</td> <td>{{ $purchase->supplier->company }}</td></tr>
                                     <tr><th>ঠিকানা</th>  <td>:</td> <td>{{ $purchase->supplier->address }}</td></tr>
                                     <tr><th>ট্রাক নং</th> <td>:</td> <td> {{ $purchase->truck_no}}</td></tr>
-                                    @if($purchase->attachment)
-                                        <tr><th>ডকুমেন্ট</th> <td>:</td> <td><a href="{{ asset('storage/purchase_attachments/' . $purchase->attachment) }}">ডাউনলোড</a> </td></tr>
+                                    @if($purchase->getMedia('purchase_invoices'))
+                                        <tr><th>ডকুমেন্ট</th> <td>:</td> <td>
+                                                @forelse($purchase->getMedia('purchase_invoices') as $invoice)
+                                                    <a href="{{ $invoice->getUrl() }}"><i class="ti ti-download"></i></a>
+                                                @empty
+                                                @endforelse
+                                            </td></tr>
                                     @endif
                                 </table>
                             </div>

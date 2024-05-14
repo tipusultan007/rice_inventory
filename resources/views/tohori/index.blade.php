@@ -44,6 +44,35 @@
                 @include('tablar::common.alert')
             @endif
             <div class="row row-cards">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="form" action="{{ route('tohori.entry') }}" method="POST">
+                                @csrf
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        @php
+                                            $purchases = \App\Models\Purchase::with('supplier')->whereNull('tohori')->get();
+                                        @endphp
+                                        <select name="purchase_id" id="purchase_id" class="select2" data-placeholder="সিলেক্ট ক্রয় রশিদ">
+                                            <option value=""></option>
+                                            @foreach($purchases as $purchase)
+                                                <option value="{{ $purchase->id }}">{{ $purchase->invoice_no }} - {{ $purchase->supplier->name }} - {{ $purchase->total }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" name="tohori" placeholder="তহরি" class="form-control">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-primary" type="submit" id="submitButton">সাবমিট</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
                 <div class="col-6">
                     <div class="card">
                         <div class="card-header bg-warning py-1">
@@ -117,7 +146,9 @@
                             <table class="table table-sm card-table table-vcenter table-bordered text-nowrap datatable">
                                 <tr>
                                     <th class="fs-4 fw-bolder">তারিখ</th>
+                                    <th class="fs-4 fw-bolder">সরবরাহকারি</th>
                                     <th class="fs-4 fw-bolder">পরিমাণ</th>
+                                    <th class="fs-4 fw-bolder">#</th>
                                 </tr>
 
                                 <tbody>
@@ -125,7 +156,11 @@
                                     <tr>
 
                                         <td>{{ date('d/m/Y',strtotime($tohori->date)) }}</td>
+                                        <td><a href="{{ route('suppliers.show',$tohori->supplier_id) }}">
+                                                {{ $tohori->supplier->name }}
+                                            </a></td>
                                         <td>{{ $tohori->tohori }}</td>
+                                        <td><a class="btn btn-sm btn-primary" href="{{ route('purchases.show',$tohori->id) }}">রশিদ</a></td>
                                     </tr>
                                 @empty
                                     <td>No Data Found</td>
@@ -142,4 +177,21 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById('form').submit();
+            this.disabled = true;
+        });
+    </script>
+    <script type="module">
+        $(".select2").select2({
+            width: '100%',
+            theme: 'bootstrap-5',
+            placeholder: 'সিলেক্ট',
+            allowClear: true,
+        });
+    </script>
 @endsection

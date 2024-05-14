@@ -51,7 +51,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <form action="{{ route('sale.product.export') }}" method="GET">
+                        <form action="{{ route('purchase.product.export') }}" method="GET">
                             <div class="row">
                                 <div class="col-md-12 mb-2">
                                     <select name="product_id" id="product_id" class="select2" data-placeholder="সিলেক্ট পণ্য">
@@ -123,6 +123,7 @@
 										<th>পণ্য</th>
 										<th>ওজন</th>
 										<th>পরিমাণ</th>
+										<th>সরবরাহকারি</th>
 										<th>টাকা</th>
 										<th>দর</th>
 
@@ -131,9 +132,12 @@
                                 @forelse ($purchaseDetails as $purchaseDetail)
                                     <tr>
 											<td>{{ date('d/m/Y',strtotime($purchaseDetail->purchase->date)) }}</td>
-											<td>{{ $purchaseDetail->product->name}}</td>
+											<td>
+                                                <a href="{{ route('products.show',$purchaseDetail->product_id) }}">{{ $purchaseDetail->product->name??'-'}}</a>
+                                            </td>
 											<td>{{ $purchaseDetail->weight }}</td>
 											<td>{{ $purchaseDetail->quantity }}</td>
+											<td>{{ $purchaseDetail->purchase->supplier->name??'-' }}</td>
 											<td>{{ $purchaseDetail->amount }}</td>
 											<td>{{ $purchaseDetail->price_rate }}</td>
                                     </tr>

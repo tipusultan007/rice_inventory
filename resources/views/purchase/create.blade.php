@@ -64,7 +64,9 @@
             background-color: #e9ecef;
             cursor: not-allowed;
         }
-
+        .filepond--panel-root {
+            background-color: #EDF0F4!important;
+        }
     </style>
     <!-- Page header -->
     <div class="page-header d-print-none">
@@ -141,14 +143,6 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-5 mb-3">
-                                        <label for="attachment" class="form-label">ফাইল:</label>
-                                        <input type="file" name="attachment" class="form-control"
-                                               value="{{ old('attachment') }}">
-                                        @error('attachment')
-                                        <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="supplier_id" class="form-label">সরবরাহকারী:</label>
                                             <select name="supplier_id" id="supplier_id" class="form-control select2"
@@ -158,7 +152,7 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-2 d-flex align-items-end mb-3">
+                                    <div class="col-md-1 d-flex align-items-end mb-3">
                                         <button type="button" id="openModalBtn" class="btn btn-secondary"
                                                 data-bs-toggle="modal" data-bs-target="#createSupplierModal">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -170,7 +164,12 @@
 
                                         </button>
                                     </div>
-
+                                    <div class="col-md-5 mb-3">
+                                        <input type="file" name="files[]" id="files" class="filepond">
+                                        @error('files')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
 
                                 <input type="hidden" name="user_id" value="{{ auth()->id() }}">
@@ -408,6 +407,31 @@
 @endsection
 
 @section('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const filesInput = document.querySelector('#files');
+            FilePond.create(filesInput, createFilePondConfig());
+
+            function createFilePondConfig() {
+                return {
+                    allowMultiple: true,
+                    allowPaste: true,
+                    maxTotalFileSize: "10MB",
+                    allowImagePreview: false,
+                    maxFiles: 2,
+                    server: {
+                        process: '{{ route('files.upload') }}',
+                        revert: '{{ route('files.delete') }}',
+                        allowProcess: true,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        }
+                    }
+                };
+            }
+        });
+    </script>
     <script>
         document.getElementById('submitButton').addEventListener('click', function (e) {
             e.preventDefault();

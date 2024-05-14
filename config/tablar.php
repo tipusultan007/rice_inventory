@@ -167,7 +167,12 @@ return [
                     'text' => 'ক্রয় ফেরত',
                     'route' => 'purchase_returns.index',
                     'icon' => 'ti ti-building-store',
+                ],[
+                    'text' => 'ক্রয়কৃত পন্য',
+                    'route' => 'purchase_details.index',
+                    'icon' => 'ti ti-building-store',
                 ],
+
                 [
                     'text' => 'সরবরাহকারী',
                     'route' => 'suppliers.index',

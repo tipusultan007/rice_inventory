@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+
 /**
  * Class User
  *
@@ -26,9 +29,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-use Notifiable;
+use Notifiable, InteractsWithMedia;
 
     static $rules = [
 		'name' => 'required',

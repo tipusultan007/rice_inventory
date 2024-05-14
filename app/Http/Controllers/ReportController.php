@@ -143,7 +143,7 @@ class ReportController extends Controller
                 WHEN transaction_type = "sale" AND type = "credit" THEN amount
                 WHEN transaction_type = "customer_payment" AND type = "debit" THEN -amount
                 WHEN transaction_type = "discount" AND type = "debit" THEN -amount
-                WHEN transaction_type = "payment_to_customer" AND type = "credit" THEN -amount
+                WHEN transaction_type = "due_to_customer" AND type = "credit" THEN -amount
                 ELSE 0
             END
         ) AS total_due'))->value('total_due');
@@ -159,7 +159,7 @@ class ReportController extends Controller
                 WHEN transaction_type = "supplier_payment" AND type = "credit" THEN -amount
                 WHEN transaction_type = "tohori" AND type = "credit" THEN -amount
                 WHEN transaction_type = "discount" AND type = "credit" THEN -amount
-                WHEN transaction_type = "payment_from_supplier" AND type = "debit" THEN -amount
+                WHEN transaction_type = "due_from_supplier" AND type = "debit" THEN -amount
                 ELSE 0
             END
         ) AS total_due'))->value('total_due');
@@ -453,12 +453,12 @@ class ReportController extends Controller
             WHEN transactions.transaction_type = "sale" AND transactions.type = "credit" THEN transactions.amount
             WHEN transactions.transaction_type = "customer_payment" AND transactions.type = "debit" THEN -transactions.amount
             WHEN transactions.transaction_type = "discount" AND transactions.type = "debit" THEN -transactions.amount
-            WHEN transactions.transaction_type = "payment_to_customer" AND transactions.type = "credit" THEN -transactions.amount
+            WHEN transactions.transaction_type = "due_to_customer" AND transactions.type = "credit" THEN -transactions.amount
             ELSE 0
         END
     ) AS total_due'))
             ->where('transactions.date', '<=', $date)
-            ->groupBy('transactions.customer_id')
+            ->groupBy('customers.name', 'customers.address', 'customers.phone','transactions.customer_id')
             ->get();
 
         return view('reports.customer', compact('customers'));
@@ -476,7 +476,7 @@ class ReportController extends Controller
                 WHEN transactions.transaction_type = "supplier_payment" AND transactions.type = "credit" THEN -transactions.amount
                 WHEN transactions.transaction_type = "tohori" AND transactions.type = "credit" THEN -transactions.amount
                 WHEN transactions.transaction_type = "discount" AND transactions.type = "credit" THEN -transactions.amount
-                WHEN transactions.transaction_type = "payment_from_supplier" AND transactions.type = "debit" THEN -transactions.amount
+                WHEN transactions.transaction_type = "due_from_supplier" AND transactions.type = "debit" THEN -transactions.amount
             ELSE 0
         END
     ) AS total_due'))

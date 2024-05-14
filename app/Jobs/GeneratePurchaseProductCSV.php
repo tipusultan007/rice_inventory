@@ -41,7 +41,7 @@ class GeneratePurchaseProductCSV implements ShouldQueue
 
         $csv->insertOne([
             'তারিখ',
-            'ক্রেতা',
+            'সরবরাহকারি',
             'মেমো নং',
             'পণ্য',
             'পরিমাণ',
@@ -53,16 +53,15 @@ class GeneratePurchaseProductCSV implements ShouldQueue
         foreach ($this->purchases as $item) {
             $csv->insertOne([
                 $item->purchase->date,
-                $item->purchase->customer->name,
+                $item->purchase->supplier->name??'-',
                 $item->purchase->invoice_no,
-                $item->product->name,
+                $item->product->name??'-',
                 $item->quantity,
                 $item->price_rate,
                 $item->amount
             ]);
         }
 
-        // Store the CSV file
         $csvFileName = 'purchases_products_' . now()->format('YmdHis') . '.csv';
         $csvFileName = str_replace(['/', '\\'], '_', $csvFileName);
 

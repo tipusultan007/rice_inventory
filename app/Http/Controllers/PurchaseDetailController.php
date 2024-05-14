@@ -16,9 +16,26 @@ class PurchaseDetailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $purchaseDetails = PurchaseDetail::paginate(10);
+        $date1 = $request->input('date1');
+        $date2 = $request->input('date2');
+        $product_id = $request->input('product_id');
+
+        $query = PurchaseDetail::with('purchase');
+
+        if ($request->filled('date1') && $request->filled('date2')) {
+            $query->whereHas('purchase', function ($query) use ($date1, $date2) {
+                $query->whereBetween('date', [$date1, $date2])
+                    ->orderByDesc('date');
+            });
+        }
+
+        if ($product_id) {
+            $query->where('product_id', $product_id);
+        }
+
+        $purchaseDetails = $query->paginate(10);
 
         return view('purchase-detail.index', compact('purchaseDetails'))
             ->with('i', (request()->input('page', 1) - 1) * $purchaseDetails->perPage());

@@ -11,6 +11,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -77,14 +78,14 @@ class PurchaseReturnController extends Controller
             // Handle products outside the loop
             $this->handlePurchaseReturnDetails($request->input('products'), $purchaseReturn);
 
-            if ($request->hasFile('attachment')) {
-                $file = $request->file('attachment');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-
-                $file->storeAs('public/purchase_return_attachments', $fileName);
-
-                $purchaseReturn->attachment = $fileName;
-                $purchaseReturn->save();
+            if ($request->has('files')) {
+                //$purchaseReturn->clearMediaCollection('purchase_return_invoices');
+                foreach ($request->input('files') as $filePath) {
+                    $filename = json_decode($filePath)[0];
+                    $purchaseReturn->addMedia(Storage::path($filename))->toMediaCollection('purchase_return_invoices');
+                    $folderName = explode('/', $filename)[1];
+                    Storage::deleteDirectory('temp/' . $folderName);
+                }
             }
 
             Transaction::create([
@@ -221,14 +222,14 @@ class PurchaseReturnController extends Controller
             // Handle products outside the loop
             $this->handlePurchaseReturnDetailsUpdate($request->input('products'), $purchaseReturn,$purchaseReturnDetails);
 
-            if ($request->hasFile('attachment')) {
-                $file = $request->file('attachment');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-
-                $file->storeAs('public/purchase_return_attachments', $fileName);
-
-                $purchaseReturn->attachment = $fileName;
-                $purchaseReturn->save();
+            if ($request->has('files')) {
+                $purchaseReturn->clearMediaCollection('purchase_return_invoices');
+                foreach ($request->input('files') as $filePath) {
+                    $filename = json_decode($filePath)[0];
+                    $purchaseReturn->addMedia(Storage::path($filename))->toMediaCollection('purchase_return_invoices');
+                    $folderName = explode('/', $filename)[1];
+                    Storage::deleteDirectory('temp/' . $folderName);
+                }
             }
 
             // Update or create the credit transaction

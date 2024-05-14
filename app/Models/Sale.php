@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * Class Sale
@@ -19,9 +21,10 @@ use Illuminate\Database\Eloquent\Model;
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class Sale extends Model
+class Sale extends Model implements HasMedia
 {
 
+    use InteractsWithMedia;
     static $rules = [
 		'date' => 'required',
 		'customer_id' => 'required',

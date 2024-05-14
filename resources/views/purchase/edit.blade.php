@@ -3,6 +3,11 @@
 @section('title', 'Update Purchase')
 
 @section('content')
+    <style>
+        .filepond--panel-root {
+            background-color: #EDF0F4!important;
+        }
+    </style>
     <!-- Page header -->
     <div class="page-header d-print-none">
         <div class="container-xl">
@@ -66,7 +71,7 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-2 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label for="invoice_no" class="form-label">চালান নং:</label>
                                         <input type="text" name="invoice_no" class="form-control"
                                                value="{{ $purchase->invoice_no }}" readonly>
@@ -74,18 +79,8 @@
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="col-md-3 mb-3">
-                                        <label for="attachment" class="form-label">ফাইল:</label>
-                                        <input type="file" name="attachment" class="form-control">
-                                        @if($purchase->attachment)
-                                            <a href="{{ asset('storage/' . $purchase->attachment) }}" target="_blank">View Attachment</a>
-                                        @endif
-                                        @error('attachment')
-                                        <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
 
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label for="supplier_id" class="form-label">সরবরাহকারী:</label>
                                         <select name="supplier_id" id="supplier_id" class="form-control select2" required data-placeholder="সরবরাহকারী বাছাই করুন">
                                             <option value=""></option>
@@ -107,6 +102,24 @@
                                         @error('truck_no')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <input type="file" name="files[]" id="files">
+                                        @error('files')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-8 mb-3">
+                                        <div class="d-flex">
+                                            @if($purchase->getMedia('purchase_invoices'))
+                                                @forelse($purchase->getMedia('purchase_invoices') as $invoice)
+                                                    <a href="{{ $invoice->getUrl() }}" download>
+                                                        <img src="{{ $invoice->getUrl() }}" height="75" class="rounded mx-2">
+                                                    </a>
+                                                @empty
+                                                @endforelse
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                                 <input type="hidden" name="user_id" value="{{ auth()->id() }}">
@@ -249,6 +262,31 @@
     </div>
 @endsection
 @section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const filesInput = document.querySelector('#files');
+            FilePond.create(filesInput, createFilePondConfig());
+
+            function createFilePondConfig() {
+                return {
+                    allowMultiple: true,
+                    allowPaste: true,
+                    maxTotalFileSize: "10MB",
+                    allowImagePreview: false,
+                    maxFiles: 2,
+                    server: {
+                        process: '{{ route('files.upload') }}',
+                        revert: '{{ route('files.delete') }}',
+                        allowProcess: true,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        }
+                    }
+                };
+            }
+        });
+    </script>
     <script type="module">
         window.addProductEntry = function () {
 

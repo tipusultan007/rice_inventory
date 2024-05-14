@@ -3,6 +3,11 @@
 @section('title', 'নতুন বিক্রয় ফেরত')
 
 @section('content')
+    <style>
+        .filepond--panel-root {
+            background-color: #EDF0F4!important;
+        }
+    </style>
     <!-- Page header -->
     <div class="page-header d-print-none">
         <div class="container-xl">
@@ -95,20 +100,18 @@
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label for="attachment" class="form-label">ফাইল:</label>
-                                            <input type="file" name="attachment" class="form-control"
-                                                   value="{{ old('attachment') }}">
-                                            @error('attachment')
-                                            <div class="text-danger">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-3 mb-3">
+                                        <div class="col-md-4 mb-3">
                                             <label for="supplier_id" class="form-label fs-3">সরবরাহকারী</label>
                                             <select name="supplier_id" class="form-select select2" required>
                                                 <option value="{{ $purchase->supplier_id }}">{{ $purchase->supplier->name }}</option>
                                             </select>
                                             @error('customer_id')
+                                            <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <input type="file" name="files[]" id="files">
+                                            @error('files')
                                             <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
@@ -233,6 +236,30 @@
 @endsection
 
 @section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filesInput = document.querySelector('#files');
+            FilePond.create(filesInput, createFilePondConfig());
+
+            function createFilePondConfig() {
+                return {
+                    allowMultiple: true,
+                    allowPaste: true,
+                    maxTotalFileSize: "10MB",
+                    allowImagePreview: false,
+                    maxFiles: 2,
+                    server: {
+                        process: '{{ route('files.upload') }}',
+                        revert: '{{ route('files.delete') }}',
+                        allowProcess: true,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        }
+                    }
+                };
+            }
+        });
+    </script>
     <script>
         document.getElementById('submitButton').addEventListener('click', function(e) {
             e.preventDefault();

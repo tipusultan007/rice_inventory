@@ -133,3 +133,8 @@ Route::middleware(['auth'])->group(function () {
 Route::resource('/initial-balances', App\Http\Controllers\InitialBalanceController::class);
 Route::get('supplier-list',[SupplierController::class,'supplierList']);
 Route::post('store-supplier',[SupplierController::class,'storeSupplier']);
+Route::post('upload',[\App\Http\Controllers\UploadController::class,'upload'])->name('files.upload');
+Route::delete('delete',[\App\Http\Controllers\UploadController::class,'delete'])->name('files.delete');
+Route::get('product-details',[ProductController::class,'showProductDetails'])->name('product.details');
+Route::post('tohori-entry',[PurchaseController::class,'tohori'])->name('tohori.entry');
+Route::get('data-product-sales',[ProductController::class,'dataSales'])->name('data.product.sales');

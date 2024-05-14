@@ -16,7 +16,7 @@ class PurchaseProductExportController extends Controller
         $date2 = $request->input('date2');
         $product_id = $request->input('product_id');
 
-        $query = PurchaseDetail::with('purchase.customer');
+        $query = PurchaseDetail::with('purchase');
 
         if ($request->filled('date1') && $request->filled('date2')) {
             $query->whereHas('purchase', function ($query) use ($date1, $date2) {
