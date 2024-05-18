@@ -78,13 +78,33 @@
                 </div>
                 <div class="col-md-9">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Balance Transfer</h3>
-                        </div>
+                        <div class="card-body">
+                            <form action="{{ route('balance_transfers.index') }}" method="GET">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <input type="text" name="date1" id="date1"
+                                               value="{{ request('date1')??date('Y-m-d') }}"
+                                               class="form-control flatpicker">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" name="date2" id="date2" value="{{ request('date2')??date('Y-m-d') }}"
+                                               class="form-control flatpicker">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn btn-primary me-2 btn-search">সার্চ করুন
+                                        </button>
+                                        <a href="{{ route('balance_transfers.index') }}" class="btn btn-danger me-2 btn-reset">রিসেট করুন</a>
+                                    </div>
+                                </div>
+                            </form>
 
+                        </div>
+                    </div>
+                    <div class="card">
                         <div class="table-responsive">
                             <table class="table card-table table-sm table-vcenter table-bordered table-sm datatable">
                                 <tr>
+                                    <th>তারিখ</th>
                                     <th>একাউন্ট হতে</th>
                                     <th>একাউন্ট</th>
                                     <th>টাকা</th>
@@ -95,6 +115,7 @@
                                 <tbody>
                                 @forelse ($balanceTransfers as $balanceTransfer)
                                     <tr>
+                                        <td style="width: 150px">{{ date('d/m/Y',strtotime($balanceTransfer->date)) }}</td>
                                         <td>{{ $balanceTransfer->fromAccount->name }}</td>
                                         <td>{{ $balanceTransfer->toAccount->name}}</td>
                                         <td>{{ $balanceTransfer->amount }}</td>
@@ -139,8 +160,8 @@
 
                             </table>
                         </div>
-                        <div class="card-footer d-flex align-items-center">
-                            {!! $balanceTransfers->links('tablar::pagination') !!}
+                        <div class="card-footer d-flex align-items-center d-print-none">
+                            {!! $balanceTransfers->appends(request()->query())->links('tablar::pagination') !!}
                         </div>
                     </div>
                 </div>

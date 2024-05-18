@@ -48,20 +48,23 @@
                             <h3 class="card-title">Balance Transfer Details</h3>
                         </div>
                         <div class="card-body">
-                            
-<div class="form-group">
-<strong>From Account Id:</strong>
-{{ $balanceTransfer->from_account_id }}
-</div>
-<div class="form-group">
-<strong>To Account Id:</strong>
-{{ $balanceTransfer->to_account_id }}
-</div>
-<div class="form-group">
-<strong>Amount:</strong>
-{{ $balanceTransfer->amount }}
-</div>
-
+                            <table class="table table-bordered table-stripped">
+                                <tr>
+                                    <th>তারিখ</th><td>{{ date('d/m/Y',strtotime($balanceTransfer->date)) }}</td>
+                                </tr>
+                                <tr>
+                                    <th>টাকা</th><td>{{ $balanceTransfer->amount }}</td>
+                                </tr>
+                                <tr>
+                                    <th>প্রদানকারী একাউন্ট</th><td>{{ $balanceTransfer->fromAccount->name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>গ্রহণকারী একাউন্ট</th><td>{{ $balanceTransfer->toAccount->name}}</td>
+                                </tr>
+                                <tr>
+                                    <th>নোট</th><td>{{ $balanceTransfer->note??'-' }}</td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </div>

@@ -22,11 +22,18 @@ class BalanceTransferController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $balanceTransfers = BalanceTransfer::with('fromAccount','toAccount')
-            ->orderBy('id','desc')
-            ->paginate(20);
+        if ($request->has('date1') && $request->has('date2')) {
+            $balanceTransfers = BalanceTransfer::with('fromAccount','toAccount')
+                ->whereBetween('date',[$request->input('date1'), $request->input('date2')])
+                ->orderBy('id','desc')
+                ->paginate(20);
+        }else{
+            $balanceTransfers = BalanceTransfer::with('fromAccount','toAccount')
+                ->orderBy('id','desc')
+                ->paginate(20);
+        }
 
         return view('balance-transfer.index', compact('balanceTransfers'))
             ->with('i', (request()->input('page', 1) - 1) * $balanceTransfers->perPage());
@@ -76,7 +83,7 @@ class BalanceTransferController extends Controller
 
             $from = Account::find($request->input('from_account_id'));
             // Create a transaction for the balance transfer from the source account
-            Transaction::create([
+           $fromTrx = Transaction::create([
                 'account_id' => $request->input('from_account_id'),
                 'account_name' => $from->name,
                 'amount' => $request->input('amount'),
@@ -89,9 +96,12 @@ class BalanceTransferController extends Controller
                 'trx_id' => $trxId
             ]);
 
+            $fromTrx->balance = $from->balance;
+            $fromTrx->save();
+
             $to = Account::find($request->input('to_account_id'));
             // Create a transaction for the balance transfer to the destination account
-            Transaction::create([
+            $toTrx = Transaction::create([
                 'account_id' => $request->input('to_account_id'),
                 'account_name' => $to->name,
                 'amount' => $request->input('amount'),
@@ -103,7 +113,8 @@ class BalanceTransferController extends Controller
                 'user_id' => Auth::id(),
                 'trx_id' => $trxId
             ]);
-
+            $toTrx->balance = $to->balance;
+            $toTrx->save();
 
         } catch (\Exception $e) {
             // An error occurred, rollback the transaction

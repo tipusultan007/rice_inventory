@@ -2,6 +2,7 @@ import '../sass/tabler.scss';
 import './bootstrap';
 import jQuery from 'jquery';
 import toastr from 'toastr';
+
 import select2 from "select2"
 select2();
 window.$ = jQuery;

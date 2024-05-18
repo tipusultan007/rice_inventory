@@ -51,7 +51,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title">ক্রয় তালিকা ডাউনলোড</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="row">
@@ -67,7 +68,8 @@
                                                                class="form-control flatpicker">
                                                     </div>
                                                     <div class="col-md-3">
-                                                        <button type="submit" class="btn btn-green me-2">ডাউনলোড করুন</button>
+                                                        <button type="submit" class="btn btn-green me-2">ডাউনলোড করুন
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </form>
@@ -145,9 +147,56 @@
             </div>
         </div>
     </div>
+
+    <div class="modal" id="uploadInvoiceModal" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ক্রয় রশিদ আপলোড</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formUploadInvoice" action="{{ route('upload.purchase.invoice') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" id="purchase_id" name="id">
+                        <input type="file" name="files[]" id="files">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn me-auto" data-bs-dismiss="modal">বাতিল</button>
+                        <button type="submit" class="btn btn-primary">আপলোড</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filesInput = document.querySelector('#files');
+            FilePond.create(filesInput, createFilePondConfig());
+
+            function createFilePondConfig() {
+                return {
+                    allowMultiple: true,
+                    allowPaste: true,
+                    maxTotalFileSize: "10MB",
+                    allowImagePreview: false,
+                    maxFiles: 2,
+                    server: {
+                        process: '{{ route('files.upload') }}',
+                        revert: '{{ route('files.delete') }}',
+                        allowProcess: true,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        }
+                    }
+                };
+            }
+        });
+    </script>
     <script type="module">
+
         document.addEventListener('DOMContentLoaded', function () {
             window.flatpickr(".flatpicker", {
                 altInput: true,
@@ -163,6 +212,13 @@
             purchaseTable();
         })
 
+        $(document).on("click", ".upload-invoice", function () {
+            var id = $(this).data('id');
+            $("#purchase_id").val(id);
+            console.log(id)
+            jQuery("#uploadInvoiceModal").modal('show');
+        })
+
         $(".btn-search").on("click", function () {
             var date1 = $("#date1").val();
             var date2 = $("#date2").val();
@@ -172,7 +228,8 @@
         })
 
         purchaseTable();
-        function purchaseTable(date1='', date2='') {
+
+        function purchaseTable(date1 = '', date2 = '') {
             jQuery('.datatable').DataTable({
                 "dom": '<"d-flex justify-content-between align-items-center header-actions mx-2 row my-3"' +
                     '<"col-sm-12 col-lg-4 d-flex justify-content-center justify-content-lg-start mb-1" l>' +
@@ -184,7 +241,7 @@
                     '>',
                 "processing": true,
                 "serverSide": true,
-                "ajax":{
+                "ajax": {
                     "url": "{{ route('data.purchases') }}",
                     "dataType": "json",
                     "type": "GET",
@@ -193,30 +250,30 @@
                     }
                 },
                 "columns": [
-                    { "data": "date" },
-                    { "data": "invoice_no" },
-                    { "data": "name" },
-                    { "data": "quantity", sorting: false, "className": "text-end" },
-                    { "data": "total",sorting: false, "className": "text-end"  },
-                    { "data": "paid",sorting: false, "className": "text-end"  },
-                    { "data": "action",sorting: false  },
+                    {"data": "date"},
+                    {"data": "invoice_no"},
+                    {"data": "name"},
+                    {"data": "quantity", sorting: false, "className": "text-end"},
+                    {"data": "total", sorting: false, "className": "text-end"},
+                    {"data": "paid", sorting: false, "className": "text-end"},
+                    {"data": "action", sorting: false},
                 ],
                 "footer": true, // Enable footer
                 "footerCallback": function (row, data, start, end, display) {
                     var api = this.api();
 
                     // Sum the values in the 'quantity' column
-                    var quantity = api.column(3, { page: 'current' }).data().reduce(function (acc, val) {
+                    var quantity = api.column(3, {page: 'current'}).data().reduce(function (acc, val) {
                         return acc + parseFloat(val);
                     }, 0);
 
                     // Sum the values in the 'total' column
-                    var total = api.column(4, { page: 'current' }).data().reduce(function (acc, val) {
+                    var total = api.column(4, {page: 'current'}).data().reduce(function (acc, val) {
                         return acc + parseFloat(val);
                     }, 0);
 
                     // Sum the values in the 'paid' column
-                    var paid = api.column(5, { page: 'current' }).data().reduce(function (acc, val) {
+                    var paid = api.column(5, {page: 'current'}).data().reduce(function (acc, val) {
                         var num = parseFloat(val);
                         return isNaN(num) ? acc : acc + num;
                     }, 0);
@@ -243,7 +300,7 @@
                         },
                         messageTop:
                             '<h2 class="text-center my-3">ক্রয় তালিকা</h2>',
-                        customize: function(win) {
+                        customize: function (win) {
                             // Remove page title
                             $(win.document.body).find('h1').remove();
                         },
@@ -256,7 +313,7 @@
                         }
                     },
                 ],
-                columnDefs:[
+                columnDefs: [
                     {
                         // Actions
                         targets: 6,
@@ -265,11 +322,13 @@
                             return (
                                 '<div class="d-inline-flex">' +
                                 '<a class="pe-1 dropdown-toggle hide-arrow text-primary" data-bs-toggle="dropdown">' +
-                                '<i class="ti ti-dots"></i>'+
+                                '<i class="ti ti-dots"></i>' +
                                 '</a>' +
                                 '<div class="dropdown-menu dropdown-menu-end">' +
                                 '<a href="{{url('purchases')}}/' + full['id'] + '" class="dropdown-item">' +
                                 'দেখুন</a>' +
+                                '<a href="javascript:;" data-id="' + full['id'] + '" class="dropdown-item upload-invoice">' +
+                                'রশিদ আপলোড</a>' +
                                 '<a href="{{url('purchases')}}/' + full['id'] + '/edit" class="dropdown-item">' +
                                 'এডিট</a>' +
                                 '<a href="javascript:;" data-id="' + full['id'] + '" class="dropdown-item fw-bolder text-danger delete">' +

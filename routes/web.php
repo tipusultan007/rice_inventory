@@ -138,3 +138,4 @@ Route::delete('delete',[\App\Http\Controllers\UploadController::class,'delete'])
 Route::get('product-details',[ProductController::class,'showProductDetails'])->name('product.details');
 Route::post('tohori-entry',[PurchaseController::class,'tohori'])->name('tohori.entry');
 Route::get('data-product-sales',[ProductController::class,'dataSales'])->name('data.product.sales');
+Route::post('upload-invoice',[PurchaseController::class,'uploadInvoice'])->name('upload.purchase.invoice');

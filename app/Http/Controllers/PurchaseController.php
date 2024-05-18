@@ -174,9 +174,13 @@ class PurchaseController extends Controller
         $data = array();
         if (!empty($posts)) {
             foreach ($posts as $post) {
+
+                $file = $post->getFirstMediaUrl('purchase_invoices');
+                $invoice = '<a data-fslightbox="first-lightbox" href="'.$file.'">দেখুন</a>';
+
                 $nestedData['id'] = $post->id;
                 $nestedData['date'] = date('d/m/Y', strtotime($post->date));
-                $nestedData['invoice_no'] = $post->invoice_no ?? '-';
+                $nestedData['invoice_no'] = $file != ''?$post->invoice_no.'<br>'.$invoice:$post->invoice_no;
                 $nestedData['name'] = $post->supplier->name . '-' . $post->supplier->address ?? '';
                 $nestedData['quantity'] = $post->purchaseDetails->sum('quantity');
                 $nestedData['total'] = $post->total;
@@ -526,6 +530,7 @@ class PurchaseController extends Controller
                     'supplier_id' => $request->input('supplier_id'),
                     'date' => $purchase->date,
                 ]);
+
                 $debitTransaction->balance = $purchase->supplier->remaining_due;
                 $debitTransaction->save();
             }
@@ -727,9 +732,7 @@ class PurchaseController extends Controller
                 $purchaseReturn->delete();
             }
 
-            if ($purchase->attachment) {
-                Storage::delete('public/purchase_attachments/' . $purchase->attachment);
-            }
+            $purchase->clearMediaCollection('purchase_invoices');
             $purchase->delete();
 
             DB::commit();
@@ -817,6 +820,22 @@ class PurchaseController extends Controller
 
         return redirect()->route('tohoris.index')
             ->with('success', 'Tohori updated successfully.');
+    }
+
+    public function uploadInvoice(Request $request)
+    {
+        $purchase = Purchase::find($request->id);
+        if ($request->has('files')) {
+            $purchase->clearMediaCollection('purchase_invoices');
+            foreach ($request->input('files') as $filePath) {
+                $filename = json_decode($filePath)[0];
+                $purchase->addMedia(Storage::path($filename))->toMediaCollection('purchase_invoices');
+                $folderName = explode('/', $filename)[1];
+                Storage::deleteDirectory('temp/' . $folderName);
+            }
+        }
+
+        return redirect()->back()->with('success','রশিদ আপলোড করা হয়েছে।');
     }
 
 }
